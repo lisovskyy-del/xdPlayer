@@ -1,9 +1,11 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting.Internal;
 using System;
+using xdPlayer.Infrastructure.Data;
 
 namespace xdPlayer.App;
 
@@ -32,12 +34,12 @@ public partial class App : Avalonia.Application
 
     private void ConfigureServices(IServiceCollection services)
     {
-        // DB
+        // DB - SQLite
         services.AddDbContext<AppDbContext>(options =>
-            options.UseSqlServer("your_connection_string"));
+            options.UseSqlite("Data Source=xdPlayer.db"));
 
         // Repositories
-        services.AddScoped<ITrackRepository, TrackRepository>();
+        /* services.AddScoped<ITrackRepository, TrackRepository>();
         services.AddScoped<IPlaylistRepository, PlaylistRepository>();
 
         // Services
@@ -49,6 +51,7 @@ public partial class App : Avalonia.Application
         services.AddTransient<MainViewModel>();
         services.AddTransient<LibraryViewModel>();
         services.AddTransient<PlayerViewModel>();
+        */
 
         // Windows
         services.AddSingleton<MainWindow>();

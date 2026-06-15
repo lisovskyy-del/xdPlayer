@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.ComponentModel.DataAnnotations;
 
 namespace xdPlayer.Domain.Entities;
 
@@ -15,6 +16,6 @@ public class PlaylistTrack
 
     // Navigation, by default set as null;
 
-    public PlaylistTrack Playlist { get; set; } = null!;
+    public Playlist Playlist { get; set; } = null!;
     public Track Track { get; set; } = null!;
 }
