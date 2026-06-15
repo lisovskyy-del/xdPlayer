@@ -3,15 +3,17 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting.Internal;
 using System;
+using System.Linq;
+using xdPlayer.Domain.Interfaces;
 using xdPlayer.Infrastructure.Data;
+using xdPlayer.Infrastructure.Repositories;
 
 namespace xdPlayer.App;
 
 public partial class App : Avalonia.Application
 {
-    public static IServiceProvider Services { get; private set; }
+    public static IServiceProvider Services { get; private set; } = null!;
 
     public override void Initialize()
     {
@@ -23,6 +25,17 @@ public partial class App : Avalonia.Application
         var services = new ServiceCollection();
         ConfigureServices(services);
         Services = services.BuildServiceProvider();
+
+        // automatically use migrations every launch
+        using var scope = Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        db.Database.Migrate();
+
+        if (!db.UserProfiles.Any())
+        {
+            db.UserProfiles.Add(new Domain.Entities.UserProfile());
+            db.SaveChanges();
+        }
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
@@ -39,11 +52,13 @@ public partial class App : Avalonia.Application
             options.UseSqlite("Data Source=xdPlayer.db"));
 
         // Repositories
-        /* services.AddScoped<ITrackRepository, TrackRepository>();
+        services.AddScoped<ITrackRepository, TrackRepository>();
         services.AddScoped<IPlaylistRepository, PlaylistRepository>();
+        services.AddScoped<ITagRepository, TagRepository>();
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         // Services
-        services.AddScoped<ILibraryService, LibraryService>();
+        /* services.AddScoped<ILibraryService, LibraryService>();
         services.AddScoped<IPlayerService, PlayerService>();
         services.AddScoped<IStatisticsService, StatisticsService>();
 

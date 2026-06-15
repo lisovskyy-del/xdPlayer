@@ -1,0 +1,17 @@
+﻿using Microsoft.EntityFrameworkCore;
+using xdPlayer.Domain.Entities;
+using xdPlayer.Domain.Interfaces;
+using xdPlayer.Infrastructure.Data;
+
+namespace xdPlayer.Infrastructure.Repositories;
+
+public class PlaylistRepository : Repository<Playlist>, IPlaylistRepository
+{
+    public PlaylistRepository(AppDbContext context) : base(context) { }
+
+    public async Task<Playlist?> GetWithTracksAsync(int id) =>
+        await _context.Playlists
+            .Include(p => p.PlaylistTracks)
+            .ThenInclude(pt => pt.Track)
+            .FirstOrDefaultAsync(p => p.Id == id);
+}
