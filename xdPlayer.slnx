@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="xdPlayer.App/xdPlayer.App.csproj" />
+  <Project Path="xdPlayer.Application/xdPlayer.Application.csproj" />
+  <Project Path="xdPlayer.Domain/xdPlayer.Domain.csproj" />
+  <Project Path="xdPlayer.Infrastructure/xdPlayer.Infrastructure.csproj" />
+  <Project Path="xdPlayer.Presentation/xdPlayer.Presentation.csproj" />
+  <Project Path="xdPlayer.Tests/xdPlayer.Tests.csproj" />
+</Solution>
