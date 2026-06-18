@@ -68,6 +68,7 @@ public partial class App : Avalonia.Application
         services.AddSingleton<PlaybackQueue>();
         services.AddSingleton<IAudioPlayerService, AudioPlayerService>();
         services.AddSingleton<PlaybackManager>();
+        services.AddSingleton<IMetadataReader, TagLibMetadataReader>();
 
 
         // ViewModels

@@ -1,6 +1,7 @@
 ﻿using Avalonia;
 using System;
 using Serilog;
+using xdPlayer.Application.Services;
 
 namespace xdPlayer.App;
 
