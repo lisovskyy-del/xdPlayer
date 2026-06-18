@@ -5,9 +5,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;
+using xdPlayer.Application.Interfaces;
+using xdPlayer.Application.Services;
 using xdPlayer.Domain.Interfaces;
+using xdPlayer.Domain.Playback;
 using xdPlayer.Infrastructure.Data;
 using xdPlayer.Infrastructure.Repositories;
+using xdPlayer.Infrastructure.Services;
 
 namespace xdPlayer.App;
 
@@ -59,10 +63,15 @@ public partial class App : Avalonia.Application
 
         // Services
         /* services.AddScoped<ILibraryService, LibraryService>();
-        services.AddScoped<IPlayerService, PlayerService>();
         services.AddScoped<IStatisticsService, StatisticsService>();
+        */
+        services.AddSingleton<PlaybackQueue>();
+        services.AddSingleton<IAudioPlayerService, AudioPlayerService>();
+        services.AddSingleton<PlaybackManager>();
+
 
         // ViewModels
+        /*
         services.AddTransient<MainViewModel>();
         services.AddTransient<LibraryViewModel>();
         services.AddTransient<PlayerViewModel>();
