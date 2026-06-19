@@ -12,6 +12,7 @@ using xdPlayer.Domain.Playback;
 using xdPlayer.Infrastructure.Data;
 using xdPlayer.Infrastructure.Repositories;
 using xdPlayer.Infrastructure.Services;
+using xdPlayer.Presentation.ViewModels;
 
 namespace xdPlayer.App;
 
@@ -75,8 +76,8 @@ public partial class App : Avalonia.Application
         /*
         services.AddTransient<MainViewModel>();
         services.AddTransient<LibraryViewModel>();
-        services.AddTransient<PlayerViewModel>();
         */
+        services.AddTransient<PlayerViewModel>();
 
         // Windows
         services.AddSingleton<MainWindow>();

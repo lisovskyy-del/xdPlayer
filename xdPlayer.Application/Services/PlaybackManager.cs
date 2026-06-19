@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using xdPlayer.Application.Interfaces;
+using xdPlayer.Domain.Entities;
 using xdPlayer.Domain.Playback;
 
 namespace xdPlayer.Application.Services;
@@ -12,6 +13,21 @@ public class PlaybackManager // the main class that is responsible for playing a
 
     public PlaybackQueue Queue { get; } // the queue, which can have parameters
 
+    public event EventHandler? Started;
+    public event EventHandler? Paused;
+    public event EventHandler<Track>? TrackChanged;
+
+    // init the objects
+    public PlaybackManager(IAudioPlayerService player, PlaybackQueue queue)
+    {
+        _player = player;
+        Queue = queue;
+
+        _player.PlaybackFinished += OnPlaybackFinished;
+        _player.PlaybackStarted += (s, e) => Started?.Invoke(this, EventArgs.Empty);
+        _player.PlaybackPaused += (s, e) => Paused?.Invoke(this, EventArgs.Empty);
+    }
+
     private void OnPlaybackFinished(object? sender, EventArgs e) // simple event that activates when track is finished
     {
         var nextTrack = Queue.Next();
@@ -19,15 +35,8 @@ public class PlaybackManager // the main class that is responsible for playing a
         if (nextTrack != null)
         {
             _player.Play(nextTrack.FilePath);
+            TrackChanged?.Invoke(this, nextTrack);
         }
-    }
-
-    public PlaybackManager(IAudioPlayerService player, PlaybackQueue queue) // init the objects
-    {
-        _player = player;
-        Queue = queue;
-
-        _player.PlaybackFinished += OnPlaybackFinished;
     }
     
     public void Play() // fetches the current index of the track and plays it 
@@ -40,6 +49,7 @@ public class PlaybackManager // the main class that is responsible for playing a
         }
 
         _player.Play(track.FilePath);
+        TrackChanged?.Invoke(this, track);
     }
 
     public void Pause()
@@ -59,6 +69,7 @@ public class PlaybackManager // the main class that is responsible for playing a
         if (track != null)
         {
             _player.Play(track.FilePath);
+            TrackChanged?.Invoke(this, track);
         }
     }
 
@@ -69,6 +80,7 @@ public class PlaybackManager // the main class that is responsible for playing a
         if (track != null)
         {
             _player.Play(track.FilePath);
+            TrackChanged?.Invoke(this, track);
         }
     }
 }

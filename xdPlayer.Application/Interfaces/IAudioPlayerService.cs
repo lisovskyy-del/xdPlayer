@@ -10,5 +10,7 @@ public interface IAudioPlayerService
     void Pause();
     void Stop();
 
+    event EventHandler? PlaybackStarted;
+    event EventHandler? PlaybackPaused;
     event EventHandler? PlaybackFinished;
 }
