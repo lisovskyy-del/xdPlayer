@@ -11,6 +11,8 @@ public class AudioPlayerService : IAudioPlayerService
     private WaveOutEvent? _outputDevice; // device of the user
     private AudioFileReader? _audioFile; // opens and plays the audio file
 
+    public event EventHandler? PlaybackStarted;
+    public event EventHandler? PlaybackPaused;
     public event EventHandler? PlaybackFinished;
 
     private void OnPlaybackStopped(object? sender, StoppedEventArgs e)
@@ -33,11 +35,13 @@ public class AudioPlayerService : IAudioPlayerService
         _outputDevice.PlaybackStopped += OnPlaybackStopped;
 
         _outputDevice.Play(); // play the audio file
+        PlaybackStarted?.Invoke(this, EventArgs.Empty);
     }
 
     public void Pause()
     {
         _outputDevice?.Pause();
+        PlaybackPaused?.Invoke(this, EventArgs.Empty);
     }
 
     public void Stop() // clears the audiofile that was about to be passed to the device and the device itself
