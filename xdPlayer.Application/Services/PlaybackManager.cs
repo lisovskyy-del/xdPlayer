@@ -7,7 +7,7 @@ using xdPlayer.Domain.Playback;
 
 namespace xdPlayer.Application.Services;
 
-public class PlaybackManager // the main class that is responsible for playing audios
+public class PlaybackManager : IPlaybackManager // the main class that is responsible for playing audios
 {
     private readonly IAudioPlayerService _player; // audio player itself
 

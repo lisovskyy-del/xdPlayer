@@ -2,6 +2,7 @@
 using System.Reactive;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using xdPlayer.Application.Interfaces;
 using xdPlayer.Application.Services;
 using xdPlayer.Domain.Entities;
 
@@ -10,7 +11,8 @@ namespace xdPlayer.Presentation.ViewModels;
 // middle point between Playback logic and Avalonia UI
 public class PlayerViewModel : ReactiveObject, IDisposable
 {
-    private readonly PlaybackManager _playbackManager;
+    private readonly IAudioPlayerService _audio;
+    private readonly IPlaybackManager _playbackManager;
 
     [Reactive] public bool IsPlaying { get; set; }
     [Reactive] public string? CurrentTrackTitle { get; set; }
@@ -27,8 +29,9 @@ public class PlayerViewModel : ReactiveObject, IDisposable
     private void OnTrackChanged(object? sender, Track track) =>
         CurrentTrackTitle = track.Title;
 
-    public PlayerViewModel(PlaybackManager playbackManager)
+    public PlayerViewModel(IPlaybackManager playbackManager, IAudioPlayerService audio)
     {
+        _audio = audio;
         _playbackManager = playbackManager;
 
         PlayCommand = ReactiveCommand.Create(() => _playbackManager.Play());

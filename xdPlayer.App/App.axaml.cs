@@ -27,19 +27,28 @@ public partial class App : Avalonia.Application
 
     public override void OnFrameworkInitializationCompleted()
     {
+        if (Avalonia.Controls.Design.IsDesignMode)
+        {
+            base.OnFrameworkInitializationCompleted();
+            return;
+        }
+
         var services = new ServiceCollection();
         ConfigureServices(services);
+
         Services = services.BuildServiceProvider();
 
         // automatically use migrations every launch
-        using var scope = Services.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-        db.Database.Migrate();
-
-        if (!db.UserProfiles.Any())
+        using (var scope = Services.CreateScope())
         {
-            db.UserProfiles.Add(new Domain.Entities.UserProfile());
-            db.SaveChanges();
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            db.Database.Migrate();
+
+            if (!db.UserProfiles.Any())
+            {
+                db.UserProfiles.Add(new Domain.Entities.UserProfile());
+                db.SaveChanges();
+            }
         }
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
