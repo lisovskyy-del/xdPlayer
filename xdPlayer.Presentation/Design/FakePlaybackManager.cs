@@ -6,21 +6,12 @@ namespace xdPlayer.Presentation.Design;
 
 public class FakePlaybackManager : IPlaybackManager
 {
-    public event EventHandler? Started;
-    public event EventHandler? Paused;
-    public event EventHandler<Track>? TrackChanged;
+    public event EventHandler? Started { add { } remove { } }
+    public event EventHandler? Paused { add { } remove { } }
+    public event EventHandler<Track>? TrackChanged { add { } remove { } }
 
-    public void Play()
-    {
-        Started?.Invoke(this, EventArgs.Empty);
-        TrackChanged?.Invoke(this, new Track { Title = "Preview Track" });
-    }
-
-    public void Pause()
-    {
-        Paused?.Invoke(this, EventArgs.Empty);
-    }
-
+    public void Play() { }
+    public void Pause() { }
     public void Stop() { }
     public void Next() { }
     public void Previous() { }

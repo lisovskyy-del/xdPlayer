@@ -1,4 +1,5 @@
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Microsoft.EntityFrameworkCore;
@@ -27,20 +28,22 @@ public partial class App : Avalonia.Application
 
     public override void OnFrameworkInitializationCompleted()
     {
-        if (Avalonia.Controls.Design.IsDesignMode)
-        {
-            base.OnFrameworkInitializationCompleted();
-            return;
-        }
-
         var services = new ServiceCollection();
         ConfigureServices(services);
 
         Services = services.BuildServiceProvider();
 
-        // automatically use migrations every launch
-        using (var scope = Services.CreateScope())
+        if (Design.IsDesignMode)
         {
+            base.OnFrameworkInitializationCompleted();
+            return;
+        }
+
+        // do migrations every launch
+        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+        {
+            using var scope = Services.CreateScope();
+
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             db.Database.Migrate();
 
@@ -49,10 +52,7 @@ public partial class App : Avalonia.Application
                 db.UserProfiles.Add(new Domain.Entities.UserProfile());
                 db.SaveChanges();
             }
-        }
 
-        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-        {
             desktop.MainWindow = Services.GetRequiredService<MainWindow>();
         }
 
@@ -60,24 +60,24 @@ public partial class App : Avalonia.Application
     }
 
     private void ConfigureServices(IServiceCollection services)
-    {
-        // DB - SQLite
-        services.AddDbContext<AppDbContext>(options =>
-            options.UseSqlite("Data Source=xdPlayer.db"));
+        {
+            // DB - SQLite
+            services.AddDbContext<AppDbContext>(options =>
+                options.UseSqlite("Data Source=xdPlayer.db"));
 
-        // Repositories
-        services.AddScoped<ITrackRepository, TrackRepository>();
-        services.AddScoped<IPlaylistRepository, PlaylistRepository>();
-        services.AddScoped<ITagRepository, TagRepository>();
-        services.AddScoped<IUnitOfWork, UnitOfWork>();
+            // Repositories
+            services.AddScoped<ITrackRepository, TrackRepository>();
+            services.AddScoped<IPlaylistRepository, PlaylistRepository>();
+            services.AddScoped<ITagRepository, TagRepository>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-        // Services
-        /* services.AddScoped<ILibraryService, LibraryService>();
-        services.AddScoped<IStatisticsService, StatisticsService>();
-        */
-        services.AddSingleton<PlaybackQueue>();
+            // Services
+            /* services.AddScoped<ILibraryService, LibraryService>();
+            services.AddScoped<IStatisticsService, StatisticsService>();
+            */
+            services.AddSingleton<PlaybackQueue>();
         services.AddSingleton<IAudioPlayerService, AudioPlayerService>();
-        services.AddSingleton<PlaybackManager>();
+        services.AddSingleton<IPlaybackManager, PlaybackManager>();
         services.AddSingleton<IMetadataReader, TagLibMetadataReader>();
 
 
@@ -86,6 +86,7 @@ public partial class App : Avalonia.Application
         services.AddTransient<MainViewModel>();
         services.AddTransient<LibraryViewModel>();
         */
+
         services.AddTransient<PlayerViewModel>();
 
         // Windows
