@@ -13,6 +13,8 @@ public interface IPlaybackManager
 
     void Play();
     void Pause();
+    void Resume();
+    void PlayOrResume();
     void Stop();
     void Next();
     void Previous();

@@ -2,6 +2,7 @@
 using System.Reactive;
 using ReactiveUI;
 using xdPlayer.Application.Interfaces;
+using xdPlayer.Application.Services;
 using xdPlayer.Domain.Entities;
 
 namespace xdPlayer.App.ViewModels;
@@ -9,6 +10,7 @@ namespace xdPlayer.App.ViewModels;
 public class PlayerViewModel : ReactiveObject, IDisposable
 {
     private readonly IPlaybackManager _playbackManager;
+    private readonly ListeningSessionService _sessionService;
 
     private bool _isPlaying;
     public bool IsPlaying
@@ -44,11 +46,12 @@ public class PlayerViewModel : ReactiveObject, IDisposable
         PreviousCommand = ReactiveCommand.Create(() => { });
     }
 
-    public PlayerViewModel(IPlaybackManager playbackManager)
+    public PlayerViewModel(IPlaybackManager playbackManager, ListeningSessionService sessionService)
     {
         _playbackManager = playbackManager;
+        _sessionService = sessionService;
 
-        PlayCommand = ReactiveCommand.Create(() => _playbackManager.Play());
+        PlayCommand = ReactiveCommand.Create(() => _playbackManager.PlayOrResume());
         PauseCommand = ReactiveCommand.Create(() => _playbackManager.Pause());
         StopCommand = ReactiveCommand.Create(() => _playbackManager.Stop());
         NextCommand = ReactiveCommand.Create(() => _playbackManager.Next());
@@ -66,7 +69,11 @@ public class PlayerViewModel : ReactiveObject, IDisposable
         Avalonia.Threading.Dispatcher.UIThread.Post(() => IsPlaying = false);
 
     private void OnTrackChanged(object? sender, Track track) =>
-        Avalonia.Threading.Dispatcher.UIThread.Post(() => CurrentTrackTitle = track.Title);
+     Avalonia.Threading.Dispatcher.UIThread.Post(async () =>
+     {
+         CurrentTrackTitle = track.Title;
+         await _sessionService.OnTrackStartedAsync(track.Id);
+     });
 
     public void Dispose()
     {

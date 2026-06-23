@@ -60,28 +60,28 @@ public partial class App : Avalonia.Application
     }
 
     private void ConfigureServices(IServiceCollection services)
-        {
-            // DB - SQLite
-            services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlite("Data Source=xdPlayer.db"));
+    {
+        // DB - SQLite
+        services.AddDbContext<AppDbContext>(options =>
+            options.UseSqlite("Data Source=xdPlayer.db"));
 
-            // Repositories
-            services.AddScoped<ITrackRepository, TrackRepository>();
-            services.AddScoped<IPlaylistRepository, PlaylistRepository>();
-            services.AddScoped<ITagRepository, TagRepository>();
-            services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<ITrackRepository, TrackRepository>();
+        services.AddScoped<IPlaylistRepository, PlaylistRepository>();
+        services.AddScoped<ITagRepository, TagRepository>();
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-            // Services
-            /* services.AddScoped<ILibraryService, LibraryService>();
-            services.AddScoped<IStatisticsService, StatisticsService>();
-            */
-            services.AddSingleton<PlaybackQueue>();
+        /* services.AddScoped<ILibraryService, LibraryService>();
+        services.AddScoped<IStatisticsService, StatisticsService>();
+        */
+
+        services.AddSingleton<ListeningSessionService>();
+        services.AddScoped<IListeningSessionRepository, ListeningSessionRepository>();
+        services.AddSingleton<PlaybackQueue>();
         services.AddSingleton<IAudioPlayerService, AudioPlayerService>();
         services.AddSingleton<IPlaybackManager, PlaybackManager>();
         services.AddSingleton<IMetadataReader, TagLibMetadataReader>();
 
 
-        // ViewModels
         /*
         services.AddTransient<MainViewModel>();
         services.AddTransient<LibraryViewModel>();

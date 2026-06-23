@@ -9,5 +9,6 @@ public interface IUnitOfWork
     ITrackRepository Tracks { get; }
     IPlaylistRepository Playlists { get; }
     ITagRepository Tags { get; }
+    IListeningSessionRepository ListeningSessions { get; }
     Task<int> SaveChangesAsync();
 }

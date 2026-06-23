@@ -57,6 +57,19 @@ public class PlaybackManager : IPlaybackManager // the main class that is respon
         _player.Pause();
     }
 
+    public void Resume()
+    {
+        _player.Resume();
+    }
+
+    public void PlayOrResume()
+    {
+        if (_player.IsPaused)
+            _player.Resume();
+        else
+            Play();
+    }
+
     public void Stop()
     {
         _player.Stop();
