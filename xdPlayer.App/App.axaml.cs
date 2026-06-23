@@ -13,7 +13,7 @@ using xdPlayer.Domain.Playback;
 using xdPlayer.Infrastructure.Data;
 using xdPlayer.Infrastructure.Repositories;
 using xdPlayer.Infrastructure.Services;
-using xdPlayer.Presentation.ViewModels;
+using xdPlayer.App.ViewModels;
 
 namespace xdPlayer.App;
 
@@ -28,16 +28,16 @@ public partial class App : Avalonia.Application
 
     public override void OnFrameworkInitializationCompleted()
     {
-        var services = new ServiceCollection();
-        ConfigureServices(services);
-
-        Services = services.BuildServiceProvider();
-
         if (Design.IsDesignMode)
         {
             base.OnFrameworkInitializationCompleted();
             return;
         }
+
+        var services = new ServiceCollection();
+        ConfigureServices(services);
+
+        Services = services.BuildServiceProvider();
 
         // do migrations every launch
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)

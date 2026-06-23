@@ -1,6 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <PackageReference Include="ReactiveUI.Avalonia" Version="12.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\xdPlayer.Domain\xdPlayer.Domain.csproj" />
   </ItemGroup>
 

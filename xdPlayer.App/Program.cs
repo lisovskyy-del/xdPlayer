@@ -2,6 +2,7 @@
 using System;
 using Serilog;
 using xdPlayer.Application.Services;
+using ReactiveUI.Avalonia;
 
 namespace xdPlayer.App;
 
@@ -41,7 +42,8 @@ class Program
     public static AppBuilder BuildAvaloniaApp()
         => AppBuilder.Configure<App>()
             .UsePlatformDetect()
-            .UseSkia()            
+            .UseSkia()
+            .UseReactiveUI(_ => { })
 #if DEBUG
             .WithDeveloperTools()
 #endif

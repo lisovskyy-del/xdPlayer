@@ -1,18 +1,22 @@
 using Avalonia.Controls;
-using xdPlayer.Presentation.Design;
-using xdPlayer.Presentation.ViewModels;
+using xdPlayer.App.ViewModels;
+using xdPlayer.Application.Interfaces;
+using xdPlayer.Domain.Entities;
+using xdPlayer.Domain.Playback;
 
 namespace xdPlayer.App;
 
 public partial class MainWindow : Window
 {
-    public MainWindow()
+    public MainWindow(PlayerViewModel vm, IPlaybackManager playbackManager, PlaybackQueue queue)
     {
         InitializeComponent();
+        DataContext = vm;
 
-        if (Design.IsDesignMode)
+        queue.Add(new Track
         {
-            DataContext = DesignViewModelFactory.CreatePlayer();
-        }
+            Title = "DJ AGONY - BASS CUTS [FULL TAPE]",
+            FilePath = @"C:\Users\manin\Downloads\imp\audios\DJ AGONY - BASS CUTS [FULL TAPE].mp3"
+        });
     }
 }
