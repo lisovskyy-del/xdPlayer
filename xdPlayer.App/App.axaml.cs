@@ -7,13 +7,13 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;
 using xdPlayer.Application.Interfaces;
-using xdPlayer.Application.Services;
 using xdPlayer.Domain.Interfaces;
 using xdPlayer.Domain.Playback;
 using xdPlayer.Infrastructure.Data;
 using xdPlayer.Infrastructure.Repositories;
 using xdPlayer.Infrastructure.Services;
 using xdPlayer.App.ViewModels;
+using xdPlayer.Application.Models;
 
 namespace xdPlayer.App;
 
@@ -70,9 +70,8 @@ public partial class App : Avalonia.Application
         services.AddScoped<ITagRepository, TagRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-        /* services.AddScoped<ILibraryService, LibraryService>();
-        services.AddScoped<IStatisticsService, StatisticsService>();
-        */
+        services.AddSingleton<ILibraryService, LibraryService>();
+        // services.AddScoped<IStatisticsService, StatisticsService>();
 
         services.AddSingleton<ListeningSessionService>();
         services.AddScoped<IListeningSessionRepository, ListeningSessionRepository>();
@@ -82,10 +81,8 @@ public partial class App : Avalonia.Application
         services.AddSingleton<IMetadataReader, TagLibMetadataReader>();
 
 
-        /*
-        services.AddTransient<MainViewModel>();
-        services.AddTransient<LibraryViewModel>();
-        */
+        // services.AddTransient<MainViewModel>();
+        services.AddSingleton<LibraryViewModel>();
 
         services.AddTransient<PlayerViewModel>();
 

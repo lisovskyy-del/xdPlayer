@@ -9,6 +9,7 @@ public interface IPlaybackManager
 {
     event EventHandler Started;
     event EventHandler Paused;
+    event EventHandler? Finished;
     event EventHandler<Track> TrackChanged;
 
     void Play();

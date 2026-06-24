@@ -90,4 +90,10 @@ public class PlaybackQueue
 
         CurrentIndex = 0;
     }
+
+    public void Clear()
+    {
+        _tracks.Clear();
+        CurrentIndex = 0;
+    }
 }

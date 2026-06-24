@@ -6,11 +6,8 @@
         Width="800" Height="500">
 
     <Grid RowDefinitions="*,Auto">
-        <!-- тут буде плейлист -->
-        <TextBlock Grid.Row="0" Text="Playlist" Margin="16"/>
-
-        <!-- нижня панель -->
-        <views:PlayerView Grid.Row="1"/>
+        <views:LibraryView Grid.Row="0" Name="LibraryViewControl"/>
+        <views:PlayerView  Grid.Row="1"/>
     </Grid>
 
 </Window>

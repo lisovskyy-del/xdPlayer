@@ -5,7 +5,7 @@ using xdPlayer.Application.Interfaces;
 using xdPlayer.Domain.Entities;
 using xdPlayer.Domain.Playback;
 
-namespace xdPlayer.Application.Services;
+namespace xdPlayer.Application.Models;
 
 public class PlaybackManager : IPlaybackManager // the main class that is responsible for playing audios
 {
@@ -15,6 +15,7 @@ public class PlaybackManager : IPlaybackManager // the main class that is respon
 
     public event EventHandler? Started;
     public event EventHandler? Paused;
+    public event EventHandler? Finished;
     public event EventHandler<Track>? TrackChanged;
 
     // init the objects
@@ -28,17 +29,20 @@ public class PlaybackManager : IPlaybackManager // the main class that is respon
         _player.PlaybackPaused += (s, e) => Paused?.Invoke(this, EventArgs.Empty);
     }
 
-    private void OnPlaybackFinished(object? sender, EventArgs e) // simple event that activates when track is finished
+    private void OnPlaybackFinished(object? sender, EventArgs e)
     {
-        var nextTrack = Queue.Next();
+        Console.WriteLine("[PlaybackManager] OnPlaybackFinished called");
 
+        Finished?.Invoke(this, EventArgs.Empty);
+
+        var nextTrack = Queue.Next();
         if (nextTrack != null)
         {
             _player.Play(nextTrack.FilePath);
             TrackChanged?.Invoke(this, nextTrack);
         }
     }
-    
+
     public void Play() // fetches the current index of the track and plays it 
     {
         var track = Queue.CurrentTrack;

@@ -1,7 +1,7 @@
 ﻿using Avalonia;
 using System;
 using Serilog;
-using xdPlayer.Application.Services;
+using xdPlayer.Application.Models;
 using ReactiveUI.Avalonia;
 
 namespace xdPlayer.App;

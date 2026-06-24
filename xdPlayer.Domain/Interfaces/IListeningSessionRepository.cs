@@ -7,6 +7,7 @@ namespace xdPlayer.Domain.Interfaces;
 
 public interface IListeningSessionRepository
 {
+    Task<ListeningSession?> GetByIdAsync(long id);
     Task<ListeningSession?> GetActiveSessionAsync(int trackId);
     Task AddAsync(ListeningSession session);
     Task SaveAsync();

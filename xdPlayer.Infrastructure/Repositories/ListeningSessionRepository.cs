@@ -24,4 +24,7 @@ public class ListeningSessionRepository : IListeningSessionRepository
 
     public async Task SaveAsync()
         => await _db.SaveChangesAsync();
+
+    public async Task<ListeningSession?> GetByIdAsync(long id)
+    => await _db.ListeningSessions.FindAsync(id);
 }

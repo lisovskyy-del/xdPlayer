@@ -2,7 +2,7 @@
 using xdPlayer.Domain.Entities;
 using xdPlayer.Domain.Interfaces;
 
-namespace xdPlayer.Application.Services;
+namespace xdPlayer.Application.Models;
 
 public class ListeningSessionService
 {
@@ -20,11 +20,15 @@ public class ListeningSessionService
 
         if (trackId == 0) return;
 
+        if (_currentSession != null)
+        {
+            using var closeScope = _scopeFactory.CreateScope();
+            var closeUow = closeScope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+            await EndCurrentSessionAsync(closeUow, completed: false);
+        }
+
         using var scope = _scopeFactory.CreateScope();
         var uow = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
-
-        if (_currentSession != null)
-            await EndCurrentSessionAsync(uow, completed: false);
 
         _currentSession = new ListeningSession
         {
@@ -39,8 +43,12 @@ public class ListeningSessionService
 
     public async Task OnTrackEndedAsync(bool completed)
     {
-        if (_currentSession == null) return;
-
+        Console.WriteLine($"[Session] OnTrackEndedAsync called, completed={completed}");
+        if (_currentSession == null)
+        {
+            Console.WriteLine("[Session] _currentSession is null, skipping");
+            return;
+        }
         using var scope = _scopeFactory.CreateScope();
         var uow = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
         await EndCurrentSessionAsync(uow, completed);
@@ -50,11 +58,14 @@ public class ListeningSessionService
     {
         if (_currentSession == null) return;
 
-        _currentSession.EndedAt = DateTime.UtcNow;
-        _currentSession.ListenedSeconds = (int)(DateTime.UtcNow - _currentSession.StartedAt).TotalSeconds;
-        _currentSession.CompletedFully = completed;
+        var session = await uow.ListeningSessions.GetByIdAsync(_currentSession.Id);
+        if (session == null) return;
 
-        _currentSession = null;
+        session.EndedAt = DateTime.UtcNow;
+        session.ListenedSeconds = (int)(DateTime.UtcNow - session.StartedAt).TotalSeconds;
+        session.CompletedFully = completed;
+
         await uow.SaveChangesAsync();
+        _currentSession = null;
     }
 }
