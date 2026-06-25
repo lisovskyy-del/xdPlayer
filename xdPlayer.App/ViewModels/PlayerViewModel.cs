@@ -82,9 +82,16 @@ public class PlayerViewModel : ReactiveObject, IDisposable
     private void OnTrackChanged(object? sender, Track track) =>
         Avalonia.Threading.Dispatcher.UIThread.Post(async () =>
         {
+            System.Diagnostics.Debug.WriteLine($"[Track] Changed to: {track.Title}, Id={track.Id}");
             CurrentTrackTitle = track.Title;
-            Console.WriteLine($"[Track] Changed to: {track.Title}, Id={track.Id}");
-            await _sessionService.OnTrackStartedAsync(track.Id);
+            try
+            {
+                await _sessionService.OnTrackStartedAsync(track.Id);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[Track] Exception: {ex.Message}");
+            }
         });
 
     public void Dispose()

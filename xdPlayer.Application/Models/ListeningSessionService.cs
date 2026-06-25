@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using System.Diagnostics;
 using xdPlayer.Domain.Entities;
 using xdPlayer.Domain.Interfaces;
 
@@ -43,17 +44,17 @@ public class ListeningSessionService
 
     public async Task OnTrackEndedAsync(bool completed)
     {
-        Console.WriteLine($"[Session] OnTrackEndedAsync called, completed={completed}");
+        Debug.WriteLine($"[Session] OnTrackEndedAsync called, completed={completed}");
         if (_currentSession == null)
         {
-            Console.WriteLine("[Session] _currentSession is null, skipping");
+            Debug.WriteLine("[Session] _currentSession is null, skipping");
             return;
         }
         using var scope = _scopeFactory.CreateScope();
         var uow = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
         await EndCurrentSessionAsync(uow, completed);
     }
-
+    
     private async Task EndCurrentSessionAsync(IUnitOfWork uow, bool completed)
     {
         if (_currentSession == null) return;
@@ -65,6 +66,7 @@ public class ListeningSessionService
         session.ListenedSeconds = (int)(DateTime.UtcNow - session.StartedAt).TotalSeconds;
         session.CompletedFully = completed;
 
+        await uow.ListeningSessions.UpdateAsync(session);
         await uow.SaveChangesAsync();
         _currentSession = null;
     }

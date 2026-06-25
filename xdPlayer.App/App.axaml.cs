@@ -42,6 +42,12 @@ public partial class App : Avalonia.Application
         // do migrations every launch
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
+            desktop.Exit += async (_, _) =>
+            {
+                var sessionService = Services.GetRequiredService<ListeningSessionService>();
+                await sessionService.OnTrackEndedAsync(completed: false);
+            };
+
             using var scope = Services.CreateScope();
 
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();

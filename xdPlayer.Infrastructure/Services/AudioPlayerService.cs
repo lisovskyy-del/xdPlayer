@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using NAudio.Wave;
 using xdPlayer.Application.Interfaces;
@@ -19,8 +20,11 @@ public class AudioPlayerService : IAudioPlayerService
 
     private void OnPlaybackStopped(object? sender, StoppedEventArgs e)
     {
-        if (_audioFile != null && _audioFile.Position >= _audioFile.Length)
+        Debug.WriteLine($"[Audio] PlaybackStopped, Position={_audioFile?.Position}, Length={_audioFile?.Length}");
+
+        if (_audioFile != null && _audioFile.Position >= _audioFile.Length - 10000)
         {
+            Debug.WriteLine("[Audio] PlaybackFinished invoked");
             PlaybackFinished?.Invoke(this, EventArgs.Empty);
         }
     }

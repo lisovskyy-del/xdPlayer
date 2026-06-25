@@ -11,18 +11,13 @@ public partial class LibraryView : UserControl
 {
     public LibraryView()
     {
+        if (!Design.IsDesignMode)
+            DataContext = App.Services?.GetRequiredService<LibraryViewModel>();
+
         InitializeComponent();
 
         if (Design.IsDesignMode)
-        {
             DataContext = new LibraryViewModel();
-            return;
-        }
-
-        Loaded += (_, _) =>
-        {
-            DataContext = App.Services.GetRequiredService<LibraryViewModel>();
-        };
     }
 
     private void OnTrackDoubleTapped(object? sender, TappedEventArgs e)

@@ -22,6 +22,12 @@ public class ListeningSessionRepository : IListeningSessionRepository
     public async Task AddAsync(ListeningSession session)
         => await _db.ListeningSessions.AddAsync(session);
 
+    public Task UpdateAsync(ListeningSession session)
+    {
+        _db.ListeningSessions.Update(session);
+        return Task.CompletedTask;
+    }
+
     public async Task SaveAsync()
         => await _db.SaveChangesAsync();
 
