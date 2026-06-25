@@ -96,4 +96,10 @@ public class PlaybackQueue
         _tracks.Clear();
         CurrentIndex = 0;
     }
+
+    public void SetIndex(int index)
+    {
+        if (index >= 0 && index < _tracks.Count)
+            CurrentIndex = index;
+    }
 }

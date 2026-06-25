@@ -12,9 +12,9 @@ public class TrackRepository : Repository<Track>, ITrackRepository
     public async Task<IEnumerable<Track>> SearchAsync(string query) =>
         await _context.Tracks
             .AsNoTracking()
-            .Where(t => t.Title.Contains(query) ||
-                        (t.Artist != null && t.Artist.Contains(query)) ||
-                        (t.Album != null && t.Album.Contains(query)))
+            .Where(t => t.Title.ToLower().Contains(query.ToLower()) ||
+                        (t.Artist != null && t.Artist.ToLower().Contains(query.ToLower())) ||
+                        (t.Album != null && t.Album.ToLower().Contains(query.ToLower())))
             .ToListAsync();
 
     public async Task<IEnumerable<Track>> GetLikedAsync() =>

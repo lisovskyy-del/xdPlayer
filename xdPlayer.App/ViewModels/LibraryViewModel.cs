@@ -150,8 +150,18 @@ public class LibraryViewModel : ReactiveObject
 
     private void PlayTrack(Track track)
     {
-        _queue.Clear();
-        _queue.Add(track);
+        var index = _queue.Tracks.IndexOf(track);
+
+        if (index >= 0)
+        {
+            _queue.SetIndex(index);
+        }
+        else
+        {
+            _queue.Add(track);
+            _queue.SetIndex(_queue.Tracks.Count - 1);
+        }
+
         _playbackManager.Play();
     }
 }
