@@ -63,21 +63,48 @@ public class PlaylistService : IPlaylistService
 
     public async Task AddTrackAsync(int playlistId, int trackId)
     {
+        System.Diagnostics.Debug.WriteLine($"[Playlist] AddTrackAsync called, playlistId={playlistId}, trackId={trackId}");
+
+        using var scope = _scopeFactory.CreateScope();
+        var uow = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+
+        var playlist = await uow.Playlists.GetWithTracksAsync(playlistId);
+        System.Diagnostics.Debug.WriteLine($"[Playlist] Playlist found: {playlist?.Name}");
+
+        if (playlist == null) return;
+
+        if (playlist.PlaylistTracks.Any(pt => pt.TrackId == trackId))
+        {
+            System.Diagnostics.Debug.WriteLine("[Playlist] Track already exists");
+            return;
+        }
+
+        playlist.PlaylistTracks.Add(new PlaylistTrack
+        {
+            PlaylistId = playlistId,
+            TrackId = trackId,
+            Position = playlist.PlaylistTracks.Count,
+        });
+
+        playlist.UpdatedAt = DateTime.UtcNow;
+        await uow.SaveChangesAsync();
+        System.Diagnostics.Debug.WriteLine("[Playlist] Track saved");
+    }
+
+    public async Task UpdateTrackPositionAsync(int playlistId, int trackId, int position)
+    {
         using var scope = _scopeFactory.CreateScope();
         var uow = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
 
         var playlist = await uow.Playlists.GetWithTracksAsync(playlistId);
         if (playlist == null) return;
 
-        if (playlist.PlaylistTracks.Any(pt => pt.TrackId == trackId)) return;
+        var playlistTrack = playlist.PlaylistTracks
+            .FirstOrDefault(pt => pt.TrackId == trackId);
 
-        playlist.PlaylistTracks.Add(new PlaylistTrack
-        {
-            PlaylistId = playlistId,
-            TrackId = trackId,
-        });
+        if (playlistTrack == null) return;
 
-        playlist.UpdatedAt = DateTime.UtcNow;
+        playlistTrack.Position = position;
         await uow.SaveChangesAsync();
     }
 

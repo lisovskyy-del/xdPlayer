@@ -1,6 +1,7 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:xdPlayer.App.ViewModels"
+             xmlns:entities="using:xdPlayer.Domain.Entities"
              x:Class="xdPlayer.App.Views.LibraryView"
              x:DataType="vm:LibraryViewModel">
 
@@ -25,8 +26,26 @@
     <DataTemplate>
         <Grid ColumnDefinitions="*,120,120,80,60"
               DoubleTapped="OnTrackDoubleTapped"
+              PointerPressed="OnGridPointerPressed"
               VerticalAlignment="Stretch"
               Background="Transparent">
+
+            <Grid.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Add to playlist">
+                        <MenuItem.ItemsSource>
+                            <Binding Path="$parent[UserControl].((vm:LibraryViewModel)DataContext).Playlists"/>
+                        </MenuItem.ItemsSource>
+                        <MenuItem.ItemTemplate>
+                            <DataTemplate x:DataType="entities:Playlist">
+                                <MenuItem Header="{Binding Name}"
+                                          Click="OnAddToPlaylist"/>
+                            </DataTemplate>
+                        </MenuItem.ItemTemplate>
+                    </MenuItem>
+                </ContextMenu>
+            </Grid.ContextMenu>
+
             <TextBlock Grid.Column="0" Text="{Binding Title}"           TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="4"/>
             <TextBlock Grid.Column="1" Text="{Binding Artist}"          TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="4"/>
             <TextBlock Grid.Column="2" Text="{Binding Album}"           TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="4"/>

@@ -16,6 +16,7 @@ public class LibraryViewModel : ReactiveObject
     private readonly ILibraryService _libraryService;
     private readonly PlaybackQueue _queue;
     private readonly IPlaybackManager _playbackManager;
+    private readonly IPlaylistService _playlistService;
 
     private string _searchQuery = string.Empty;
     public string SearchQuery
@@ -28,17 +29,22 @@ public class LibraryViewModel : ReactiveObject
         }
     }
 
+    public ObservableCollection<Playlist> Playlists { get; } = [];
+
     public ObservableCollection<Track> Tracks { get; } = [];
 
     public ReactiveCommand<Unit, Unit> AddFileCommand { get; }
     public ReactiveCommand<Unit, Unit> AddFolderCommand { get; }
     public ReactiveCommand<Track, Unit> PlayTrackCommand { get; }
+    public ReactiveCommand<(Track, Playlist), Unit> AddToPlaylistCommand { get; }
 
     // for avalonia previewer
     public LibraryViewModel()
     {
         _libraryService = null!;
         _queue = null!;
+        _playbackManager = null!;
+        _playlistService = null!;
 
         Tracks.Add(new Track { Title = "Track 1", Artist = "Artist 1", DurationSeconds = 213 });
         Tracks.Add(new Track { Title = "Track 2", Artist = "Artist 2", DurationSeconds = 180 });
@@ -47,19 +53,23 @@ public class LibraryViewModel : ReactiveObject
         AddFileCommand = ReactiveCommand.Create(() => { });
         AddFolderCommand = ReactiveCommand.Create(() => { });
         PlayTrackCommand = ReactiveCommand.Create<Track>(_ => { });
+        AddToPlaylistCommand = ReactiveCommand.Create<(Track, Playlist)>(_ => { });
     }
 
-    public LibraryViewModel(ILibraryService libraryService, PlaybackQueue queue, IPlaybackManager playbackManager)
+    public LibraryViewModel(ILibraryService libraryService, PlaybackQueue queue, IPlaybackManager playbackManager, IPlaylistService playlistService)
     {
         _libraryService = libraryService;
         _queue = queue;
         _playbackManager = playbackManager;
+        _playlistService = playlistService;
 
         AddFileCommand = ReactiveCommand.CreateFromTask(AddFileAsync);
         AddFolderCommand = ReactiveCommand.CreateFromTask(AddFolderAsync);
         PlayTrackCommand = ReactiveCommand.Create<Track>(PlayTrack);
+        AddToPlaylistCommand = ReactiveCommand.CreateFromTask<(Track, Playlist)>(AddToPlaylistAsync);
 
         _ = LoadTracksAsync();
+        _ = LoadPlaylistsAsync();
     }
 
     private async Task LoadTracksAsync()
@@ -163,5 +173,26 @@ public class LibraryViewModel : ReactiveObject
         }
 
         _playbackManager.Play();
+    }
+
+    private async Task LoadPlaylistsAsync()
+    {
+        var playlists = await _playlistService.GetAllAsync();
+        Playlists.Clear();
+        foreach (var p in playlists)
+            Playlists.Add(p);
+    }
+
+    private async Task AddToPlaylistAsync((Track track, Playlist playlist) args)
+    {
+        await _playlistService.AddTrackAsync(args.playlist.Id, args.track.Id);
+    }
+
+    public async Task RefreshPlaylistsAsync()
+    {
+        var playlists = await _playlistService.GetAllAsync();
+        Playlists.Clear();
+        foreach (var p in playlists)
+            Playlists.Add(p);
     }
 }

@@ -3,14 +3,17 @@
         xmlns:views="using:xdPlayer.App.Views"
         x:Class="xdPlayer.App.MainWindow"
         Title="xdPlayer"
-        Width="800" Height="500"
-        MinWidth="500"
+        Width="900" Height="500"
+        MinWidth="600"
         MinHeight="300"
         Background="#1E1E1E">
 
     <Grid RowDefinitions="*,Auto">
-        <views:LibraryView Grid.Row="0" Name="LibraryViewControl"/>
-        <views:PlayerView  Grid.Row="1"/>
+        <Grid Grid.Row="0" ColumnDefinitions="*,250">
+            <views:LibraryView Grid.Column="0" Name="LibraryViewControl"/>
+            <views:PlaylistView Grid.Column="1"/>
+        </Grid>
+        <views:PlayerView Grid.Row="1"/>
     </Grid>
 
 </Window>

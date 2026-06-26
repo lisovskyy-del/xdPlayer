@@ -14,6 +14,7 @@ using xdPlayer.Infrastructure.Repositories;
 using xdPlayer.Infrastructure.Services;
 using xdPlayer.App.ViewModels;
 using xdPlayer.Application.Models;
+using xdPlayer.Application.Services;
 
 namespace xdPlayer.App;
 
@@ -77,6 +78,7 @@ public partial class App : Avalonia.Application
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         services.AddSingleton<ILibraryService, LibraryService>();
+        services.AddSingleton<IPlaylistService, PlaylistService>();
         // services.AddScoped<IStatisticsService, StatisticsService>();
 
         services.AddSingleton<ListeningSessionService>();
@@ -89,7 +91,7 @@ public partial class App : Avalonia.Application
 
         // services.AddTransient<MainViewModel>();
         services.AddSingleton<LibraryViewModel>();
-
+        services.AddSingleton<PlaylistViewModel>();
         services.AddTransient<PlayerViewModel>();
 
         // Windows

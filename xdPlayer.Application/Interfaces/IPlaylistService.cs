@@ -15,6 +15,7 @@ public interface IPlaylistService
     Task RenameAsync(int playlistId, string newName);
     Task AddTrackAsync(int playlistId, int trackId);
     Task RemoveTrackAsync(int playlistId, int trackId);
+    Task UpdateTrackPositionAsync(int playlistId, int trackId, int position);
 
     Task DeleteAsync(int playlistId);
 }
