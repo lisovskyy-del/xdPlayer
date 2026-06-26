@@ -4,12 +4,12 @@
              x:Class="xdPlayer.App.Views.PlaylistView"
              x:DataType="vm:PlaylistViewModel">
 
-    <Grid ColumnDefinitions="200,*">
+    <Grid ColumnDefinitions="200,Auto">
 
-        <Grid Grid.Column="0" RowDefinitions="Auto,*,Auto">
+        <Grid Grid.Column="0" RowDefinitions="50,*,Auto">
 
             <TextBlock Grid.Row="0" Text="Playlists"
-                       FontWeight="Medium" Margin="8,8,8,4"/>
+                       FontWeight="Medium" Margin="8,15,8,4"/>
 
             <ListBox Grid.Row="1"
                      ItemsSource="{Binding Playlists}"
@@ -46,11 +46,11 @@
 
         </Grid>
 
-        <Grid Grid.Column="1" RowDefinitions="Auto,*">
+        <Grid Grid.Column="1" RowDefinitions="50,*">
 
             <TextBlock Grid.Row="0"
                        Text="{Binding SelectedPlaylist.Name}"
-                       FontWeight="Medium" Margin="8,8,8,4"/>
+                       FontWeight="Medium" Margin="8,15,8,4"/>
 
 <ListBox Grid.Row="1"
          ItemsSource="{Binding CurrentTracks}"

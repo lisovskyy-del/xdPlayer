@@ -16,11 +16,11 @@
                         Orientation="Horizontal"
                         Spacing="8"
                         VerticalAlignment="Center">
-                <Button Content="⏮" Command="{Binding PreviousCommand}"/>
+                <Button Content="◀◀" Command="{Binding PreviousCommand}"/>
                 <Button Content="▶" Command="{Binding PlayCommand}"/>
-                <Button Content="⏸" Command="{Binding PauseCommand}"/>
+                <Button Content="❚❚" Command="{Binding PauseCommand}"/>
                 <Button Content="⏹" Command="{Binding StopCommand}"/>
-                <Button Content="⏭" Command="{Binding NextCommand}"/>
+                <Button Content="▶▶" Command="{Binding NextCommand}"/>
             </StackPanel>
         </Grid>
     </Border>
