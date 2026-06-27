@@ -77,7 +77,7 @@ public class PlaylistViewModel : ReactiveObject
         DeletePlaylistCommand = ReactiveCommand.CreateFromTask<Playlist>(DeletePlaylistAsync);
         PlayTrackCommand = ReactiveCommand.Create<Track>(PlayTrack);
         RemoveTrackCommand = ReactiveCommand.CreateFromTask<Track>(RemoveTrackAsync);
-        MoveTrackCommand = ReactiveCommand.Create<(int, int)>(_ => { });
+        MoveTrackCommand = ReactiveCommand.CreateFromTask<(int fromIndex, int toIndex)>(MoveTrackAsync);
 
         _ = LoadPlaylistsAsync();
     }

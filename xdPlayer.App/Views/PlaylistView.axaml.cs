@@ -68,7 +68,17 @@ public partial class PlaylistView : UserControl
             System.Diagnostics.Debug.WriteLine($"[DnD] from={_draggedTrack.Title}({fromIndex}) to={targetTrack.Title}({toIndex})");
 
             if (fromIndex >= 0 && toIndex >= 0 && fromIndex != toIndex)
-                vm.MoveTrackCommand.Execute((fromIndex, toIndex)).Subscribe();
+            {
+                System.Diagnostics.Debug.WriteLine($"[DnD] Executing MoveTrackCommand from={fromIndex} to={toIndex}");
+                vm.MoveTrackCommand.Execute((fromIndex, toIndex)).Subscribe(
+                    _ => System.Diagnostics.Debug.WriteLine("[DnD] Command executed"),
+                    ex => System.Diagnostics.Debug.WriteLine($"[DnD] Command error: {ex.Message}")
+                );
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine($"[DnD] Skipped: fromIndex={fromIndex} toIndex={toIndex}");
+            }
         }
 
         _draggedTrack = null;
@@ -88,7 +98,9 @@ public partial class PlaylistView : UserControl
         if (fromIndex < 0 || toIndex < 0 || fromIndex == toIndex) return;
 
         System.Diagnostics.Debug.WriteLine($"[DnD] Executing MoveTrackCommand from={fromIndex} to={toIndex}");
-        vm.MoveTrackCommand.Execute((fromIndex, toIndex)).Subscribe();
-        _draggedTrack = null;
+        vm.MoveTrackCommand.Execute((fromIndex, toIndex)).Subscribe(
+            _ => System.Diagnostics.Debug.WriteLine("[DnD] Command executed"),
+            ex => System.Diagnostics.Debug.WriteLine($"[DnD] Command error: {ex.Message}")
+        );
     }
 }
