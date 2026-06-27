@@ -15,7 +15,8 @@
         </StackPanel>
 
 <ListBox Grid.Row="1" 
-         ItemsSource="{Binding Tracks}">
+         ItemsSource="{Binding Tracks}"
+         SelectionMode="Single">
     <ListBox.Styles>
         <Style Selector="ListBoxItem">
             <Setter Property="HorizontalContentAlignment" Value="Stretch"/>

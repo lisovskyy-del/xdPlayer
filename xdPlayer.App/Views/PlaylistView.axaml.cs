@@ -1,7 +1,9 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Reactive.Linq;
 using xdPlayer.App.ViewModels;
 using xdPlayer.Domain.Entities;
 
@@ -15,7 +17,11 @@ public partial class PlaylistView : UserControl
     public PlaylistView()
     {
         if (!Design.IsDesignMode)
-            DataContext = App.Services?.GetRequiredService<PlaylistViewModel>();
+        {
+            var vm = App.Services?.GetRequiredService<PlaylistViewModel>();
+            System.Diagnostics.Debug.WriteLine($"[PlaylistView] VM HashCode: {vm?.GetHashCode()}");
+            DataContext = vm;
+        }
 
         InitializeComponent();
 
@@ -102,5 +108,35 @@ public partial class PlaylistView : UserControl
             _ => System.Diagnostics.Debug.WriteLine("[DnD] Command executed"),
             ex => System.Diagnostics.Debug.WriteLine($"[DnD] Command error: {ex.Message}")
         );
+    }
+
+    private async void OnDeletePlaylistClick(object? sender, RoutedEventArgs e)
+    {
+        if (sender is Button button && button.DataContext is Playlist playlist)
+        {
+            System.Diagnostics.Debug.WriteLine($"[View] DataContext VM HashCode: {(DataContext as PlaylistViewModel)?.GetHashCode()}");
+            System.Diagnostics.Debug.WriteLine($"[View] Delete clicked for playlist: {playlist.Name}");
+            if (DataContext is PlaylistViewModel vm)
+            {
+                System.Diagnostics.Debug.WriteLine($"[View] Executing DeletePlaylistCommand");
+                vm.DeletePlaylistCommand.Execute(playlist).Subscribe(
+                    _ => System.Diagnostics.Debug.WriteLine("[View] Command completed"),
+                    ex => System.Diagnostics.Debug.WriteLine($"[View] Command error: {ex.Message}")
+                );
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine($"[View] DataContext is {DataContext?.GetType().Name}");
+            }
+        }
+    }
+
+    private async void OnRemoveTrackClick(object? sender, RoutedEventArgs e)
+    {
+        if (sender is Button button && button.DataContext is Track track)
+        {
+            if (DataContext is PlaylistViewModel vm)
+                await vm.RemoveTrackCommand.Execute(track);
+        }
     }
 }

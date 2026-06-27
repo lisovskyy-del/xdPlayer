@@ -4,6 +4,7 @@ using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Reactive;
 using System.Text;
 using System.Threading.Tasks;
@@ -50,15 +51,14 @@ public class PlaylistViewModel : ReactiveObject
     // for avalonia previewer
     public PlaylistViewModel()
     {
+        System.Diagnostics.Debug.WriteLine("[PlaylistViewModel] Empty constructor called");
+
         _playlistService = null!;
         _queue = null!;
         _playbackManager = null!;
 
-        Playlists =
-        [
-            new Playlist { Id = 1, Name = "Playlist 1" },
-            new Playlist { Id = 2, Name = "Playlist 2" },
-        ];
+        Playlists.Add(new Playlist { Id = 1, Name = "Playlist 1" });
+        Playlists.Add(new Playlist { Id = 2, Name = "Playlist 2" });
 
         CreatePlaylistCommand = ReactiveCommand.Create(() => { });
         DeletePlaylistCommand = ReactiveCommand.Create<Playlist>(_ => { });
@@ -69,6 +69,8 @@ public class PlaylistViewModel : ReactiveObject
 
     public PlaylistViewModel(IPlaylistService playlistService, PlaybackQueue queue, IPlaybackManager playbackManager)
     {
+        System.Diagnostics.Debug.WriteLine("[PlaylistViewModel] Main constructor called");
+
         _playlistService = playlistService;
         _queue = queue;
         _playbackManager = playbackManager;
@@ -80,6 +82,8 @@ public class PlaylistViewModel : ReactiveObject
         MoveTrackCommand = ReactiveCommand.CreateFromTask<(int fromIndex, int toIndex)>(MoveTrackAsync);
 
         _ = LoadPlaylistsAsync();
+
+        System.Diagnostics.Debug.WriteLine($"[VM] DeletePlaylistCommand is null: {DeletePlaylistCommand == null}");
     }
 
     private async Task LoadPlaylistsAsync()
@@ -144,12 +148,16 @@ public class PlaylistViewModel : ReactiveObject
     private async Task DeletePlaylistAsync(Playlist playlist)
     {
         await _playlistService.DeleteAsync(playlist.Id);
-        Playlists.Remove(playlist);
-        if (SelectedPlaylist?.Id == playlist.Id)
+
+        await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
         {
-            SelectedPlaylist = null;
             CurrentTracks.Clear();
-        }
+            SelectedPlaylist = null;
+
+            var toRemove = Playlists.FirstOrDefault(p => p.Id == playlist.Id);
+            if (toRemove != null)
+                Playlists.Remove(toRemove);
+        });
 
         var libraryVm = App.Services.GetRequiredService<LibraryViewModel>();
         await libraryVm.RefreshPlaylistsAsync();

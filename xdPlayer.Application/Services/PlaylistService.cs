@@ -130,11 +130,6 @@ public class PlaylistService : IPlaylistService
     {
         using var scope = _scopeFactory.CreateScope();
         var uow = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
-
-        var playlist = await uow.Playlists.GetByIdAsync(playlistId);
-        if (playlist == null) return;
-
-        await uow.Playlists.DeleteAsync(playlist);
-        await uow.SaveChangesAsync();
+        await uow.Playlists.DeleteWithTracksAsync(playlistId);
     }
 }

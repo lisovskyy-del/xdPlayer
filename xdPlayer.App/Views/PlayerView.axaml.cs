@@ -1,4 +1,5 @@
 ﻿using Avalonia.Controls;
+using Avalonia.Input;
 using xdPlayer.App.ViewModels;
 
 namespace xdPlayer.App.Views;

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Migrations;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -28,7 +29,8 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<PlaylistTrack>()
             .HasOne(pt => pt.Playlist)
             .WithMany(p => p.PlaylistTracks)
-            .HasForeignKey(pt => pt.PlaylistId);
+            .HasForeignKey(pt => pt.PlaylistId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<PlaylistTrack>()
             .HasOne(pt => pt.Track)

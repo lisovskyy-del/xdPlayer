@@ -12,6 +12,7 @@
                        FontWeight="Medium" Margin="8,15,8,4"/>
 
             <ListBox Grid.Row="1"
+                     Name="PlaylistsListBox"
                      ItemsSource="{Binding Playlists}"
                      SelectedItem="{Binding SelectedPlaylist}">
                 <ListBox.ItemTemplate>
@@ -26,8 +27,7 @@
                                        TextTrimming="CharacterEllipsis"/>
                             <Button Grid.Column="1"
                                     Content="✕"
-                                    Command="{Binding $parent[UserControl].((vm:PlaylistViewModel)DataContext).DeletePlaylistCommand}"
-                                    CommandParameter="{Binding}"
+                                    Click="OnDeletePlaylistClick"
                                     Background="Transparent"
                                     BorderThickness="0"
                                     Padding="4"/>
@@ -53,8 +53,10 @@
                        FontWeight="Medium" Margin="8,15,8,4"/>
 
 <ListBox Grid.Row="1"
+         Name="TracksListBox"
          ItemsSource="{Binding CurrentTracks}"
-         DragDrop.AllowDrop="True">
+         DragDrop.AllowDrop="True"
+         PointerPressed="OnTrackPointerPressed">
     <ListBox.Styles>
         <Style Selector="ListBoxItem">
             <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
@@ -80,8 +82,7 @@
                 </StackPanel>
                 <Button Grid.Column="1"
                         Content="✕"
-                        Command="{Binding $parent[UserControl].((vm:PlaylistViewModel)DataContext).RemoveTrackCommand}"
-                        CommandParameter="{Binding}"
+                        Click="OnRemoveTrackClick"
                         Background="Transparent"
                         BorderThickness="0"
                         Padding="4"/>
