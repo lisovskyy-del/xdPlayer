@@ -77,6 +77,7 @@ public partial class App : Avalonia.Application
         services.AddScoped<ITagRepository, TagRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
+        services.AddSingleton<ITagService, TagService>();
         services.AddSingleton<ILibraryService, LibraryService>();
         services.AddSingleton<IPlaylistService, PlaylistService>();
         // services.AddScoped<IStatisticsService, StatisticsService>();

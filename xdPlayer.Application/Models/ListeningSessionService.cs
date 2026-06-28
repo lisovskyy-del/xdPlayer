@@ -54,7 +54,7 @@ public class ListeningSessionService
         var uow = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
         await EndCurrentSessionAsync(uow, completed);
     }
-    
+
     private async Task EndCurrentSessionAsync(IUnitOfWork uow, bool completed)
     {
         if (_currentSession == null) return;
@@ -67,6 +67,16 @@ public class ListeningSessionService
         session.CompletedFully = completed;
 
         await uow.ListeningSessions.UpdateAsync(session);
+
+        var track = await uow.Tracks.GetByIdAsync(session.TrackId);
+        if (track != null)
+        {
+            track.PlayCount += 1;
+            track.TotalListenedSeconds += session.ListenedSeconds;
+            track.LastPlayedAt = DateTime.UtcNow;
+            await uow.Tracks.UpdateAsync(track);
+        }
+
         await uow.SaveChangesAsync();
         _currentSession = null;
     }

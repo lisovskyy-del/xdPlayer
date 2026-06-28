@@ -17,6 +17,7 @@ public class LibraryViewModel : ReactiveObject
     private readonly PlaybackQueue _queue;
     private readonly IPlaybackManager _playbackManager;
     private readonly IPlaylistService _playlistService;
+    private readonly ITagService _tagService;
 
     private string _searchQuery = string.Empty;
     public string SearchQuery
@@ -29,14 +30,26 @@ public class LibraryViewModel : ReactiveObject
         }
     }
 
-    public ObservableCollection<Playlist> Playlists { get; } = [];
+    private string _newTagName = string.Empty;
+    public string NewTagName
+    {
+        get => _newTagName;
+        set => this.RaiseAndSetIfChanged(ref _newTagName, value);
+    }
 
+    public ObservableCollection<Playlist> Playlists { get; } = [];
+    public ObservableCollection<Tag> AllTags { get; } = [];
     public ObservableCollection<Track> Tracks { get; } = [];
 
     public ReactiveCommand<Unit, Unit> AddFileCommand { get; }
     public ReactiveCommand<Unit, Unit> AddFolderCommand { get; }
     public ReactiveCommand<Track, Unit> PlayTrackCommand { get; }
     public ReactiveCommand<(Track, Playlist), Unit> AddToPlaylistCommand { get; }
+
+    public ReactiveCommand<(Track, Tag), Unit> AddTagToTrackCommand { get; }
+    public ReactiveCommand<(Track, Tag), Unit> RemoveTagFromTrackCommand { get; }
+    public ReactiveCommand<Unit, Unit> CreateTagCommand { get; }
+
 
     // for avalonia previewer
     public LibraryViewModel()
@@ -45,6 +58,7 @@ public class LibraryViewModel : ReactiveObject
         _queue = null!;
         _playbackManager = null!;
         _playlistService = null!;
+        _tagService = null!;
 
         Tracks.Add(new Track { Title = "Track 1", Artist = "Artist 1", DurationSeconds = 213 });
         Tracks.Add(new Track { Title = "Track 2", Artist = "Artist 2", DurationSeconds = 180 });
@@ -54,22 +68,34 @@ public class LibraryViewModel : ReactiveObject
         AddFolderCommand = ReactiveCommand.Create(() => { });
         PlayTrackCommand = ReactiveCommand.Create<Track>(_ => { });
         AddToPlaylistCommand = ReactiveCommand.Create<(Track, Playlist)>(_ => { });
+        AddTagToTrackCommand = ReactiveCommand.Create<(Track, Tag)>(_ => { });
+        RemoveTagFromTrackCommand = ReactiveCommand.Create<(Track, Tag)>(_ => { });
+        CreateTagCommand = ReactiveCommand.Create(() => { });
     }
 
-    public LibraryViewModel(ILibraryService libraryService, PlaybackQueue queue, IPlaybackManager playbackManager, IPlaylistService playlistService)
+    public LibraryViewModel(ILibraryService libraryService, PlaybackQueue queue, 
+        IPlaybackManager playbackManager, IPlaylistService playlistService,
+        ITagService tagService)
     {
         _libraryService = libraryService;
         _queue = queue;
         _playbackManager = playbackManager;
         _playlistService = playlistService;
+        _tagService = tagService;
 
         AddFileCommand = ReactiveCommand.CreateFromTask(AddFileAsync);
         AddFolderCommand = ReactiveCommand.CreateFromTask(AddFolderAsync);
         PlayTrackCommand = ReactiveCommand.Create<Track>(PlayTrack);
         AddToPlaylistCommand = ReactiveCommand.CreateFromTask<(Track, Playlist)>(AddToPlaylistAsync);
+        AddTagToTrackCommand = ReactiveCommand.CreateFromTask<(Track, Tag)>(AddTagToTrackAsync);
+        RemoveTagFromTrackCommand = ReactiveCommand.CreateFromTask<(Track, Tag)>(RemoveTagFromTrackAsync);
+        CreateTagCommand = ReactiveCommand.CreateFromTask(CreateTagAsync);
 
         _ = LoadTracksAsync();
         _ = LoadPlaylistsAsync();
+        _ = LoadTracksAsync();
+        _ = LoadPlaylistsAsync();
+        _ = LoadTagsAsync();
     }
 
     private async Task LoadTracksAsync()
@@ -194,5 +220,39 @@ public class LibraryViewModel : ReactiveObject
         Playlists.Clear();
         foreach (var p in playlists)
             Playlists.Add(p);
+    }
+
+    private async Task LoadTagsAsync()
+    {
+        var tags = await _tagService.GetAllAsync();
+        AllTags.Clear();
+        foreach (var t in tags)
+            AllTags.Add(t);
+    }
+
+    private async Task CreateTagAsync()
+    {
+        if (string.IsNullOrWhiteSpace(NewTagName)) return;
+        var tag = await _tagService.CreateAsync(NewTagName);
+        AllTags.Add(tag);
+        NewTagName = string.Empty;
+    }
+
+    private async Task AddTagToTrackAsync((Track track, Tag tag) args)
+    {
+        await _tagService.AddTagToTrackAsync(args.track.Id, args.tag.Id);
+    }
+
+    private async Task RemoveTagFromTrackAsync((Track track, Tag tag) args)
+    {
+        await _tagService.RemoveTagFromTrackAsync(args.track.Id, args.tag.Id);
+    }
+
+    public async Task RefreshTagsAsync()
+    {
+        var tags = await _tagService.GetAllAsync();
+        AllTags.Clear();
+        foreach (var t in tags)
+            AllTags.Add(t);
     }
 }
