@@ -3,14 +3,14 @@
              x:Class="xdPlayer.App.App"
              RequestedThemeVariant="Dark">
 
-    <Application.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceInclude Source="/Styles/Colors.axaml"/>
-                <ResourceInclude Source="/Styles/Controls.axaml"/>
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </Application.Resources>
+<Application.Resources>
+    <ResourceDictionary>
+        <ResourceDictionary.MergedDictionaries>
+            <ResourceInclude Source="/Styles/Colors.axaml"/>
+            <ResourceInclude Source="/Styles/Controls.axaml"/>
+        </ResourceDictionary.MergedDictionaries>
+    </ResourceDictionary>
+</Application.Resources>
 
     <Application.Styles>
         <FluentTheme/>

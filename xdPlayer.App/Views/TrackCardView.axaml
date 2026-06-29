@@ -1,0 +1,38 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:entities="using:xdPlayer.Domain.Entities"
+             x:Class="xdPlayer.App.Views.TrackCardView"
+             x:DataType="entities:Track">
+
+    <Border Width="170"
+            Padding="10"
+            CornerRadius="10"
+            Background="#242424">
+
+        <StackPanel Spacing="8">
+
+            <Border Height="150"
+                    CornerRadius="8"
+                    ClipToBounds="True"
+                    Background="#404040">
+
+                <Image Source="{Binding CoverImagePath}"
+                       Stretch="UniformToFill"/>
+
+            </Border>
+
+            <TextBlock Text="{Binding Title}"
+                       FontWeight="SemiBold"
+                       FontSize="15"
+                       TextTrimming="CharacterEllipsis"/>
+
+            <TextBlock Text="{Binding Artist}"
+                       FontSize="13"
+                       Opacity="0.7"
+                       TextTrimming="CharacterEllipsis"/>
+
+        </StackPanel>
+
+    </Border>
+
+</UserControl>

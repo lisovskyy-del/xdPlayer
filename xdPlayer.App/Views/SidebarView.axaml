@@ -1,0 +1,69 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:xdPlayer.App.ViewModels"
+             xmlns:entities="using:xdPlayer.Domain.Entities"
+             x:Class="xdPlayer.App.Views.SidebarView"
+             x:DataType="vm:PlaylistViewModel">
+
+    <Border Background="#181818"
+            BorderBrush="#2A2A2A"
+            BorderThickness="0,0,1,0">
+
+        <Grid RowDefinitions="Auto,*,Auto"
+              Margin="12">
+
+            <StackPanel Grid.Row="0" Spacing="8">
+
+                <TextBlock Text="xdPlayer"
+                           FontSize="22"
+                           FontWeight="Bold"/>
+
+                <Button Content="🎵 All Tracks"
+                        HorizontalAlignment="Stretch"/>
+
+            </StackPanel>
+
+            <StackPanel Grid.Row="1"
+                        Margin="0,20,0,0">
+
+                <TextBlock Text="PLAYLISTS"
+                           Opacity="0.6"
+                           Margin="0,0,0,8"/>
+
+                <ItemsControl ItemsSource="{Binding Playlists}">
+
+                    <ItemsControl.ItemTemplate>
+
+                        <DataTemplate x:DataType="entities:Playlist">
+
+                            <Border Margin="0,0,0,6"
+                                    Padding="8"
+                                    CornerRadius="6"
+                                    Background="#252525">
+
+                                <TextBlock Text="{Binding Name}"/>
+
+                            </Border>
+
+                        </DataTemplate>
+
+                    </ItemsControl.ItemTemplate>
+
+                </ItemsControl>
+
+            </StackPanel>
+
+            <Border Grid.Row="2"
+                    Background="#252525"
+                    CornerRadius="8"
+                    Padding="12">
+
+                <TextBlock Text="Guest"/>
+
+            </Border>
+
+        </Grid>
+
+    </Border>
+
+</UserControl>
