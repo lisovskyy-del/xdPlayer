@@ -1,5 +1,21 @@
-<ResourceDictionary
+<Styles
     xmlns="https://github.com/avaloniaui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:views="using:xdPlayer.App.Views">
 
-</ResourceDictionary>
+    <Style Selector="views|TrackCardView Border">
+
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="Background"
+                                 Duration="0:0:0.15"/>
+            </Transitions>
+        </Setter>
+
+    </Style>
+
+<Style Selector="views|TrackCardView Border:pointerover">
+    <Setter Property="Background" Value="#343434"/>
+</Style>
+
+</Styles>

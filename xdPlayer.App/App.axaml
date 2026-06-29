@@ -7,12 +7,13 @@
     <ResourceDictionary>
         <ResourceDictionary.MergedDictionaries>
             <ResourceInclude Source="/Styles/Colors.axaml"/>
-            <ResourceInclude Source="/Styles/Controls.axaml"/>
         </ResourceDictionary.MergedDictionaries>
     </ResourceDictionary>
 </Application.Resources>
 
-    <Application.Styles>
-        <FluentTheme/>
-    </Application.Styles>
+<Application.Styles>
+    <FluentTheme/>
+
+    <StyleInclude Source="/Styles/Controls.axaml"/>
+</Application.Styles>
 </Application>
