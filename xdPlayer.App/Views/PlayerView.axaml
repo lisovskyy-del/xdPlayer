@@ -4,7 +4,7 @@
              x:Class="xdPlayer.App.Views.PlayerView"
              x:DataType="vm:PlayerViewModel">
 
-    <Border Background="#1E1E1E" Height="80" Padding="16,0">
+    <Border Background="#151515" Height="80" Padding="16,0">
         <Grid ColumnDefinitions="*,Auto,*"
               VerticalAlignment="Center">
             <TextBlock Grid.Column="0"

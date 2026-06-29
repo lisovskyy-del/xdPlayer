@@ -17,10 +17,10 @@ public partial class MainWindow : Window
         InitializeComponent();
     }
 
-    public MainWindow(PlayerViewModel playerVm)
+    public MainWindow(MainWindowViewModel vm)
     {
         InitializeComponent();
-        DataContext = playerVm;
+        DataContext = vm;
 
         PointerPressed += (_, e) =>
         {

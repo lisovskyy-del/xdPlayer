@@ -4,95 +4,127 @@
              x:Class="xdPlayer.App.Views.PlaylistView"
              x:DataType="vm:PlaylistViewModel">
 
-    <Grid ColumnDefinitions="200,Auto">
+<Grid RowDefinitions="Auto,*"
+      Margin="20">
 
-        <Grid Grid.Column="0" RowDefinitions="50,*,Auto">
+    <!-- Header -->
 
-            <TextBlock Grid.Row="0" Text="Playlists"
-                       FontWeight="Medium" Margin="8,15,8,4"/>
+<Grid Grid.Row="0"
+      ColumnDefinitions="140,*"
+      Margin="0,0,0,20">
 
-            <ListBox Grid.Row="1"
-                     Name="PlaylistsListBox"
-                     ItemsSource="{Binding Playlists}"
-                     SelectedItem="{Binding SelectedPlaylist}">
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <Grid ColumnDefinitions="*,Auto"
-                              DoubleTapped="OnTrackDoubleTapped"
-                              Background="Transparent"
-                              VerticalAlignment="Stretch">
-                            <TextBlock Grid.Column="0"
-                                       Text="{Binding Name}"
-                                       VerticalAlignment="Center"
-                                       TextTrimming="CharacterEllipsis"/>
-                            <Button Grid.Column="1"
-                                    Content="✕"
-                                    Click="OnDeletePlaylistClick"
-                                    Background="Transparent"
-                                    BorderThickness="0"
-                                    Padding="4"/>
-                        </Grid>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
+    <!-- Cover -->
+    <Border Width="120"
+            Height="120"
+            CornerRadius="8"
+            Background="#333">
 
-            <StackPanel Grid.Row="2" Spacing="4" Margin="8">
-                <TextBox Watermark="Playlist name..."
-                         Text="{Binding NewPlaylistName}"/>
-                <Button Content="+ Create"
-                        Command="{Binding CreatePlaylistCommand}"
-                        HorizontalAlignment="Stretch"/>
-            </StackPanel>
+        <Image Source="{Binding SelectedPlaylist.CoverImagePath}"
+               Stretch="UniformToFill"/>
 
-        </Grid>
+    </Border>
 
-        <Grid Grid.Column="1" RowDefinitions="50,*">
+    <!-- Info -->
+    <StackPanel Grid.Column="1"
+                Margin="20,0,0,0"
+                VerticalAlignment="Bottom"
+                Spacing="6">
 
-            <TextBlock Grid.Row="0"
-                       Text="{Binding SelectedPlaylist.Name}"
-                       FontWeight="Medium" Margin="8,15,8,4"/>
+        <TextBlock Text="Playlist"
+                   Opacity="0.7"
+                   FontSize="14"/>
+
+        <TextBlock Text="{Binding SelectedPlaylist.Name}"
+                   FontSize="34"
+                   FontWeight="Bold"/>
+
+        <TextBlock Text="{Binding CurrentTracks.Count, StringFormat='{}{0} tracks'}"
+                   Opacity="0.7"/>
+
+    </StackPanel>
+
+</Grid>
+
+    <!-- Tracks -->
 
 <ListBox Grid.Row="1"
-         Name="TracksListBox"
          ItemsSource="{Binding CurrentTracks}"
-         DragDrop.AllowDrop="True"
-         PointerPressed="OnTrackPointerPressed">
+         BorderThickness="0"
+         Background="Transparent">
+
     <ListBox.Styles>
+
         <Style Selector="ListBoxItem">
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Margin" Value="0,0,0,2"/>
             <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-            <Setter Property="Padding" Value="8,4"/>
         </Style>
+
     </ListBox.Styles>
+
     <ListBox.ItemTemplate>
+
         <DataTemplate>
-            <Grid ColumnDefinitions="*,Auto"
-                  DoubleTapped="OnTrackDoubleTapped"
-                  Background="Transparent"
-                  VerticalAlignment="Stretch"
-                  PointerPressed="OnTrackPointerPressed"
-                  PointerReleased="OnTrackPointerReleased"
-                  DragDrop.Drop="OnTrackDrop">
-                <StackPanel Grid.Column="0">
-                    <TextBlock Text="{Binding Title}"
-                               TextTrimming="CharacterEllipsis"/>
-                    <TextBlock Text="{Binding Artist}"
-                               FontSize="11"
-                               Opacity="0.6"
-                               TextTrimming="CharacterEllipsis"/>
-                </StackPanel>
-                <Button Grid.Column="1"
-                        Content="✕"
-                        Click="OnRemoveTrackClick"
-                        Background="Transparent"
-                        BorderThickness="0"
-                        Padding="4"/>
-            </Grid>
+
+            <Border Background="#222"
+                    CornerRadius="6"
+                    Padding="10">
+
+                <Grid ColumnDefinitions="40,56,*,180,70">
+
+                    <!-- Id -->
+                    <TextBlock Grid.Column="0"
+                               VerticalAlignment="Center"
+                               Text="{Binding Id}"
+                               Opacity="0.6"/>
+
+                    <Border Grid.Column="1"
+        Width="46"
+        Height="46"
+        CornerRadius="4"
+        Background="#444"
+        ClipToBounds="True">
+
+    <Image Source="{Binding CoverImagePath}"
+           Stretch="UniformToFill"/>
+
+</Border>
+
+                    <!-- Track -->
+                    <StackPanel Grid.Column="2"
+                                Spacing="2">
+
+                        <TextBlock Text="{Binding Title}"
+                                   FontWeight="SemiBold"/>
+
+                        <TextBlock Text="{Binding Artist}"
+                                   FontSize="12"
+                                   Opacity="0.65"/>
+
+                    </StackPanel>
+
+                    <!-- Album -->
+                    <TextBlock Grid.Column="3"
+                               VerticalAlignment="Center"
+                               Text="{Binding Album}"
+                               Opacity="0.7"/>
+
+                    <!-- Duration -->
+                    <TextBlock Grid.Column="4"
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Right"
+                               Text="{Binding DurationSeconds}"/>
+
+                </Grid>
+
+            </Border>
+
         </DataTemplate>
+
     </ListBox.ItemTemplate>
+
 </ListBox>
 
-        </Grid>
-
-    </Grid>
+</Grid>
 
 </UserControl>

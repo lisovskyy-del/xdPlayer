@@ -89,11 +89,10 @@ public partial class App : Avalonia.Application
         services.AddSingleton<IPlaybackManager, PlaybackManager>();
         services.AddSingleton<IMetadataReader, TagLibMetadataReader>();
 
-
-        // services.AddTransient<MainViewModel>();
         services.AddSingleton<LibraryViewModel>();
         services.AddSingleton<PlaylistViewModel>();
-        services.AddTransient<PlayerViewModel>();
+        services.AddSingleton<PlayerViewModel>();
+        services.AddSingleton<MainWindowViewModel>();
 
         // Windows
         services.AddSingleton<MainWindow>();

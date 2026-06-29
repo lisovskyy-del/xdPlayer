@@ -37,30 +37,39 @@
             </StackPanel>
 
             <!-- PLAYLISTS -->
-            <ScrollViewer Grid.Row="2">
+<ListBox Grid.Row="2"
+         ItemsSource="{Binding Playlists}"
+         SelectedItem="{Binding SelectedPlaylist}"
+         BorderThickness="0"
+         Background="Transparent">
 
-                <ItemsControl ItemsSource="{Binding Playlists}">
+    <ListBox.Styles>
 
-                    <ItemsControl.ItemTemplate>
+        <Style Selector="ListBoxItem">
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Margin" Value="0,0,0,6"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+        </Style>
 
-                        <DataTemplate x:DataType="entities:Playlist">
+    </ListBox.Styles>
 
-                            <Border Background="#222"
-                                    Padding="8"
-                                    Margin="0,0,0,6"
-                                    CornerRadius="6">
+    <ListBox.ItemTemplate>
 
-                                <TextBlock Text="{Binding Name}"/>
+        <DataTemplate x:DataType="entities:Playlist">
 
-                            </Border>
+            <Border Background="#222"
+                    Padding="8"
+                    CornerRadius="6">
 
-                        </DataTemplate>
+                <TextBlock Text="{Binding Name}"/>
 
-                    </ItemsControl.ItemTemplate>
+            </Border>
 
-                </ItemsControl>
+        </DataTemplate>
 
-            </ScrollViewer>
+    </ListBox.ItemTemplate>
+
+</ListBox>
 
             <!-- BOTTOM -->
             <Border Grid.Row="3"
