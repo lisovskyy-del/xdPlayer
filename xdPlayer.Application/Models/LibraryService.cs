@@ -30,17 +30,10 @@ public class LibraryService : ILibraryService
         if (existing != null) return existing;
 
         var meta = _metadata.ReadMetadata(filePath);
-        var track = new Track
-        {
-            FilePath = filePath,
-            Title = meta.Title ?? Path.GetFileNameWithoutExtension(filePath),
-            Artist = meta.Artist,
-            Album = meta.Album,
-            Genre = meta.Genre,
-            Year = meta.Year,
-            DurationSeconds = meta.DurationSeconds,
-            AddedAt = DateTime.UtcNow
-        };
+        var track = _metadata.ReadMetadata(filePath);
+
+        track.FilePath = filePath;
+        track.AddedAt = DateTime.UtcNow;
 
         await uow.Tracks.AddAsync(track);
         await uow.SaveChangesAsync();

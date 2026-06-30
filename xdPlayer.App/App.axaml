@@ -15,7 +15,7 @@
         </ResourceDictionary.MergedDictionaries>
 
         <converters:DurationConverter x:Key="DurationConverter"/>
-
+        <converters:CoverConverter x:Key="CoverConverter"/>
     </ResourceDictionary>
 
 </Application.Resources>

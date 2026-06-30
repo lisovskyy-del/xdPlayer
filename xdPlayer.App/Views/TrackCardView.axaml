@@ -36,15 +36,16 @@
 
     <Grid>
 
-        <Image Source="{Binding CoverImagePath}"
-               Stretch="UniformToFill"/>
+        <Border Height="140"
+        CornerRadius="8"
+        ClipToBounds="True">
 
-        <TextBlock Text="🎵"
-                   FontSize="42"
-                   HorizontalAlignment="Center"
-                   VerticalAlignment="Center"
-                   IsHitTestVisible="False"/>
+        <Image
+            Stretch="UniformToFill"
+            Source="{Binding CoverImagePath,
+                         Converter={StaticResource CoverConverter}}"/>
 
+        </Border>
     </Grid>
 
 </Border>

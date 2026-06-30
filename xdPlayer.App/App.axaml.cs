@@ -90,8 +90,8 @@ public partial class App : Avalonia.Application
         services.AddSingleton<IMetadataReader, TagLibMetadataReader>();
 
         services.AddSingleton<LibraryViewModel>();
-        services.AddSingleton<SidebarViewModel>();
         services.AddSingleton<PlaylistViewModel>();
+        services.AddSingleton<SidebarViewModel>();
         services.AddSingleton<PlayerViewModel>();
         services.AddSingleton<MainWindowViewModel>();
 
