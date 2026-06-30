@@ -96,6 +96,12 @@ public class LibraryViewModel : ReactiveObject
         _ = LoadTracksAsync();
         _ = LoadPlaylistsAsync();
         _ = LoadTagsAsync();
+
+        AddToPlaylistCommand = ReactiveCommand.CreateFromTask<(Track track, Playlist playlist)>(
+        async args =>
+        {
+            await _playlistService.AddTrackAsync(args.playlist.Id, args.track.Id);
+        });
     }
 
     private async Task LoadTracksAsync()

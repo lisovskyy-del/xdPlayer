@@ -4,13 +4,27 @@
              x:Class="xdPlayer.App.Views.TrackCardView"
              x:DataType="entities:Track">
 
-<Border x:Name="CardBorder"
+<Border x:Name="Card"
         Width="170"
         Padding="10"
         Margin="4"
         CornerRadius="12"
         Background="{DynamicResource SurfaceBrush}"
-        BoxShadow="0 4 16 0 #33000000">
+        BoxShadow="0 4 16 0 #33000000"
+        PointerPressed="OnPointerPressed"
+        DoubleTapped="OnDoubleTapped">
+
+    <Border.ContextMenu>
+
+    <ContextMenu>
+
+        <MenuItem Header="Add to playlist">
+
+        </MenuItem>
+
+    </ContextMenu>
+
+    </Border.ContextMenu>
 
     <StackPanel Spacing="8">
 

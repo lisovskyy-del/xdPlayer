@@ -113,7 +113,8 @@
                     <TextBlock Grid.Column="4"
                                VerticalAlignment="Center"
                                HorizontalAlignment="Right"
-                               Text="{Binding DurationSeconds}"/>
+                               Text="{Binding DurationSeconds,
+                               Converter={StaticResource DurationConverter}}"/>
 
                 </Grid>
 

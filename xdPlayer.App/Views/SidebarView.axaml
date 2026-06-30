@@ -3,7 +3,7 @@
              xmlns:vm="using:xdPlayer.App.ViewModels"
              xmlns:entities="using:xdPlayer.Domain.Entities"
              x:Class="xdPlayer.App.Views.SidebarView"
-             x:DataType="vm:PlaylistViewModel">
+             x:DataType="vm:SidebarViewModel">
 
     <Border Background="#151515"
             Width="220">
@@ -19,7 +19,8 @@
                            FontWeight="Bold"/>
 
                 <Button Content="🎵 All Tracks"
-                        HorizontalAlignment="Stretch"/>
+                        HorizontalAlignment="Stretch"
+                        Command="{Binding ShowLibraryCommand}"/>
 
             </StackPanel>
 

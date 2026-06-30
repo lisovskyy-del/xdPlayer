@@ -27,12 +27,6 @@ public partial class MainWindow : Window
             var hit = e.Source as Control;
             while (hit != null && hit is not ListBoxItem)
                 hit = hit.Parent as Control;
-
-            if (hit == null)
-            {
-                foreach (var listBox in this.GetVisualDescendants().OfType<ListBox>())
-                    listBox.SelectedItem = null;
-            }
         };
     }
 }

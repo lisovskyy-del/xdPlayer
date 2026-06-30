@@ -1,40 +1,53 @@
-﻿using xdPlayer.App.ViewModels;
+﻿using System.Reactive;
 using ReactiveUI;
 
 namespace xdPlayer.App.ViewModels;
 
 public class MainWindowViewModel : ReactiveObject
 {
-    private bool _showLibrary = true;
+    private object? _currentPage;
 
     public LibraryViewModel Library { get; }
     public PlaylistViewModel Playlist { get; }
     public PlayerViewModel Player { get; }
+    public SidebarViewModel Sidebar { get; }
 
-    public bool ShowLibrary
+    public ReactiveCommand<Unit, Unit> ShowLibraryCommand { get; }
+
+    public object? CurrentPage
     {
-        get => _showLibrary;
-        set => this.RaiseAndSetIfChanged(ref _showLibrary, value);
+        get => _currentPage;
+        set => this.RaiseAndSetIfChanged(ref _currentPage, value);
     }
 
-    public bool ShowPlaylist => !ShowLibrary;
-
     public MainWindowViewModel(
-    LibraryViewModel library,
-    PlaylistViewModel playlist,
-    PlayerViewModel player)
+        LibraryViewModel library,
+        SidebarViewModel sidebar,
+        PlaylistViewModel playlist,
+        PlayerViewModel player)
     {
         Library = library;
         Playlist = playlist;
         Player = player;
+        CurrentPage = Library;
+        Sidebar = sidebar;
 
-        Playlist.PropertyChanged += (_, e) =>
+        sidebar.LibraryRequested += ShowLibrary;
+        sidebar.PlaylistRequested += ShowPlaylist;
+
+        ShowLibraryCommand = ReactiveCommand.Create(() =>
         {
-            if (e.PropertyName == nameof(PlaylistViewModel.SelectedPlaylist))
-            {
-                ShowLibrary = Playlist.SelectedPlaylist == null;
-                this.RaisePropertyChanged(nameof(ShowPlaylist));
-            }
-        };
+            CurrentPage = Library;
+        });
+    }
+
+    public void ShowLibrary()
+    {
+        CurrentPage = Library;
+    }
+
+    public void ShowPlaylist()
+    {
+        CurrentPage = Playlist;
     }
 }

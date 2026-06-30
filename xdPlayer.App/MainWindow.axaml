@@ -10,23 +10,28 @@
         MinHeight="250"
         Background="#1E1E1E">
 
-    <Grid RowDefinitions="*,Auto">
-        <Grid Grid.Row="0" ColumnDefinitions="220,*">
+<Window.DataTemplates>
 
-            <views:SidebarView
+    <DataTemplate DataType="vm:LibraryViewModel">
+        <views:LibraryView/>
+    </DataTemplate>
+
+    <DataTemplate DataType="vm:PlaylistViewModel">
+        <views:PlaylistView/>
+    </DataTemplate>
+
+</Window.DataTemplates>
+
+<Grid RowDefinitions="*,Auto">
+     <Grid Grid.Row="0" ColumnDefinitions="220,*">
+
+          <views:SidebarView
                 Grid.Column="0"
-                DataContext="{Binding Playlist}"/>
+                DataContext="{Binding Sidebar}"/>
 
 <Grid Grid.Column="1">
 
-    <views:LibraryView
-        Name="LibraryViewControl"
-        DataContext="{Binding Library}"
-        IsVisible="{Binding $parent[Window].DataContext.ShowLibrary}"/>
-
-    <views:PlaylistView
-        DataContext="{Binding Playlist}"
-        IsVisible="{Binding $parent[Window].DataContext.ShowPlaylist}"/>
+    <ContentControl Content="{Binding CurrentPage}"/>
 
 </Grid>
 
