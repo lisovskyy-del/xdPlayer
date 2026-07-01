@@ -4,18 +4,184 @@
     xmlns:views="using:xdPlayer.App.Views">
 
     <Style Selector="views|TrackCardView Border">
-
         <Setter Property="Transitions">
             <Transitions>
-                <BrushTransition Property="Background"
-                                 Duration="0:0:0.15"/>
+                <BrushTransition Property="Background" Duration="0:0:0.15"/>
             </Transitions>
         </Setter>
-
     </Style>
 
-<Style Selector="views|TrackCardView Border:pointerover">
-    <Setter Property="Background" Value="#343434"/>
+    <Style Selector="views|TrackCardView Border:pointerover">
+        <Setter Property="Background" Value="#343434"/>
+    </Style>
+
+    <!-- ============ SIDEBAR ============ -->
+
+    <!-- Clickable row button that looks like a flat list item -->
+    <Style Selector="Button.sidebarRow">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="CornerRadius" Value="6"/>
+        <Setter Property="Padding" Value="10,0"/>
+        <Setter Property="Height" Value="36"/>
+        <Setter Property="HorizontalContentAlignment" Value="Left"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border Background="{TemplateBinding Background}"
+                        CornerRadius="{TemplateBinding CornerRadius}"
+                        Padding="{TemplateBinding Padding}">
+                    <Border.Transitions>
+                        <Transitions>
+                            <BrushTransition Property="Background" Duration="0:0:0.12"/>
+                        </Transitions>
+                    </Border.Transitions>
+                    <ContentPresenter Content="{TemplateBinding Content}"
+                                       VerticalAlignment="Center"/>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+
+    <Style Selector="Button.sidebarRow:pointerover /template/ Border">
+        <Setter Property="Background" Value="{StaticResource SidebarHoverBrush}"/>
+    </Style>
+
+    <Style Selector="Button.sidebarRow.selected /template/ Border">
+        <Setter Property="Background" Value="{StaticResource SidebarSelectedBrush}"/>
+    </Style>
+
+    <!-- Playlist ListBoxItem -->
+    <Style Selector="ListBox.playlistList">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+
+<Style Selector="ListBox.playlistList ListBoxItem">
+    <Setter Property="Padding" Value="0"/>
+    <Setter Property="Margin" Value="0,1"/>
+    <Setter Property="CornerRadius" Value="6"/>
+    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="Cursor" Value="Hand"/>
+    <Setter Property="Transitions">
+        <Transitions>
+            <BrushTransition Property="Background" Duration="0:0:0.12"/>
+        </Transitions>
+    </Setter>
+</Style>
+
+    <Style Selector="ListBox.playlistList ListBoxItem:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{StaticResource SidebarHoverBrush}"/>
+    </Style>
+
+    <Style Selector="ListBox.playlistList ListBoxItem:selected /template/ ContentPresenter">
+        <Setter Property="Background" Value="{StaticResource SidebarSelectedBrush}"/>
+    </Style>
+
+    <!-- Small icon button (e.g. "+" add playlist) -->
+    <Style Selector="Button.iconButton">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="CornerRadius" Value="4"/>
+        <Setter Property="Padding" Value="5"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border Background="{TemplateBinding Background}"
+                        CornerRadius="{TemplateBinding CornerRadius}"
+                        Padding="{TemplateBinding Padding}">
+                    <Border.Transitions>
+                        <Transitions>
+                            <BrushTransition Property="Background" Duration="0:0:0.12"/>
+                        </Transitions>
+                    </Border.Transitions>
+                    <ContentPresenter Content="{TemplateBinding Content}"/>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+
+    <Style Selector="Button.iconButton:pointerover /template/ Border">
+        <Setter Property="Background" Value="{StaticResource SidebarHoverBrush}"/>
+    </Style>
+
+    <!-- User footer -->
+    <Style Selector="Border.userFooter">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="Background" Duration="0:0:0.12"/>
+            </Transitions>
+        </Setter>
+    </Style>
+
+    <Style Selector="Border.userFooter:pointerover">
+        <Setter Property="Background" Value="{StaticResource SidebarHoverBrush}"/>
+    </Style>
+
+    <!-- ============ CONTEXT MENU ============ -->
+
+<Style Selector="ContextMenu">
+    <Setter Property="Background" Value="{StaticResource SurfaceBrush}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource DividerBrush}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="CornerRadius" Value="8"/>
+    <Setter Property="Padding" Value="4"/>
+</Style>
+
+<Style Selector="MenuItem">
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
+    <Setter Property="CornerRadius" Value="4"/>
+    <Setter Property="Padding" Value="10,6"/>
+</Style>
+
+<Style Selector="MenuItem:pointerover /template/ Border#PART_LayoutRoot">
+    <Setter Property="Background" Value="{StaticResource SidebarHoverBrush}"/>
+</Style>
+
+<Style Selector="MenuItem:selected /template/ Border#PART_LayoutRoot">
+    <Setter Property="Background" Value="{StaticResource SidebarSelectedBrush}"/>
+</Style>
+
+    <!-- ============ TRACK LIST (Playlist rows) ============ -->
+
+<Style Selector="ListBox.trackList">
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="BorderThickness" Value="0"/>
+</Style>
+
+<Style Selector="ListBox.trackList ListBoxItem">
+    <Setter Property="Padding" Value="0"/>
+    <Setter Property="Margin" Value="0,0,0,4"/>
+    <Setter Property="CornerRadius" Value="8"/>
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+</Style>
+
+<Style Selector="ListBox.trackList ListBoxItem:pointerover /template/ ContentPresenter">
+    <Setter Property="Background" Value="Transparent"/>
+</Style>
+
+<Style Selector="ListBox.trackList ListBoxItem:selected /template/ ContentPresenter">
+    <Setter Property="Background" Value="Transparent"/>
+</Style>
+
+<Style Selector="Border.trackRow">
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="CornerRadius" Value="8"/>
+    <Setter Property="Transitions">
+        <Transitions>
+            <BrushTransition Property="Background" Duration="0:0:0.12"/>
+        </Transitions>
+    </Setter>
+</Style>
+
+<Style Selector="Border.trackRow:pointerover">
+    <Setter Property="Background" Value="{StaticResource SidebarHoverBrush}"/>
 </Style>
 
 </Styles>

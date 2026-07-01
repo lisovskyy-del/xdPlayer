@@ -4,127 +4,134 @@
              x:Class="xdPlayer.App.Views.PlaylistView"
              x:DataType="vm:PlaylistViewModel">
 
-<Grid RowDefinitions="Auto,*"
-      Margin="20">
+<Grid RowDefinitions="Auto,*">
 
     <!-- Header -->
+    <Grid Grid.Row="0"
+          ColumnDefinitions="140,*"
+          Margin="20,20,20,20">
 
+        <!-- Cover -->
+        <Border Width="120"
+                Height="120"
+                CornerRadius="8"
+                Background="#333"
+                ClipToBounds="True">
+
+            <Image Source="{Binding SelectedPlaylist.CoverImagePath}"
+                   Stretch="UniformToFill"/>
+
+        </Border>
+
+        <!-- Info -->
+        <StackPanel Grid.Column="1"
+                    Margin="20,0,0,0"
+                    VerticalAlignment="Center"
+                    Spacing="6">
+
+            <TextBlock Text="{Binding SelectedPlaylist.Name}"
+                       FontSize="34"
+                       FontWeight="Bold"/>
+
+            <TextBlock Text="{Binding TracksSummary}"
+                       Opacity="0.7"/>
+
+        </StackPanel>
+
+    </Grid>
+
+    <!-- Tracks -->
+    <Grid Grid.Row="1"
+          RowDefinitions="Auto,*"
+          Background="{StaticResource BackgroundBrush}">
+
+<!-- Column headers -->
 <Grid Grid.Row="0"
-      ColumnDefinitions="140,*"
-      Margin="0,0,0,20">
+      ColumnDefinitions="40,*,160,70"
+      Margin="20,12,20,8">
 
-    <!-- Cover -->
-    <Border Width="120"
-            Height="120"
-            CornerRadius="8"
-            Background="#333">
+    <TextBlock Grid.Column="0"
+               Text="#"
+               FontSize="11"
+               FontWeight="Bold"
+               Opacity="0.5"/>
 
-        <Image Source="{Binding SelectedPlaylist.CoverImagePath}"
-               Stretch="UniformToFill"/>
+    <TextBlock Grid.Column="1"
+               Text="TITLE"
+               FontSize="11"
+               FontWeight="Bold"
+               Opacity="0.5"/>
 
-    </Border>
+    <TextBlock Grid.Column="2"
+               Text="ARTIST"
+               FontSize="11"
+               FontWeight="Bold"
+               Opacity="0.5"/>
 
-    <!-- Info -->
-    <StackPanel Grid.Column="1"
-                Margin="20,0,0,0"
-                VerticalAlignment="Bottom"
-                Spacing="6">
-
-        <TextBlock Text="Playlist"
-                   Opacity="0.7"
-                   FontSize="14"/>
-
-        <TextBlock Text="{Binding SelectedPlaylist.Name}"
-                   FontSize="34"
-                   FontWeight="Bold"/>
-
-        <TextBlock Text="{Binding CurrentTracks.Count, StringFormat='{}{0} tracks'}"
-                   Opacity="0.7"/>
-
-    </StackPanel>
+    <TextBlock Grid.Column="3"
+               Text="DURATION"
+               FontSize="11"
+               FontWeight="Bold"
+               Opacity="0.5"
+               HorizontalAlignment="Right"/>
 
 </Grid>
 
-    <!-- Tracks -->
+        <!-- Track rows -->
+        <ListBox Grid.Row="1"
+                 Classes="trackList"
+                 Margin="10,0,10,10"
+                 ItemsSource="{Binding CurrentTracks}">
 
-<ListBox Grid.Row="1"
-         ItemsSource="{Binding CurrentTracks}"
-         BorderThickness="0"
-         Background="Transparent">
+            <ListBox.ItemTemplate>
 
-    <ListBox.Styles>
+                <DataTemplate>
 
-        <Style Selector="ListBoxItem">
-            <Setter Property="Padding" Value="0"/>
-            <Setter Property="Margin" Value="0,0,0,2"/>
-            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-        </Style>
+<Border Classes="trackRow"
+        Padding="10">
 
-    </ListBox.Styles>
+    <Grid ColumnDefinitions="40,*,160,70"
+          PointerPressed="OnTrackPointerPressed"
+          DoubleTapped="OnTrackDoubleTapped">
 
-    <ListBox.ItemTemplate>
+        <!-- Id -->
+        <TextBlock Grid.Column="0"
+                   VerticalAlignment="Center"
+                   Text="{Binding Id}"
+                   Opacity="0.6"/>
 
-        <DataTemplate>
+        <!-- Title -->
+        <TextBlock Grid.Column="1"
+                   VerticalAlignment="Center"
+                   Text="{Binding Title}"
+                   FontWeight="SemiBold"
+                   TextTrimming="CharacterEllipsis"/>
 
-            <Border Background="#222"
-                    CornerRadius="6"
-                    Padding="10">
+        <!-- Artist -->
+        <TextBlock Grid.Column="2"
+                   VerticalAlignment="Center"
+                   Text="{Binding Artist}"
+                   Opacity="0.7"
+                   TextTrimming="CharacterEllipsis"/>
 
-                <Grid ColumnDefinitions="40,56,*,180,70">
+        <!-- Duration -->
+        <TextBlock Grid.Column="3"
+                   VerticalAlignment="Center"
+                   HorizontalAlignment="Right"
+                   Text="{Binding DurationSeconds,
+                   Converter={StaticResource DurationConverter}}"/>
 
-                    <!-- Id -->
-                    <TextBlock Grid.Column="0"
-                               VerticalAlignment="Center"
-                               Text="{Binding Id}"
-                               Opacity="0.6"/>
-
-                    <Border Grid.Column="1"
-        Width="46"
-        Height="46"
-        CornerRadius="4"
-        Background="#444"
-        ClipToBounds="True">
-
-    <Image Source="{Binding CoverImagePath}"
-           Stretch="UniformToFill"/>
+    </Grid>
 
 </Border>
 
-                    <!-- Track -->
-                    <StackPanel Grid.Column="2"
-                                Spacing="2">
+                </DataTemplate>
 
-                        <TextBlock Text="{Binding Title}"
-                                   FontWeight="SemiBold"/>
+            </ListBox.ItemTemplate>
 
-                        <TextBlock Text="{Binding Artist}"
-                                   FontSize="12"
-                                   Opacity="0.65"/>
+        </ListBox>
 
-                    </StackPanel>
-
-                    <!-- Album -->
-                    <TextBlock Grid.Column="3"
-                               VerticalAlignment="Center"
-                               Text="{Binding Album}"
-                               Opacity="0.7"/>
-
-                    <!-- Duration -->
-                    <TextBlock Grid.Column="4"
-                               VerticalAlignment="Center"
-                               HorizontalAlignment="Right"
-                               Text="{Binding DurationSeconds,
-                               Converter={StaticResource DurationConverter}}"/>
-
-                </Grid>
-
-            </Border>
-
-        </DataTemplate>
-
-    </ListBox.ItemTemplate>
-
-</ListBox>
+    </Grid>
 
 </Grid>
 

@@ -2,107 +2,143 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:xdPlayer.App.ViewModels"
              xmlns:entities="using:xdPlayer.Domain.Entities"
-             xmlns:fa="using:FluentAvalonia.UI.Controls"
              x:Class="xdPlayer.App.Views.SidebarView"
              x:DataType="vm:SidebarViewModel">
 
-    <Border Background="#151515"
-            Width="220">
+    <Border Background="{StaticResource SidebarBackgroundBrush}"
+            Width="240">
 
-        <Grid RowDefinitions="Auto,Auto,*,Auto"
-              Margin="12">
+        <Grid RowDefinitions="Auto,Auto,Auto,*,Auto"
+              Margin="12,16,12,12">
 
-            <!-- TOP -->
-            <StackPanel Grid.Row="0" Spacing="12">
+            <!-- LOGO -->
+            <TextBlock Grid.Row="0"
+                       Text="xdPlayer"
+                       FontSize="20"
+                       FontWeight="Bold"
+                       Foreground="{StaticResource TextBrush}"
+                       Margin="6,0,0,16"/>
 
-                <TextBlock Text="xdPlayer"
-                           FontSize="22"
-                           FontWeight="Bold"/>
-
-<Button Content="🎵 All Tracks"
+            <!-- ALL TRACKS -->
+<!-- ALL TRACKS -->
+<Button Grid.Row="1"
+        Classes="sidebarRow"
+        Classes.selected="{Binding IsLibrarySelected}"
+        Command="{Binding ShowLibraryCommand}"
         HorizontalAlignment="Stretch"
-        Command="{Binding ShowLibraryCommand}"/>
+        Margin="0,0,0,16">
+    <StackPanel Orientation="Horizontal" Spacing="10">
+        <TextBlock Text="🎵" FontSize="14" VerticalAlignment="Center"/>
+        <TextBlock Text="All Tracks"
+                   VerticalAlignment="Center"
+                   FontWeight="SemiBold"
+                   Foreground="{StaticResource TextBrush}"/>
+    </StackPanel>
+</Button>
 
-            </StackPanel>
+            <!-- PLAYLISTS SECTION HEADER -->
+            <Grid Grid.Row="2"
+                  ColumnDefinitions="*,Auto"
+                  Margin="6,4,6,8">
 
-            <!-- CREATE PLAYLIST -->
-            <StackPanel Grid.Row="1"
-                        Margin="0,16,0,16"
-                        Spacing="8">
+                <TextBlock Grid.Column="0"
+                           Text="PLAYLISTS"
+                           FontSize="11"
+                           FontWeight="Bold"
+                           Foreground="{StaticResource TextSubtleBrush}"
+                           VerticalAlignment="Center"/>
 
-                <TextBox Text="{Binding NewPlaylistName}"
-                         PlaceholderText="New playlist"/>
+<!-- add button -->
+<Button Grid.Column="1"
+        Classes="iconButton"
+        Command="{Binding ToggleAddPlaylistCommand}"
+        ToolTip.Tip="New playlist">
+    <TextBlock Text="＋" FontSize="14" Foreground="{StaticResource TextMutedBrush}"/>
+</Button>
 
-                <Button Content="Create"
-                        Command="{Binding CreatePlaylistCommand}"/>
+            </Grid>
 
-            </StackPanel>
+            <!-- PLAYLISTS LIST -->
+            <Grid Grid.Row="3"
+                  RowDefinitions="Auto,*">
 
-            <!-- PLAYLISTS -->
-<ListBox Grid.Row="2"
-         ItemsSource="{Binding Playlists}"
-         SelectedItem="{Binding SelectedPlaylist}"
-         BorderThickness="0"
-         Background="Transparent">
+                <!-- Inline "new playlist" input -->
+                <Border Grid.Row="0"
+                        IsVisible="{Binding IsAddingPlaylist}"
+                        Background="{StaticResource SurfaceBrush}"
+                        CornerRadius="6"
+                        Margin="0,0,0,6"
+                        Padding="8,6">
 
-<ListBox.Styles>
+                    <StackPanel Spacing="6">
 
-    <Style Selector="ListBoxItem">
-        <Setter Property="Padding" Value="0"/>
-        <Setter Property="Margin" Value="0,2"/>
-        <Setter Property="CornerRadius" Value="6"/>
-        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-        <Setter Property="Background" Value="Transparent"/>
-    </Style>
+                        <TextBox Text="{Binding NewPlaylistName}"
+                                 Watermark="Playlist name"
+                                 Name="NewPlaylistTextBox"/>
 
-    <Style Selector="ListBoxItem:pointerover">
-        <Setter Property="Background" Value="#262626"/>
-    </Style>
+                        <StackPanel Orientation="Horizontal"
+                                    Spacing="6"
+                                    HorizontalAlignment="Right">
 
-    <Style Selector="ListBoxItem:selected">
-        <Setter Property="Background" Value="#323232"/>
-    </Style>
+                            <Button Content="Cancel"
+                                    Command="{Binding CancelAddPlaylistCommand}"
+                                    Background="Transparent"
+                                    Foreground="{StaticResource TextMutedBrush}"
+                                    BorderThickness="0"/>
 
-</ListBox.Styles>
+                            <Button Content="Create"
+                                    Command="{Binding ConfirmAddPlaylistCommand}"
+                                    Background="{StaticResource AccentBrush}"
+                                    Foreground="White"
+                                    CornerRadius="4"
+                                    Padding="10,4"/>
 
-    <ListBox.ItemTemplate>
+                        </StackPanel>
 
-<DataTemplate x:DataType="entities:Playlist">
+                    </StackPanel>
 
-    <Grid Height="34"
-          Margin="0,1">
+                </Border>
 
-<StackPanel Orientation="Horizontal"
-            Margin="12,0"
-            Spacing="8">
+                <ListBox Grid.Row="1"
+                         Classes="playlistList"
+                         ItemsSource="{Binding Playlists}"
+                         SelectedItem="{Binding SelectedPlaylist}">
 
-    <PathIcon Data="{StaticResource FolderIcon}"
-              Width="16"
-              Height="16"/>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate x:DataType="entities:Playlist">
 
-    <TextBlock Text="{Binding Name}"
-               VerticalAlignment="Center"/>
+                            <Grid Height="34">
+                                <StackPanel Orientation="Horizontal"
+                                            Margin="10,0"
+                                            Spacing="10"
+                                            VerticalAlignment="Center">
 
-</StackPanel>
+<!-- playlist item icon -->
+<TextBlock Text="🎧" FontSize="12" VerticalAlignment="Center"/>
 
-    </Grid>
+                                    <TextBlock Text="{Binding Name}"
+                                               VerticalAlignment="Center"
+                                               Foreground="{StaticResource TextBrush}"
+                                               TextTrimming="CharacterEllipsis"/>
 
-</DataTemplate>
+                                </StackPanel>
+                            </Grid>
 
-    </ListBox.ItemTemplate>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
 
-</ListBox>
+                </ListBox>
 
-            <!-- BOTTOM -->
-            <Border Grid.Row="3"
-                    Background="#222"
-                    Padding="10"
-                    CornerRadius="8">
+            </Grid>
 
-                <TextBlock Text="User"
-                           HorizontalAlignment="Center"/>
-
-            </Border>
+<!-- user footer -->
+<Border Grid.Row="4" Classes="userFooter" Margin="0,12,0,0" Padding="8">
+    <StackPanel Orientation="Horizontal" Spacing="10">
+        <Border Width="28" Height="28" CornerRadius="14"
+                Background="{StaticResource SurfaceBrush}"/>
+        <TextBlock Text="User" VerticalAlignment="Center" Foreground="{StaticResource TextBrush}"/>
+    </StackPanel>
+</Border>
 
         </Grid>
 

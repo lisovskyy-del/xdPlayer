@@ -7,4 +7,12 @@
     <SolidColorBrush x:Key="AccentBrush" Color="#1DB954"/>
     <SolidColorBrush x:Key="TextBrush" Color="White"/>
 
+    <!-- Sidebar-specific -->
+    <SolidColorBrush x:Key="SidebarBackgroundBrush" Color="#0A0A0A"/>
+<SolidColorBrush x:Key="SidebarHoverBrush" Color="#14FFFFFF"/>
+<SolidColorBrush x:Key="SidebarSelectedBrush" Color="#1FFFFFFF"/>
+    <SolidColorBrush x:Key="TextMutedBrush" Color="#8A8A8A"/>
+    <SolidColorBrush x:Key="TextSubtleBrush" Color="#606060"/>
+    <SolidColorBrush x:Key="DividerBrush" Color="#242424"/>
+
 </ResourceDictionary>

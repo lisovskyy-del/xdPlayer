@@ -41,5 +41,6 @@
   <ItemGroup>
     <ProjectReference Include="..\xdPlayer.Application\xdPlayer.Application.csproj" />
     <ProjectReference Include="..\xdPlayer.Infrastructure\xdPlayer.Infrastructure.csproj" />
+	  <AvaloniaResource Include="Assets\**"></AvaloniaResource>
   </ItemGroup>
 </Project>

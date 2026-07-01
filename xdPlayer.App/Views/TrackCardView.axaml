@@ -14,17 +14,17 @@
         PointerPressed="OnPointerPressed"
         DoubleTapped="OnDoubleTapped">
 
-    <Border.ContextMenu>
+<Border.ContextMenu>
 
-    <ContextMenu>
+    <ContextMenu Opening="OnContextMenuOpening">
 
-        <MenuItem Header="Add to playlist">
-
+        <MenuItem Header="Add to playlist" x:Name="AddToPlaylistMenuItem">
+            <MenuItem Header="No playlists" IsEnabled="False"/>
         </MenuItem>
 
     </ContextMenu>
 
-    </Border.ContextMenu>
+</Border.ContextMenu>
 
     <StackPanel Spacing="8">
 

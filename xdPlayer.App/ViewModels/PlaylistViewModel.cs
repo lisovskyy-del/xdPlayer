@@ -16,14 +16,15 @@ namespace xdPlayer.App.ViewModels;
 
 public class PlaylistViewModel : ReactiveObject
 {
+    private Playlist? _selectedPlaylist;
     private readonly IPlaylistService _playlistService;
     private readonly PlaybackQueue _queue;
     private readonly IPlaybackManager _playbackManager;
+    private string _newPlaylistName = string.Empty;
 
     public ObservableCollection<Playlist> Playlists { get; } = [];
     public ObservableCollection<Track> CurrentTracks { get; } = [];
 
-    private Playlist? _selectedPlaylist;
     public Playlist? SelectedPlaylist
     {
         get => _selectedPlaylist;
@@ -35,7 +36,23 @@ public class PlaylistViewModel : ReactiveObject
         }
     }
 
-    private string _newPlaylistName = string.Empty;
+    public string TracksSummary
+    {
+        get
+        {
+            var count = CurrentTracks.Count;
+            var totalSeconds = CurrentTracks.Sum(t => t.DurationSeconds);
+
+            var hours = totalSeconds / 3600;
+            var minutes = (totalSeconds % 3600) / 60;
+
+            var durationText = hours > 0 ? $"{hours}h {minutes}m" : $"{minutes}m";
+            var trackWord = count == 1 ? "track" : "tracks";
+
+            return $"{count} {trackWord} • {durationText}";
+        }
+    }
+
     public string NewPlaylistName
     {
         get => _newPlaylistName;
@@ -47,6 +64,7 @@ public class PlaylistViewModel : ReactiveObject
     public ReactiveCommand<Track, Unit> PlayTrackCommand { get; }
     public ReactiveCommand<Track, Unit> RemoveTrackCommand { get; }
     public ReactiveCommand<(int fromIndex, int toIndex), Unit> MoveTrackCommand { get; }
+    public ReactiveCommand<(Track track, Playlist playlist), Unit> AddTrackToPlaylistCommand { get; }
 
     // for avalonia previewer
     public PlaylistViewModel()
@@ -65,6 +83,7 @@ public class PlaylistViewModel : ReactiveObject
         PlayTrackCommand = ReactiveCommand.Create<Track>(_ => { });
         RemoveTrackCommand = ReactiveCommand.Create<Track>(_ => { });
         MoveTrackCommand = ReactiveCommand.Create<(int, int)>(_ => { });
+        AddTrackToPlaylistCommand = ReactiveCommand.Create<(Track, Playlist)>(_ => { });
     }
 
     public PlaylistViewModel(IPlaylistService playlistService, PlaybackQueue queue, IPlaybackManager playbackManager)
@@ -80,10 +99,14 @@ public class PlaylistViewModel : ReactiveObject
         PlayTrackCommand = ReactiveCommand.Create<Track>(PlayTrack);
         RemoveTrackCommand = ReactiveCommand.CreateFromTask<Track>(RemoveTrackAsync);
         MoveTrackCommand = ReactiveCommand.CreateFromTask<(int fromIndex, int toIndex)>(MoveTrackAsync);
+        AddTrackToPlaylistCommand = ReactiveCommand.CreateFromTask<(Track track, Playlist playlist)>(AddTrackToPlaylistAsync);
 
         _ = LoadPlaylistsAsync();
 
         System.Diagnostics.Debug.WriteLine($"[VM] DeletePlaylistCommand is null: {DeletePlaylistCommand == null}");
+
+        CurrentTracks.CollectionChanged += (_, _) =>
+        this.RaisePropertyChanged(nameof(TracksSummary));
     }
 
     private async Task LoadPlaylistsAsync()
@@ -185,5 +208,13 @@ public class PlaylistViewModel : ReactiveObject
     {
         if (_selectedPlaylist != null)
             await LoadTracksAsync(_selectedPlaylist.Id);
+    }
+
+    private async Task AddTrackToPlaylistAsync((Track track, Playlist playlist) args)
+    {
+        await _playlistService.AddTrackAsync(args.playlist.Id, args.track.Id);
+
+        if (SelectedPlaylist?.Id == args.playlist.Id)
+            await LoadTracksAsync(args.playlist.Id);
     }
 }
