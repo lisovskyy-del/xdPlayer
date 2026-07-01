@@ -2,17 +2,19 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:converters="using:xdPlayer.App.Converters"
              x:Class="xdPlayer.App.App"
+             xmlns:svg="clr-namespace:Avalonia.Svg.Skia;assembly=Avalonia.Svg.Skia"
              RequestedThemeVariant="Dark">
 
 <Application.Resources>
 
     <ResourceDictionary>
 
-        <ResourceDictionary.MergedDictionaries>
+<ResourceDictionary.MergedDictionaries>
 
-            <ResourceInclude Source="/Styles/Colors.axaml"/>
+    <ResourceInclude Source="/Styles/Colors.axaml"/>
+    <StyleInclude Source="/Styles/Controls.axaml"/>
 
-        </ResourceDictionary.MergedDictionaries>
+</ResourceDictionary.MergedDictionaries>
 
         <converters:DurationConverter x:Key="DurationConverter"/>
         <converters:CoverConverter x:Key="CoverConverter"/>
