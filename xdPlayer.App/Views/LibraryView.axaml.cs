@@ -71,10 +71,11 @@ public partial class LibraryView : UserControl
     private void OnListContextMenuOpening(object? sender, CancelEventArgs e)
     {
         if (sender is not ContextMenu contextMenu) return;
-        if (contextMenu.DataContext is not Track track) return;
+        if (_contextMenuTrack == null) return;
         if (contextMenu.Items.Count == 0) return;
         if (contextMenu.Items[0] is not MenuItem addToPlaylistItem) return;
 
+        var track = _contextMenuTrack;
         var playlistVm = App.Services.GetRequiredService<PlaylistViewModel>();
         addToPlaylistItem.Items.Clear();
 

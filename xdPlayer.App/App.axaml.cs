@@ -27,7 +27,7 @@ public partial class App : Avalonia.Application
         AvaloniaXamlLoader.Load(this);
     }
 
-    public override void OnFrameworkInitializationCompleted()
+    public override async void OnFrameworkInitializationCompleted()
     {
         if (Design.IsDesignMode)
         {
@@ -40,7 +40,6 @@ public partial class App : Avalonia.Application
 
         Services = services.BuildServiceProvider();
 
-        // do migrations every launch
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             desktop.Exit += async (_, _) =>
@@ -59,6 +58,9 @@ public partial class App : Avalonia.Application
                 db.UserProfiles.Add(new Domain.Entities.UserProfile());
                 db.SaveChanges();
             }
+
+            var playlistVm = Services.GetRequiredService<PlaylistViewModel>();
+            await playlistVm.RefreshPlaylistsAsync();
 
             desktop.MainWindow = Services.GetRequiredService<MainWindow>();
         }

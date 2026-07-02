@@ -23,7 +23,8 @@
                      BorderBrush="{StaticResource DividerBrush}"
                      BorderThickness="1"
                      CornerRadius="8"
-                     Padding="14,10,36,10"
+                     Padding="10,12,36,10"
+                     FontSize="15"
                      Foreground="{StaticResource TextBrush}"/>
 
             <TextBlock Text="🔍"
@@ -124,6 +125,7 @@
 
                         <Grid ColumnDefinitions="48,*,160,70"
                               DoubleTapped="OnListTrackDoubleTapped"
+                              PointerPressed="OnGridPointerPressed"
                               Background="Transparent">
 
                             <Grid.ContextMenu>

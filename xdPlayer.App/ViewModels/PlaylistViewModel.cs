@@ -134,8 +134,6 @@ public class PlaylistViewModel : ReactiveObject
         AddTrackToPlaylistCommand = ReactiveCommand.CreateFromTask<(Track track, Playlist playlist)>(AddTrackToPlaylistAsync);
         SetPlaylistCoverCommand = ReactiveCommand.CreateFromTask<(Playlist playlist, string filePath)>(SetPlaylistCoverAsync);
 
-        _ = LoadPlaylistsAsync();
-
         System.Diagnostics.Debug.WriteLine($"[VM] DeletePlaylistCommand is null: {DeletePlaylistCommand == null}");
 
         CurrentTracks.CollectionChanged += (_, _) =>
