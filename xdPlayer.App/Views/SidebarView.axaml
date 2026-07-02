@@ -80,12 +80,6 @@
                                     Spacing="6"
                                     HorizontalAlignment="Right">
 
-                            <Button Content="Cancel"
-                                    Command="{Binding CancelAddPlaylistCommand}"
-                                    Background="Transparent"
-                                    Foreground="{StaticResource TextMutedBrush}"
-                                    BorderThickness="0"/>
-
                             <Button Content="Create"
                                     Command="{Binding ConfirmAddPlaylistCommand}"
                                     Background="{StaticResource AccentBrush}"

@@ -85,7 +85,7 @@ public class LibraryViewModel : ReactiveObject
 
         AddFileCommand = ReactiveCommand.CreateFromTask(AddFileAsync);
         AddFolderCommand = ReactiveCommand.CreateFromTask(AddFolderAsync);
-        PlayTrackCommand = ReactiveCommand.Create<Track>(PlayTrack);
+        PlayTrackCommand = ReactiveCommand.CreateFromTask<Track>(PlayTrackAsync);
         AddToPlaylistCommand = ReactiveCommand.CreateFromTask<(Track, Playlist)>(AddToPlaylistAsync);
         AddTagToTrackCommand = ReactiveCommand.CreateFromTask<(Track, Tag)>(AddTagToTrackAsync);
         RemoveTagFromTrackCommand = ReactiveCommand.CreateFromTask<(Track, Tag)>(RemoveTagFromTrackAsync);
@@ -190,7 +190,7 @@ public class LibraryViewModel : ReactiveObject
         }
     }
 
-    private void PlayTrack(Track track)
+    private async Task PlayTrackAsync(Track track)
     {
         var index = _queue.Tracks.IndexOf(track);
 
@@ -204,7 +204,7 @@ public class LibraryViewModel : ReactiveObject
             _queue.SetIndex(_queue.Tracks.Count - 1);
         }
 
-        _playbackManager.Play();
+        await _playbackManager.PlayAsync();
     }
 
     private async Task LoadPlaylistsAsync()

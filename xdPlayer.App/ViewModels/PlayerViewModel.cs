@@ -51,15 +51,15 @@ public class PlayerViewModel : ReactiveObject, IDisposable
         _playbackManager = playbackManager;
         _sessionService = sessionService;
 
-        PlayCommand = ReactiveCommand.Create(() => _playbackManager.PlayOrResume());
+        PlayCommand = ReactiveCommand.CreateFromTask(() => _playbackManager.PlayOrResumeAsync());
         PauseCommand = ReactiveCommand.Create(() => _playbackManager.Pause());
         StopCommand = ReactiveCommand.CreateFromTask(async () =>
         {
             _playbackManager.Stop();
             await _sessionService.OnTrackEndedAsync(completed: false);
         });
-        NextCommand = ReactiveCommand.Create(() => _playbackManager.Next());
-        PreviousCommand = ReactiveCommand.Create(() => _playbackManager.Previous());
+        NextCommand = ReactiveCommand.CreateFromTask(() => _playbackManager.NextAsync());
+        PreviousCommand = ReactiveCommand.CreateFromTask(() => _playbackManager.PreviousAsync());
 
         _playbackManager.Started += OnStarted;
         _playbackManager.Paused += OnPaused;

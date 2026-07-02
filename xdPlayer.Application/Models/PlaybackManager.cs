@@ -1,24 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Threading.Tasks;
 using xdPlayer.Application.Interfaces;
 using xdPlayer.Domain.Entities;
 using xdPlayer.Domain.Playback;
 
 namespace xdPlayer.Application.Models;
 
-public class PlaybackManager : IPlaybackManager // the main class that is responsible for playing audios
+public class PlaybackManager : IPlaybackManager
 {
-    private readonly IAudioPlayerService _player; // audio player itself
+    private readonly IAudioPlayerService _player;
 
-    public PlaybackQueue Queue { get; } // the queue, which can have parameters
+    public PlaybackQueue Queue { get; }
 
     public event EventHandler? Started;
     public event EventHandler? Paused;
     public event EventHandler? Finished;
     public event EventHandler<Track>? TrackChanged;
 
-    // init the objects
     public PlaybackManager(IAudioPlayerService player, PlaybackQueue queue)
     {
         _player = player;
@@ -29,7 +27,7 @@ public class PlaybackManager : IPlaybackManager // the main class that is respon
         _player.PlaybackPaused += (s, e) => Paused?.Invoke(this, EventArgs.Empty);
     }
 
-    private void OnPlaybackFinished(object? sender, EventArgs e)
+    private async void OnPlaybackFinished(object? sender, EventArgs e)
     {
         Console.WriteLine("[PlaybackManager] OnPlaybackFinished called");
 
@@ -38,65 +36,50 @@ public class PlaybackManager : IPlaybackManager // the main class that is respon
         var nextTrack = Queue.Next();
         if (nextTrack != null)
         {
-            _player.Play(nextTrack.FilePath);
+            await _player.PlayAsync(nextTrack.FilePath);
             TrackChanged?.Invoke(this, nextTrack);
         }
     }
 
-    public void Play() // fetches the current index of the track and plays it 
+    public async Task PlayAsync()
     {
         var track = Queue.CurrentTrack;
+        if (track == null) return;
 
-        if (track == null)
-        {
-            return;
-        }
-
-        _player.Play(track.FilePath);
+        await _player.PlayAsync(track.FilePath);
         TrackChanged?.Invoke(this, track);
     }
 
-    public void Pause()
-    {
-        _player.Pause();
-    }
+    public void Pause() => _player.Pause();
 
-    public void Resume()
-    {
-        _player.Resume();
-    }
+    public void Resume() => _player.Resume();
 
-    public void PlayOrResume()
+    public async Task PlayOrResumeAsync()
     {
         if (_player.IsPaused)
             _player.Resume();
         else
-            Play();
+            await PlayAsync();
     }
 
-    public void Stop()
-    {
-        _player.Stop();
-    }
+    public void Stop() => _player.Stop();
 
-    public void Next()
+    public async Task NextAsync()
     {
         var track = Queue.Next();
-
         if (track != null)
         {
-            _player.Play(track.FilePath);
+            await _player.PlayAsync(track.FilePath);
             TrackChanged?.Invoke(this, track);
         }
     }
 
-    public void Previous()
+    public async Task PreviousAsync()
     {
         var track = Queue.Previous();
-
         if (track != null)
         {
-            _player.Play(track.FilePath);
+            await _player.PlayAsync(track.FilePath);
             TrackChanged?.Invoke(this, track);
         }
     }

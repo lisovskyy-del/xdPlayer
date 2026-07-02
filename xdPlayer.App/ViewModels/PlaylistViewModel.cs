@@ -96,7 +96,7 @@ public class PlaylistViewModel : ReactiveObject
 
         CreatePlaylistCommand = ReactiveCommand.CreateFromTask(CreatePlaylistAsync);
         DeletePlaylistCommand = ReactiveCommand.CreateFromTask<Playlist>(DeletePlaylistAsync);
-        PlayTrackCommand = ReactiveCommand.Create<Track>(PlayTrack);
+        PlayTrackCommand = ReactiveCommand.CreateFromTask<Track>(PlayTrackAsync);
         RemoveTrackCommand = ReactiveCommand.CreateFromTask<Track>(RemoveTrackAsync);
         MoveTrackCommand = ReactiveCommand.CreateFromTask<(int fromIndex, int toIndex)>(MoveTrackAsync);
         AddTrackToPlaylistCommand = ReactiveCommand.CreateFromTask<(Track track, Playlist playlist)>(AddTrackToPlaylistAsync);
@@ -138,8 +138,9 @@ public class PlaylistViewModel : ReactiveObject
             CurrentTracks.Insert(args.toIndex, track);
         });
 
-        for (int i = 0; i < CurrentTracks.Count; i++)
-            await _playlistService.UpdateTrackPositionAsync(SelectedPlaylist.Id, CurrentTracks[i].Id, i);
+        await _playlistService.UpdateTrackPositionsAsync(
+            SelectedPlaylist.Id,
+            CurrentTracks.Select(t => t.Id).ToList());
     }
 
     private async Task LoadTracksAsync(int playlistId)
@@ -186,7 +187,7 @@ public class PlaylistViewModel : ReactiveObject
         await libraryVm.RefreshPlaylistsAsync();
     }
 
-    private void PlayTrack(Track track)
+    private async Task PlayTrackAsync(Track track)
     {
         _queue.Clear();
         foreach (var t in CurrentTracks)
@@ -194,7 +195,7 @@ public class PlaylistViewModel : ReactiveObject
         var index = _queue.Tracks.IndexOf(track);
         if (index >= 0)
             _queue.SetIndex(index);
-        _playbackManager.Play();
+        await _playbackManager.PlayAsync();
     }
 
     private async Task RemoveTrackAsync(Track track)

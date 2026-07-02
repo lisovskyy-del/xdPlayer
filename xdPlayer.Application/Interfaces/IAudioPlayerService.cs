@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Threading.Tasks;
 
 namespace xdPlayer.Application.Interfaces;
 
@@ -8,7 +7,7 @@ public interface IAudioPlayerService
 {
     bool IsPaused { get; }
 
-    void Play(string filepath);
+    Task PlayAsync(string filepath);
     void Pause();
     void Resume();
     void Stop();

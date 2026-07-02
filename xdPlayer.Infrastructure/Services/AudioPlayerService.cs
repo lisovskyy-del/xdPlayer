@@ -29,19 +29,22 @@ public class AudioPlayerService : IAudioPlayerService
         }
     }
 
-    public void Play(string path)
+    public async Task PlayAsync(string path)
     {
         Stop();
         IsPaused = false;
 
-        _audioFile = new AudioFileReader(path);
-        _outputDevice = new WaveOutEvent();
+        await Task.Run(() =>
+        {
+            _audioFile = new AudioFileReader(path);
+            _outputDevice = new WaveOutEvent();
 
-        _outputDevice.Init(_audioFile); // pass the audio file to the device user is on
+            _outputDevice.Init(_audioFile);
+            _outputDevice.PlaybackStopped += OnPlaybackStopped;
 
-        _outputDevice.PlaybackStopped += OnPlaybackStopped;
+            _outputDevice.Play();
+        });
 
-        _outputDevice.Play(); // play the audio file
         PlaybackStarted?.Invoke(this, EventArgs.Empty);
     }
 

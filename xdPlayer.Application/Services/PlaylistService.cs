@@ -91,7 +91,7 @@ public class PlaylistService : IPlaylistService
         System.Diagnostics.Debug.WriteLine("[Playlist] Track saved");
     }
 
-    public async Task UpdateTrackPositionAsync(int playlistId, int trackId, int position)
+    public async Task UpdateTrackPositionsAsync(int playlistId, IReadOnlyList<int> orderedTrackIds)
     {
         using var scope = _scopeFactory.CreateScope();
         var uow = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
@@ -99,12 +99,15 @@ public class PlaylistService : IPlaylistService
         var playlist = await uow.Playlists.GetWithTracksAsync(playlistId);
         if (playlist == null) return;
 
-        var playlistTrack = playlist.PlaylistTracks
-            .FirstOrDefault(pt => pt.TrackId == trackId);
+        for (int i = 0; i < orderedTrackIds.Count; i++)
+        {
+            var trackId = orderedTrackIds[i];
+            var playlistTrack = playlist.PlaylistTracks.FirstOrDefault(pt => pt.TrackId == trackId);
+            if (playlistTrack != null)
+                playlistTrack.Position = i;
+        }
 
-        if (playlistTrack == null) return;
-
-        playlistTrack.Position = position;
+        playlist.UpdatedAt = DateTime.UtcNow;
         await uow.SaveChangesAsync();
     }
 

@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Threading.Tasks;
 using xdPlayer.Domain.Entities;
 
 namespace xdPlayer.Application.Interfaces;
@@ -12,11 +11,11 @@ public interface IPlaybackManager
     event EventHandler? Finished;
     event EventHandler<Track> TrackChanged;
 
-    void Play();
+    Task PlayAsync();
     void Pause();
     void Resume();
-    void PlayOrResume();
+    Task PlayOrResumeAsync();
     void Stop();
-    void Next();
-    void Previous();
+    Task NextAsync();
+    Task PreviousAsync();
 }
