@@ -14,6 +14,28 @@ using xdPlayer.Domain.Playback;
 
 namespace xdPlayer.App.ViewModels;
 
+public class PlaylistDisplayItem : ReactiveObject
+{
+    public Playlist Playlist { get; }
+
+    public int Id => Playlist.Id;
+    public string Name => Playlist.Name;
+    public int TrackCount => Playlist.PlaylistTracks.Count;
+
+    private string? _coverImagePath;
+    public string? CoverImagePath
+    {
+        get => _coverImagePath;
+        set => this.RaiseAndSetIfChanged(ref _coverImagePath, value);
+    }
+
+    public PlaylistDisplayItem(Playlist playlist)
+    {
+        Playlist = playlist;
+        _coverImagePath = playlist.CoverImagePath;
+    }
+}
+
 public class PlaylistViewModel : ReactiveObject
 {
     private Playlist? _selectedPlaylist;
@@ -21,6 +43,7 @@ public class PlaylistViewModel : ReactiveObject
     private readonly PlaybackQueue _queue;
     private readonly IPlaybackManager _playbackManager;
     private string _newPlaylistName = string.Empty;
+    private string? _selectedPlaylistCoverPath;
 
     public ObservableCollection<Playlist> Playlists { get; } = [];
     public ObservableCollection<Track> CurrentTracks { get; } = [];
@@ -31,9 +54,16 @@ public class PlaylistViewModel : ReactiveObject
         set
         {
             this.RaiseAndSetIfChanged(ref _selectedPlaylist, value);
+            SelectedPlaylistCoverPath = value?.CoverImagePath;
             if (value != null)
                 _ = LoadTracksAsync(value.Id);
         }
+    }
+
+    public string? SelectedPlaylistCoverPath
+    {
+        get => _selectedPlaylistCoverPath;
+        private set => this.RaiseAndSetIfChanged(ref _selectedPlaylistCoverPath, value);
     }
 
     public string TracksSummary
@@ -65,6 +95,7 @@ public class PlaylistViewModel : ReactiveObject
     public ReactiveCommand<Track, Unit> RemoveTrackCommand { get; }
     public ReactiveCommand<(int fromIndex, int toIndex), Unit> MoveTrackCommand { get; }
     public ReactiveCommand<(Track track, Playlist playlist), Unit> AddTrackToPlaylistCommand { get; }
+    public ReactiveCommand<(Playlist playlist, string filePath), Unit> SetPlaylistCoverCommand { get; }
 
     // for avalonia previewer
     public PlaylistViewModel()
@@ -84,6 +115,7 @@ public class PlaylistViewModel : ReactiveObject
         RemoveTrackCommand = ReactiveCommand.Create<Track>(_ => { });
         MoveTrackCommand = ReactiveCommand.Create<(int, int)>(_ => { });
         AddTrackToPlaylistCommand = ReactiveCommand.Create<(Track, Playlist)>(_ => { });
+        SetPlaylistCoverCommand = ReactiveCommand.Create<(Playlist, string)>(_ => { });
     }
 
     public PlaylistViewModel(IPlaylistService playlistService, PlaybackQueue queue, IPlaybackManager playbackManager)
@@ -100,6 +132,7 @@ public class PlaylistViewModel : ReactiveObject
         RemoveTrackCommand = ReactiveCommand.CreateFromTask<Track>(RemoveTrackAsync);
         MoveTrackCommand = ReactiveCommand.CreateFromTask<(int fromIndex, int toIndex)>(MoveTrackAsync);
         AddTrackToPlaylistCommand = ReactiveCommand.CreateFromTask<(Track track, Playlist playlist)>(AddTrackToPlaylistAsync);
+        SetPlaylistCoverCommand = ReactiveCommand.CreateFromTask<(Playlist playlist, string filePath)>(SetPlaylistCoverAsync);
 
         _ = LoadPlaylistsAsync();
 
@@ -111,7 +144,7 @@ public class PlaylistViewModel : ReactiveObject
 
     private async Task LoadPlaylistsAsync()
     {
-        var playlists = await _playlistService.GetAllAsync();
+        var playlists = await _playlistService.GetAllWithTracksAsync();
         Playlists.Clear();
         foreach (var p in playlists)
             Playlists.Add(p);
@@ -217,5 +250,36 @@ public class PlaylistViewModel : ReactiveObject
 
         if (SelectedPlaylist?.Id == args.playlist.Id)
             await LoadTracksAsync(args.playlist.Id);
+
+        await RefreshPlaylistsAsync();
+    }
+
+    private async Task SetPlaylistCoverAsync((Playlist playlist, string filePath) args)
+    {
+        var updated = await _playlistService.SetCoverAsync(args.playlist.Id, args.filePath);
+
+        updated.PlaylistTracks = args.playlist.PlaylistTracks;
+
+        args.playlist.CoverImagePath = updated.CoverImagePath;
+        args.playlist.UpdatedAt = updated.UpdatedAt;
+
+        var index = Playlists.IndexOf(args.playlist);
+        if (index >= 0)
+        {
+            var wasSelected = SelectedPlaylist?.Id == args.playlist.Id;
+
+            Playlists[index] = updated;
+
+            if (wasSelected)
+                SelectedPlaylist = updated;
+        }
+
+        if (SelectedPlaylist?.Id == args.playlist.Id)
+            SelectedPlaylistCoverPath = updated.CoverImagePath;
+    }
+
+    public async Task RefreshPlaylistsAsync()
+    {
+        await LoadPlaylistsAsync();
     }
 }

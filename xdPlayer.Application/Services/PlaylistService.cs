@@ -46,6 +46,30 @@ public class PlaylistService : IPlaylistService
         return playlist;
     }
 
+    public async Task<Playlist> SetCoverAsync(int playlistId, string imageFilePath)
+    {
+        using var scope = _scopeFactory.CreateScope();
+        var uow = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+
+        var playlist = await uow.Playlists.GetByIdAsync(playlistId);
+        if (playlist == null) throw new InvalidOperationException("Playlist not found");
+
+        Directory.CreateDirectory("PlaylistCovers");
+
+        var extension = Path.GetExtension(imageFilePath);
+        var newCoverPath = Path.Combine("PlaylistCovers", $"{Guid.NewGuid()}{extension}");
+
+        File.Copy(imageFilePath, newCoverPath, overwrite: true);
+
+        playlist.CoverImagePath = newCoverPath;
+        playlist.UpdatedAt = DateTime.UtcNow;
+
+        await uow.Playlists.UpdateAsync(playlist);
+        await uow.SaveChangesAsync();
+
+        return playlist;
+    }
+
     public async Task RenameAsync(int playlistId, string newName)
     {
         using var scope = _scopeFactory.CreateScope();
@@ -134,5 +158,12 @@ public class PlaylistService : IPlaylistService
         using var scope = _scopeFactory.CreateScope();
         var uow = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
         await uow.Playlists.DeleteWithTracksAsync(playlistId);
+    }
+
+    public async Task<IEnumerable<Playlist>> GetAllWithTracksAsync()
+    {
+        using var scope = _scopeFactory.CreateScope();
+        var uow = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+        return await uow.Playlists.GetAllWithTracksAsync();
     }
 }

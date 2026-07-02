@@ -1,5 +1,6 @@
 ﻿using Avalonia.Platform.Storage;
 using DynamicData;
+using Microsoft.Extensions.DependencyInjection;
 using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -50,6 +51,10 @@ public class LibraryViewModel : ReactiveObject
     public ReactiveCommand<(Track, Tag), Unit> RemoveTagFromTrackCommand { get; }
     public ReactiveCommand<Unit, Unit> CreateTagCommand { get; }
 
+    public ReactiveCommand<Track, Unit> DeleteTrackCommand { get; }
+
+    public ReactiveCommand<(Track track, string filePath), Unit> SetTrackCoverCommand { get; }
+
 
     // for avalonia previewer
     public LibraryViewModel()
@@ -71,6 +76,8 @@ public class LibraryViewModel : ReactiveObject
         AddTagToTrackCommand = ReactiveCommand.Create<(Track, Tag)>(_ => { });
         RemoveTagFromTrackCommand = ReactiveCommand.Create<(Track, Tag)>(_ => { });
         CreateTagCommand = ReactiveCommand.Create(() => { });
+        DeleteTrackCommand = ReactiveCommand.Create<Track>(_ => { });
+        SetTrackCoverCommand = ReactiveCommand.Create<(Track, string)>(_ => { });
     }
 
     public LibraryViewModel(ILibraryService libraryService, PlaybackQueue queue, 
@@ -90,6 +97,8 @@ public class LibraryViewModel : ReactiveObject
         AddTagToTrackCommand = ReactiveCommand.CreateFromTask<(Track, Tag)>(AddTagToTrackAsync);
         RemoveTagFromTrackCommand = ReactiveCommand.CreateFromTask<(Track, Tag)>(RemoveTagFromTrackAsync);
         CreateTagCommand = ReactiveCommand.CreateFromTask(CreateTagAsync);
+        DeleteTrackCommand = ReactiveCommand.CreateFromTask<Track>(DeleteTrackAsync);
+        SetTrackCoverCommand = ReactiveCommand.CreateFromTask<(Track track, string filePath)>(SetTrackCoverAsync);
 
         _ = LoadTracksAsync();
         _ = LoadPlaylistsAsync();
@@ -162,6 +171,15 @@ public class LibraryViewModel : ReactiveObject
         }
     }
 
+    private async Task SetTrackCoverAsync((Track track, string filePath) args)
+    {
+        var updated = await _libraryService.SetTrackCoverAsync(args.track.Id, args.filePath);
+
+        var index = Tracks.IndexOf(args.track);
+        if (index >= 0)
+            Tracks[index] = updated;
+    }
+
     private async Task AddFolderAsync()
     {
         var topLevel = Avalonia.Application.Current?.ApplicationLifetime is
@@ -218,6 +236,9 @@ public class LibraryViewModel : ReactiveObject
     private async Task AddToPlaylistAsync((Track track, Playlist playlist) args)
     {
         await _playlistService.AddTrackAsync(args.playlist.Id, args.track.Id);
+
+        var playlistVm = App.Services.GetRequiredService<PlaylistViewModel>();
+        await playlistVm.RefreshPlaylistsAsync();
     }
 
     public async Task RefreshPlaylistsAsync()
@@ -242,6 +263,20 @@ public class LibraryViewModel : ReactiveObject
         var tag = await _tagService.CreateAsync(NewTagName);
         AllTags.Add(tag);
         NewTagName = string.Empty;
+    }
+
+    private async Task DeleteTrackAsync(Track track)
+    {
+        await _libraryService.DeleteTrackAsync(track.Id);
+
+        Tracks.Remove(track);
+
+        var index = _queue.Tracks.IndexOf(track);
+        if (index >= 0)
+            _queue.Remove(track);
+
+        var playlistVm = App.Services.GetRequiredService<PlaylistViewModel>();
+        await playlistVm.RefreshPlaylistsAsync();
     }
 
     private async Task AddTagToTrackAsync((Track track, Tag tag) args)

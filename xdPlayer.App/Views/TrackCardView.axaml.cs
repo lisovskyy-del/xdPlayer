@@ -1,10 +1,13 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Interactivity;
+using Avalonia.Platform.Storage;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using xdPlayer.App.ViewModels;
 using System.ComponentModel;
+using xdPlayer.App.ViewModels;
 using xdPlayer.Domain.Entities;
+using System.Reactive.Linq;
 
 namespace xdPlayer.App.Views;
 
@@ -59,5 +62,43 @@ public partial class TrackCardView : UserControl
         var libraryVm = App.Services.GetRequiredService<LibraryViewModel>();
 
         libraryVm.PlayTrackCommand.Execute(track).Subscribe();
+    }
+
+    private void OnDeleteClick(object? sender, RoutedEventArgs e)
+    {
+        if (DataContext is not Track track) return;
+
+        var libraryVm = App.Services.GetRequiredService<LibraryViewModel>();
+        libraryVm.DeleteTrackCommand.Execute(track).Subscribe();
+    }
+
+    private async void OnChangeCoverClick(object? sender, RoutedEventArgs e)
+    {
+        if (DataContext is not Track track) return;
+
+        var topLevel = Avalonia.Application.Current?.ApplicationLifetime is
+            Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktop
+            ? desktop.MainWindow
+            : null;
+
+        if (topLevel == null) return;
+
+        var files = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+        {
+            Title = "Choose cover image",
+            AllowMultiple = false,
+            FileTypeFilter =
+            [
+                new FilePickerFileType("Images")
+            {
+                Patterns = ["*.png", "*.jpg", "*.jpeg", "*.webp"]
+            }
+            ]
+        });
+
+        if (files.Count == 0) return;
+
+        var libraryVm = App.Services.GetRequiredService<LibraryViewModel>();
+        await libraryVm.SetTrackCoverCommand.Execute((track, files[0].Path.LocalPath));
     }
 }

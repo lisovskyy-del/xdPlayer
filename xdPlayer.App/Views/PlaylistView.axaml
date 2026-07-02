@@ -12,16 +12,34 @@
           Margin="20,20,20,20">
 
         <!-- Cover -->
-        <Border Width="120"
-                Height="120"
-                CornerRadius="8"
-                Background="#333"
-                ClipToBounds="True">
+<Border x:Name="PlaylistCoverHoverBorder"
+        Width="120"
+        Height="120"
+        CornerRadius="8"
+        Background="#333"
+        ClipToBounds="True"
+        Cursor="Hand"
+        PointerPressed="OnPlaylistCoverPointerPressed">
 
-            <Image Source="{Binding SelectedPlaylist.CoverImagePath}"
-                   Stretch="UniformToFill"/>
+    <Grid>
 
+         <Image Source="{Binding SelectedPlaylistCoverPath,
+                Converter={StaticResource CoverConverter}}"
+                Stretch="UniformToFill"/>
+
+        <Border x:Name="PlaylistCoverOverlay"
+                Background="#00000000"
+                IsHitTestVisible="False">
+            <Border.Transitions>
+                <Transitions>
+                    <BrushTransition Property="Background" Duration="0:0:0.12"/>
+                </Transitions>
+            </Border.Transitions>
         </Border>
+
+    </Grid>
+
+</Border>
 
         <!-- Info -->
         <StackPanel Grid.Column="1"
@@ -93,6 +111,12 @@
     <Grid ColumnDefinitions="40,*,160,70"
           PointerPressed="OnTrackPointerPressed"
           DoubleTapped="OnTrackDoubleTapped">
+
+        <Grid.ContextMenu>
+            <ContextMenu>
+                <MenuItem Header="Remove from playlist" Click="OnRemoveTrackClick"/>
+            </ContextMenu>
+        </Grid.ContextMenu>
 
         <!-- Id -->
         <TextBlock Grid.Column="0"

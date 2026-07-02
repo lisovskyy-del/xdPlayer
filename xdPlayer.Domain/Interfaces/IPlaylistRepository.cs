@@ -9,4 +9,5 @@ public interface IPlaylistRepository : IRepository<Playlist>
 {
     Task<Playlist?> GetWithTracksAsync(int id);
     Task DeleteWithTracksAsync(int playlistId);
+    Task<IEnumerable<Playlist>> GetAllWithTracksAsync();
 }

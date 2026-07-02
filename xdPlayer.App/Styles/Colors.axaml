@@ -4,6 +4,7 @@
 
     <SolidColorBrush x:Key="BackgroundBrush" Color="#121212"/>
     <SolidColorBrush x:Key="SurfaceBrush" Color="#1E1E1E"/>
+    <SolidColorBrush x:Key="CardBrush" Color="#1999"/>
     <SolidColorBrush x:Key="AccentBrush" Color="#1FFFFFFF"/>
     <SolidColorBrush x:Key="TextBrush" Color="White"/>
 

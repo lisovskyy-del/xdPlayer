@@ -9,7 +9,7 @@
         Padding="10"
         Margin="4"
         CornerRadius="12"
-        Background="{DynamicResource SurfaceBrush}"
+        Background="{DynamicResource CardBrush}"
         BoxShadow="0 4 16 0 #33000000"
         PointerPressed="OnPointerPressed"
         DoubleTapped="OnDoubleTapped">
@@ -22,6 +22,12 @@
             <MenuItem Header="No playlists" IsEnabled="False"/>
         </MenuItem>
 
+        <MenuItem Header="Change cover..." Click="OnChangeCoverClick"/>
+
+        <Separator/>
+
+        <MenuItem Header="Delete" Click="OnDeleteClick"/>
+
     </ContextMenu>
 
 </Border.ContextMenu>
@@ -29,26 +35,16 @@
     <StackPanel Spacing="8">
 
         <!-- Cover -->
-<Border Height="150"
-        CornerRadius="8"
-        Background="#404040"
-        ClipToBounds="True">
+        <Border Height="150"
+                CornerRadius="8"
+                Background="#404040"
+                ClipToBounds="True">
 
-    <Grid>
-
-        <Border Height="140"
-        CornerRadius="8"
-        ClipToBounds="True">
-
-        <Image
-            Stretch="UniformToFill"
-            Source="{Binding CoverImagePath,
-                         Converter={StaticResource CoverConverter}}"/>
+            <Image Stretch="UniformToFill"
+                   Source="{Binding CoverImagePath,
+                            Converter={StaticResource CoverConverter}}"/>
 
         </Border>
-    </Grid>
-
-</Border>
 
         <!-- Title -->
         <TextBlock Text="{Binding Title}"

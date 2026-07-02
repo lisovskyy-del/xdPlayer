@@ -39,11 +39,13 @@
               HorizontalScrollBarVisibility="Disabled"
               VerticalScrollBarVisibility="Auto">
 
-    <ItemsControl ItemsSource="{Binding Tracks}">
+    <ItemsControl ItemsSource="{Binding Tracks}"
+                  HorizontalAlignment="Center">
 
         <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>
-                <WrapPanel Orientation="Horizontal"/>
+                <WrapPanel Orientation="Horizontal"
+                           HorizontalAlignment="Center"/>
             </ItemsPanelTemplate>
         </ItemsControl.ItemsPanel>
 

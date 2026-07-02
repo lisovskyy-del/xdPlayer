@@ -1,6 +1,7 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Platform.Storage;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Reactive.Linq;
@@ -133,10 +134,39 @@ public partial class PlaylistView : UserControl
 
     private async void OnRemoveTrackClick(object? sender, RoutedEventArgs e)
     {
-        if (sender is Button button && button.DataContext is Track track)
+        if (sender is MenuItem menuItem && menuItem.DataContext is Track track)
         {
             if (DataContext is PlaylistViewModel vm)
                 await vm.RemoveTrackCommand.Execute(track);
         }
+    }
+
+    private async void OnPlaylistCoverPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (DataContext is not PlaylistViewModel vm || vm.SelectedPlaylist == null) return;
+
+        var topLevel = Avalonia.Application.Current?.ApplicationLifetime is
+            Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktop
+            ? desktop.MainWindow
+            : null;
+
+        if (topLevel == null) return;
+
+        var files = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+        {
+            Title = "Choose playlist cover",
+            AllowMultiple = false,
+            FileTypeFilter =
+            [
+                new FilePickerFileType("Images")
+            {
+                Patterns = ["*.png", "*.jpg", "*.jpeg", "*.webp"]
+            }
+            ]
+        });
+
+        if (files.Count == 0) return;
+
+        await vm.SetPlaylistCoverCommand.Execute((vm.SelectedPlaylist, files[0].Path.LocalPath));
     }
 }

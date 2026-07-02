@@ -73,6 +73,29 @@ public class LibraryService : ILibraryService
         };
     }
 
+    public async Task<Track> SetTrackCoverAsync(int trackId, string imageFilePath)
+    {
+        using var scope = _scopeFactory.CreateScope();
+        var uow = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+
+        var track = await uow.Tracks.GetByIdAsync(trackId);
+        if (track == null) throw new InvalidOperationException("Track not found");
+
+        Directory.CreateDirectory("Covers");
+
+        var extension = Path.GetExtension(imageFilePath);
+        var newCoverPath = Path.Combine("Covers", $"{Guid.NewGuid()}{extension}");
+
+        File.Copy(imageFilePath, newCoverPath, overwrite: true);
+
+        track.CoverImagePath = newCoverPath;
+
+        await uow.Tracks.UpdateAsync(track);
+        await uow.SaveChangesAsync();
+
+        return track;
+    }
+
     public async Task<IEnumerable<Track>> SearchAsync(string query)
     {
         using var scope = _scopeFactory.CreateScope();
@@ -108,6 +131,18 @@ public class LibraryService : ILibraryService
             _ => tracks
         };
         return Task.FromResult(sorted);
+    }
+
+    public async Task DeleteTrackAsync(int trackId)
+    {
+        using var scope = _scopeFactory.CreateScope();
+        var uow = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+
+        var track = await uow.Tracks.GetByIdAsync(trackId);
+        if (track == null) return;
+
+        await uow.Tracks.DeleteAsync(track);
+        await uow.SaveChangesAsync();
     }
 
     private static readonly string[] AudioExtensions =

@@ -25,4 +25,9 @@ public class Playlist
 
     // Navigation
     public ICollection<PlaylistTrack> PlaylistTracks { get; set; } = [];
+
+    public override bool Equals(object? obj) =>
+        obj is Playlist other && Id != 0 && Id == other.Id;
+
+    public override int GetHashCode() => Id.GetHashCode();
 }

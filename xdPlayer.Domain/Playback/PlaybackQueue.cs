@@ -102,4 +102,17 @@ public class PlaybackQueue
         if (index >= 0 && index < _tracks.Count)
             CurrentIndex = index;
     }
+
+    public void Remove(Track track)
+    {
+        var index = _tracks.IndexOf(track);
+        if (index < 0) return;
+
+        _tracks.RemoveAt(index);
+
+        if (index < CurrentIndex)
+            CurrentIndex--;
+        else if (index == CurrentIndex && CurrentIndex >= _tracks.Count)
+            CurrentIndex = Math.Max(0, _tracks.Count - 1);
+    }
 }

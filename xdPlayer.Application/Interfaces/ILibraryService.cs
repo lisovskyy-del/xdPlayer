@@ -11,8 +11,12 @@ public interface ILibraryService
     Task<IEnumerable<Track>> GetAllAsync();
     Task<PagedResult<Track>> GetPagedAsync(int page, int pageSize);
 
+    Task<Track> SetTrackCoverAsync(int trackId, string imageFilePath);
+
     Task<IEnumerable<Track>> SearchAsync(string query);
     Task<IEnumerable<Track>> FilterAsync(LibraryFilter filter);
 
     Task<IEnumerable<Track>> SortAsync(IEnumerable<Track> tracks, SortField field, bool ascending);
+
+    Task DeleteTrackAsync(int trackId);
 }

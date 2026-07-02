@@ -99,26 +99,53 @@
                          SelectedItem="{Binding SelectedPlaylist}">
 
                     <ListBox.ItemTemplate>
-                        <DataTemplate x:DataType="entities:Playlist">
+<DataTemplate x:DataType="entities:Playlist">
 
-                            <Grid Height="34">
-                                <StackPanel Orientation="Horizontal"
-                                            Margin="10,0"
-                                            Spacing="10"
-                                            VerticalAlignment="Center">
+    <Grid Height="60"
+          ColumnDefinitions="48,*"
+          Margin="10,0">
 
-<!-- playlist item icon -->
-<TextBlock Text="🎧" FontSize="12" VerticalAlignment="Center"/>
+        <Grid.ContextMenu>
+            <ContextMenu>
+                <MenuItem Header="Delete playlist" Click="OnDeletePlaylistClick"/>
+            </ContextMenu>
+        </Grid.ContextMenu>
 
-                                    <TextBlock Text="{Binding Name}"
-                                               VerticalAlignment="Center"
-                                               Foreground="{StaticResource TextBrush}"
-                                               TextTrimming="CharacterEllipsis"/>
+        <Border Grid.Column="0"
+                Width="48"
+                Height="48"
+                CornerRadius="6"
+                Background="{StaticResource SurfaceBrush}"
+                ClipToBounds="True"
+                VerticalAlignment="Center">
 
-                                </StackPanel>
-                            </Grid>
+            <Image Source="{Binding CoverImagePath,
+                            Converter={StaticResource CoverConverter}}"
+                   Stretch="UniformToFill"/>
 
-                        </DataTemplate>
+        </Border>
+
+        <StackPanel Grid.Column="1"
+                    Margin="12,0,0,0"
+                    VerticalAlignment="Center"
+                    Spacing="2">
+
+            <TextBlock Text="{Binding Name}"
+                       FontWeight="SemiBold"
+                       FontSize="14"
+                       Foreground="{StaticResource TextBrush}"
+                       TextTrimming="CharacterEllipsis"/>
+
+            <TextBlock Text="{Binding PlaylistTracks.Count, StringFormat='{}{0} tracks'}"
+                       FontSize="12"
+                       Opacity="0.6"
+                       Foreground="{StaticResource TextBrush}"/>
+
+        </StackPanel>
+
+    </Grid>
+
+</DataTemplate>
                     </ListBox.ItemTemplate>
 
                 </ListBox>

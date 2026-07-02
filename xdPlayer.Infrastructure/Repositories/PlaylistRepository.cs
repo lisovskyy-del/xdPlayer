@@ -35,4 +35,10 @@ public class PlaylistRepository : Repository<Playlist>, IPlaylistRepository
         await _context.SaveChangesAsync();
         System.Diagnostics.Debug.WriteLine("[Playlist] Playlist removed");
     }
+
+    public async Task<IEnumerable<Playlist>> GetAllWithTracksAsync() =>
+    await _context.Playlists
+        .Include(p => p.PlaylistTracks)
+        .AsNoTracking()
+        .ToListAsync();
 }
