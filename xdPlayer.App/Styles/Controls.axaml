@@ -15,6 +15,10 @@
         <Setter Property="Background" Value="#343434"/>
     </Style>
 
+<Style Selector="Button.iconButton.selected /template/ Border">
+    <Setter Property="Background" Value="{StaticResource SidebarSelectedBrush}"/>
+</Style>
+
     <!-- ============ SIDEBAR ============ -->
 
     <!-- Clickable row button that looks like a flat list item -->

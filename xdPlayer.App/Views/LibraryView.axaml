@@ -36,20 +36,26 @@
 
         </Grid>
 
-        <StackPanel Grid.Column="1"
-                    Orientation="Horizontal"
-                    Spacing="4"
-                    Margin="12,0,0,0">
+<StackPanel Grid.Column="1"
+            Orientation="Horizontal"
+            Spacing="4"
+            Margin="12,0,0,0">
 
-            <Button Classes="iconButton" Width="44" Height="44">
-                <TextBlock Text="⊞" FontSize="22"/>
-            </Button>
+    <Button Classes="iconButton"
+            Classes.selected="{Binding IsGridView}"
+            Command="{Binding SetGridViewCommand}"
+            Width="44" Height="44">
+        <TextBlock Text="⊞" FontSize="22"/>
+    </Button>
 
-            <Button Classes="iconButton" Width="44" Height="44">
-                <TextBlock Text="☰" FontSize="22"/>
-            </Button>
+    <Button Classes="iconButton"
+            Classes.selected="{Binding !IsGridView}"
+            Command="{Binding SetListViewCommand}"
+            Width="44" Height="44">
+        <TextBlock Text="☰" FontSize="22"/>
+    </Button>
 
-        </StackPanel>
+</StackPanel>
 
     </Grid>
 
@@ -73,12 +79,16 @@
                    Foreground="{StaticResource TextBrush}"/>
     </StackPanel>
 
-    <ScrollViewer Grid.Row="3"
-          HorizontalScrollBarVisibility="Disabled"
-          VerticalScrollBarVisibility="Auto">
+<ScrollViewer Grid.Row="3"
+      HorizontalScrollBarVisibility="Disabled"
+      VerticalScrollBarVisibility="Auto">
 
+    <Grid>
+
+        <!-- Grid mode -->
         <ItemsControl ItemsSource="{Binding Tracks}"
-                      HorizontalAlignment="Center">
+                      HorizontalAlignment="Center"
+                      IsVisible="{Binding IsGridView}">
 
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
@@ -101,7 +111,72 @@
 
         </ItemsControl>
 
-    </ScrollViewer>
+        <!-- List mode -->
+        <ListBox Classes="trackList"
+                 Margin="24,0,24,20"
+                 ItemsSource="{Binding Tracks}"
+                 IsVisible="{Binding !IsGridView}">
+
+            <ListBox.ItemTemplate>
+                <DataTemplate x:DataType="entities:Track">
+
+                    <Border Classes="trackRow" Padding="10">
+
+                        <Grid ColumnDefinitions="48,*,160,70"
+                              DoubleTapped="OnListTrackDoubleTapped"
+                              Background="Transparent">
+
+                            <Grid.ContextMenu>
+                                <ContextMenu Opening="OnListContextMenuOpening">
+                                    <MenuItem Header="Add to playlist"/>
+                                    <Separator/>
+                                    <MenuItem Header="Delete" Click="OnListDeleteClick"/>
+                                </ContextMenu>
+                            </Grid.ContextMenu>
+
+                            <Border Grid.Column="0"
+                                    Width="40" Height="40"
+                                    CornerRadius="4"
+                                    Background="#444"
+                                    ClipToBounds="True">
+
+                                <Image Source="{Binding CoverImagePath,
+                                                Converter={StaticResource CoverConverter}}"
+                                       Stretch="UniformToFill"/>
+
+                            </Border>
+
+                            <TextBlock Grid.Column="1"
+                                       VerticalAlignment="Center"
+                                       Margin="12,0,0,0"
+                                       Text="{Binding Title}"
+                                       FontWeight="SemiBold"
+                                       TextTrimming="CharacterEllipsis"/>
+
+                            <TextBlock Grid.Column="2"
+                                       VerticalAlignment="Center"
+                                       Text="{Binding Artist}"
+                                       Opacity="0.7"
+                                       TextTrimming="CharacterEllipsis"/>
+
+                            <TextBlock Grid.Column="3"
+                                       VerticalAlignment="Center"
+                                       HorizontalAlignment="Right"
+                                       Text="{Binding DurationSeconds,
+                                       Converter={StaticResource DurationConverter}}"/>
+
+                        </Grid>
+
+                    </Border>
+
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+
+        </ListBox>
+
+    </Grid>
+
+</ScrollViewer>
 
 </Grid>
 

@@ -20,6 +20,13 @@ public class LibraryViewModel : ReactiveObject
     private readonly IPlaylistService _playlistService;
     private readonly ITagService _tagService;
 
+    private bool _isGridView = true;
+    public bool IsGridView
+    {
+        get => _isGridView;
+        set => this.RaiseAndSetIfChanged(ref _isGridView, value);
+    }
+
     private string _searchQuery = string.Empty;
     public string SearchQuery
     {
@@ -57,6 +64,9 @@ public class LibraryViewModel : ReactiveObject
 
     public ReactiveCommand<(Track track, string filePath), Unit> SetTrackCoverCommand { get; }
 
+    public ReactiveCommand<Unit, Unit> SetGridViewCommand { get; }
+    public ReactiveCommand<Unit, Unit> SetListViewCommand { get; }
+
 
     // for avalonia previewer
     public LibraryViewModel()
@@ -81,6 +91,9 @@ public class LibraryViewModel : ReactiveObject
         DeleteTrackCommand = ReactiveCommand.Create<Track>(_ => { });
         SetTrackCoverCommand = ReactiveCommand.Create<(Track, string)>(_ => { });
         Tracks.CollectionChanged += (_, _) => this.RaisePropertyChanged(nameof(TracksCountText));
+
+        SetGridViewCommand = ReactiveCommand.Create(() => { IsGridView = true; });
+        SetListViewCommand = ReactiveCommand.Create(() => { IsGridView = false; });
     }
 
     public LibraryViewModel(ILibraryService libraryService, PlaybackQueue queue, 
@@ -103,6 +116,9 @@ public class LibraryViewModel : ReactiveObject
         DeleteTrackCommand = ReactiveCommand.CreateFromTask<Track>(DeleteTrackAsync);
         SetTrackCoverCommand = ReactiveCommand.CreateFromTask<(Track track, string filePath)>(SetTrackCoverAsync);
         Tracks.CollectionChanged += (_, _) => this.RaisePropertyChanged(nameof(TracksCountText));
+
+        SetGridViewCommand = ReactiveCommand.Create(() => { IsGridView = true; });
+        SetListViewCommand = ReactiveCommand.Create(() => { IsGridView = false; });
 
         _ = LoadTracksAsync();
         _ = LoadPlaylistsAsync();
