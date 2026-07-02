@@ -38,6 +38,8 @@ public class LibraryViewModel : ReactiveObject
         set => this.RaiseAndSetIfChanged(ref _newTagName, value);
     }
 
+    public string TracksCountText => $"{Tracks.Count} tracks";
+
     public ObservableCollection<Playlist> Playlists { get; } = [];
     public ObservableCollection<Tag> AllTags { get; } = [];
     public ObservableCollection<Track> Tracks { get; } = [];
@@ -78,6 +80,7 @@ public class LibraryViewModel : ReactiveObject
         CreateTagCommand = ReactiveCommand.Create(() => { });
         DeleteTrackCommand = ReactiveCommand.Create<Track>(_ => { });
         SetTrackCoverCommand = ReactiveCommand.Create<(Track, string)>(_ => { });
+        Tracks.CollectionChanged += (_, _) => this.RaisePropertyChanged(nameof(TracksCountText));
     }
 
     public LibraryViewModel(ILibraryService libraryService, PlaybackQueue queue, 
@@ -99,6 +102,7 @@ public class LibraryViewModel : ReactiveObject
         CreateTagCommand = ReactiveCommand.CreateFromTask(CreateTagAsync);
         DeleteTrackCommand = ReactiveCommand.CreateFromTask<Track>(DeleteTrackAsync);
         SetTrackCoverCommand = ReactiveCommand.CreateFromTask<(Track track, string filePath)>(SetTrackCoverAsync);
+        Tracks.CollectionChanged += (_, _) => this.RaisePropertyChanged(nameof(TracksCountText));
 
         _ = LoadTracksAsync();
         _ = LoadPlaylistsAsync();

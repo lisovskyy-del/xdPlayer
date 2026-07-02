@@ -22,24 +22,34 @@
 
 </Window.DataTemplates>
 
-<Grid RowDefinitions="*,Auto">
-     <Grid Grid.Row="0" ColumnDefinitions="220,*">
+<Grid RowDefinitions="*,1,Auto">
+
+     <Grid Grid.Row="0" ColumnDefinitions="240,1,*">
 
           <views:SidebarView
                 Grid.Column="0"
                 DataContext="{Binding Sidebar}"/>
 
-<Grid Grid.Column="1">
+          <Border Grid.Column="1"
+                  Width="1"
+                  Background="{StaticResource DividerBrush}"/>
 
-    <ContentControl Content="{Binding CurrentPage}"/>
+          <Grid Grid.Column="2">
+
+              <ContentControl Content="{Binding CurrentPage}"/>
+
+          </Grid>
+
+     </Grid>
+
+     <Border Grid.Row="1"
+             Height="1"
+             Background="{StaticResource DividerBrush}"/>
+
+     <views:PlayerView
+         Grid.Row="2"
+         DataContext="{Binding Player}"/>
 
 </Grid>
-
-        </Grid>
-
-        <views:PlayerView
-            Grid.Row="1"
-            DataContext="{Binding Player}"/>
-    </Grid>
 
 </Window>

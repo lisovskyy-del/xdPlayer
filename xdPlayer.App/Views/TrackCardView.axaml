@@ -5,8 +5,8 @@
              x:DataType="entities:Track">
 
 <Border x:Name="Card"
-        Width="170"
-        Padding="10"
+        Width="220"
+        Padding="8"
         Margin="4"
         CornerRadius="12"
         Background="{DynamicResource CardBrush}"
@@ -35,7 +35,7 @@
     <StackPanel Spacing="8">
 
         <!-- Cover -->
-        <Border Height="150"
+        <Border Height="200"
                 CornerRadius="8"
                 Background="#404040"
                 ClipToBounds="True">

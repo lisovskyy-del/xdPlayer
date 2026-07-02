@@ -14,49 +14,72 @@
             <!-- LOGO -->
             <TextBlock Grid.Row="0"
                        Text="xdPlayer"
-                       FontSize="20"
-                       FontWeight="Bold"
+                       FontSize="15"
+                       FontWeight="Normal"
                        Foreground="{StaticResource TextBrush}"
                        Margin="6,0,0,16"/>
 
-            <!-- ALL TRACKS -->
 <!-- ALL TRACKS -->
-<Button Grid.Row="1"
-        Classes="sidebarRow"
-        Classes.selected="{Binding IsLibrarySelected}"
-        Command="{Binding ShowLibraryCommand}"
-        HorizontalAlignment="Stretch"
-        Margin="0,0,0,16">
-    <StackPanel Orientation="Horizontal" Spacing="10">
-        <TextBlock Text="🎵" FontSize="14" VerticalAlignment="Center"/>
-        <TextBlock Text="All Tracks"
-                   VerticalAlignment="Center"
-                   FontWeight="SemiBold"
-                   Foreground="{StaticResource TextBrush}"/>
-    </StackPanel>
-</Button>
+<Border Grid.Row="1"
+        Classes="sidebarRow selected"
+        Cursor="Hand"
+        PointerPressed="OnAllTracksPointerPressed"
+        Margin="0,0,6,16">
+
+    <Grid ColumnDefinitions="*,Auto">
+
+        <StackPanel Grid.Column="0"
+                    Orientation="Horizontal"
+                    Spacing="10"
+                    Margin="10,0,0,0"
+                    VerticalAlignment="Center"
+                    IsHitTestVisible="False">
+            <TextBlock Text="🎵" FontSize="14" VerticalAlignment="Center"/>
+            <TextBlock Text="All Tracks"
+                       VerticalAlignment="Center"
+                       FontWeight="SemiBold"
+                       Foreground="{StaticResource TextBrush}"/>
+        </StackPanel>
+
+        <Button Grid.Column="1"
+                Classes="iconButton"
+                Width="28"
+                Height="28">
+            <Button.Flyout>
+                <MenuFlyout Placement="BottomEdgeAlignedRight">
+                    <MenuItem Header="Add file(s)" Click="OnAddFileClick"/>
+                    <MenuItem Header="Add folder" Click="OnAddFolderClick"/>
+                </MenuFlyout>
+            </Button.Flyout>
+            <TextBlock Text="+" FontSize="14" FontWeight="Bold" Foreground="{StaticResource TextMutedBrush}"/>
+        </Button>
+
+    </Grid>
+
+</Border>
 
             <!-- PLAYLISTS SECTION HEADER -->
-            <Grid Grid.Row="2"
-                  ColumnDefinitions="*,Auto"
-                  Margin="6,4,6,8">
+<Grid Grid.Row="2"
+      ColumnDefinitions="*,Auto"
+      Margin="5,4,6,8">
 
-                <TextBlock Grid.Column="0"
-                           Text="PLAYLISTS"
-                           FontSize="11"
-                           FontWeight="Bold"
-                           Foreground="{StaticResource TextSubtleBrush}"
-                           VerticalAlignment="Center"/>
+    <TextBlock Grid.Column="0"
+               Text="PLAYLISTS"
+               FontSize="11"
+               FontWeight="Bold"
+               Foreground="{StaticResource TextSubtleBrush}"
+               VerticalAlignment="Center"/>
 
-<!-- add button -->
-<Button Grid.Column="1"
-        Classes="iconButton"
-        Command="{Binding ToggleAddPlaylistCommand}"
-        ToolTip.Tip="New playlist">
-    <TextBlock Text="＋" FontSize="14" Foreground="{StaticResource TextMutedBrush}"/>
-</Button>
+    <Button Grid.Column="1"
+            Classes="iconButton"
+            Width="28"
+            Height="28"
+            Command="{Binding ToggleAddPlaylistCommand}"
+            ToolTip.Tip="New playlist">
+        <TextBlock Text="+" FontSize="14" FontWeight="Bold" Foreground="{StaticResource TextMutedBrush}"/>
+    </Button>
 
-            </Grid>
+</Grid>
 
             <!-- PLAYLISTS LIST -->
             <Grid Grid.Row="3"

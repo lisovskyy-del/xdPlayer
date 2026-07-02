@@ -4,7 +4,7 @@
              x:Class="xdPlayer.App.Views.PlaylistView"
              x:DataType="vm:PlaylistViewModel">
 
-<Grid RowDefinitions="Auto,*">
+<Grid RowDefinitions="Auto,Auto,*">
 
     <!-- Header -->
     <Grid Grid.Row="0"
@@ -58,8 +58,13 @@
 
     </Grid>
 
+    <!-- Divider -->
+    <Border Grid.Row="1"
+            Height="1"
+            Background="{StaticResource DividerBrush}"/>
+
     <!-- Tracks -->
-    <Grid Grid.Row="1"
+    <Grid Grid.Row="2"
           RowDefinitions="Auto,*"
           Background="{StaticResource BackgroundBrush}">
 
