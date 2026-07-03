@@ -5,24 +5,141 @@
              x:DataType="vm:PlayerViewModel">
 
     <Border Background="#151515" Height="80" Padding="16,0">
-        <Grid ColumnDefinitions="*,Auto,*"
+        <Grid ColumnDefinitions="280,*,280"
               VerticalAlignment="Center">
-            <TextBlock Grid.Column="0"
-                Text="{Binding CurrentTrackTitle}"
-                Foreground="White"
-                VerticalAlignment="Center"
-                TextTrimming="CharacterEllipsis"/>
 
+            <!-- Left: cover + title + artist + like -->
+            <StackPanel Grid.Column="0"
+                        Orientation="Horizontal"
+                        Spacing="12"
+                        VerticalAlignment="Center">
+
+                <Border Width="48" Height="48"
+                        CornerRadius="6"
+                        Background="#333"
+                        ClipToBounds="True">
+                    <Image Source="{Binding CurrentTrackCoverPath,
+                                    Converter={StaticResource CoverConverter}}"
+                           Stretch="UniformToFill"/>
+                </Border>
+
+                <StackPanel VerticalAlignment="Center"
+                            Spacing="2"
+                            MaxWidth="150">
+                    <TextBlock Text="{Binding CurrentTrackTitle}"
+                               Foreground="{StaticResource TextBrush}"
+                               FontWeight="SemiBold"
+                               FontSize="13"
+                               TextTrimming="CharacterEllipsis"/>
+                    <TextBlock Text="{Binding CurrentTrackArtist}"
+                               Foreground="{StaticResource TextMutedBrush}"
+                               FontSize="12"
+                               TextTrimming="CharacterEllipsis"/>
+                </StackPanel>
+
+                <Button Classes="iconButton"
+                        Width="28" Height="28"
+                        Command="{Binding ToggleLikeCommand}">
+                    <TextBlock Text="{Binding IsLiked, Converter={StaticResource LikeIconConverter}}"
+                               FontSize="14"/>
+                </Button>
+
+            </StackPanel>
+
+            <!-- Center: controls + progress -->
             <StackPanel Grid.Column="1"
+                        VerticalAlignment="Center">
+
+                <StackPanel Orientation="Horizontal"
+                            Spacing="16"
+                            HorizontalAlignment="Center">
+
+                    <Button Classes="iconButton" Width="32" Height="32"
+                            Command="{Binding PreviousCommand}">
+                        <TextBlock Text="◀◀" FontSize="12" Foreground="{StaticResource TextBrush}"/>
+                    </Button>
+
+                    <Button Classes="iconButton" Width="40" Height="40"
+                            Command="{Binding PlayCommand}"
+                            IsVisible="{Binding !IsPlaying}">
+                        <Grid>
+                            <Ellipse Width="40" Height="40" Fill="White"/>
+                            <Polygon Points="0,0 14,7 0,14"
+                                     Fill="#1E1E1E"
+                                     HorizontalAlignment="Center"
+                                     VerticalAlignment="Center"
+                                     Margin="2,0,0,0"/>
+                        </Grid>
+                    </Button>
+
+                    <Button Classes="iconButton" Width="40" Height="40"
+                            Command="{Binding PauseCommand}"
+                            IsVisible="{Binding IsPlaying}">
+                        <Grid>
+                            <Ellipse Width="40" Height="40" Fill="White"/>
+                            <StackPanel Orientation="Horizontal" Spacing="4"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center">
+                                <Rectangle Width="4" Height="14" Fill="#1E1E1E"/>
+                                <Rectangle Width="4" Height="14" Fill="#1E1E1E"/>
+                            </StackPanel>
+                        </Grid>
+                    </Button>
+
+                    <Button Classes="iconButton" Width="32" Height="32"
+                            Command="{Binding NextCommand}">
+                        <TextBlock Text="▶▶" FontSize="12" Foreground="{StaticResource TextBrush}"/>
+                    </Button>
+
+                </StackPanel>
+
+                <Grid ColumnDefinitions="Auto,*,Auto" Width="400">
+
+                    <TextBlock Grid.Column="0"
+                               Text="{Binding CurrentPosition, Converter={StaticResource TimeSpanConverter}}"
+                               FontSize="11"
+                               Opacity="0.6"
+                               Foreground="{StaticResource TextBrush}"
+                               VerticalAlignment="Center"/>
+
+                    <Slider Grid.Column="1"
+                            Name="ProgressSlider"
+                            Margin="8,0"
+                            Minimum="0"
+                            Maximum="{Binding TotalDuration.TotalSeconds}"
+                            Value="{Binding CurrentPosition.TotalSeconds, Mode=OneWay}"/>
+
+                    <TextBlock Grid.Column="2"
+                               Text="{Binding TotalDuration, Converter={StaticResource TimeSpanConverter}}"
+                               FontSize="11"
+                               Opacity="0.6"
+                               Foreground="{StaticResource TextBrush}"
+                               VerticalAlignment="Center"/>
+
+                </Grid>
+
+            </StackPanel>
+
+            <!-- Right: volume -->
+            <StackPanel Grid.Column="2"
                         Orientation="Horizontal"
                         Spacing="8"
+                        HorizontalAlignment="Right"
                         VerticalAlignment="Center">
-                <Button Content="◀◀" Command="{Binding PreviousCommand}"/>
-                <Button Content="▶" Command="{Binding PlayCommand}"/>
-                <Button Content="❚❚" Command="{Binding PauseCommand}"/>
-                <Button Content="⏹" Command="{Binding StopCommand}"/>
-                <Button Content="▶▶" Command="{Binding NextCommand}"/>
+
+                <TextBlock Text="🔊"
+                           FontSize="18"
+                           Width="20"
+                           Opacity="0.8"
+                           VerticalAlignment="Center"/>
+
+                <Slider Width="100"
+                        Minimum="0"
+                        Maximum="100"
+                        Value="{Binding Volume}"/>
+
             </StackPanel>
+
         </Grid>
     </Border>
 

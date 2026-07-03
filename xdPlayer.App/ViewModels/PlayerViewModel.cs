@@ -1,6 +1,7 @@
-﻿using System;
+﻿using ReactiveUI;
+using System;
 using System.Reactive;
-using ReactiveUI;
+using System.Threading.Tasks;
 using xdPlayer.Application.Interfaces;
 using xdPlayer.Application.Models;
 using xdPlayer.Domain.Entities;
@@ -11,7 +12,59 @@ public class PlayerViewModel : ReactiveObject, IDisposable
 {
     private readonly IPlaybackManager _playbackManager;
     private readonly ListeningSessionService _sessionService;
+    private readonly ILibraryService _libraryService;
     private readonly System.Timers.Timer? _progressTimer;
+
+    private int _currentTrackId;
+
+    private bool _hasTrack;
+    public bool HasTrack
+    {
+        get => _hasTrack;
+        set => this.RaiseAndSetIfChanged(ref _hasTrack, value);
+    }
+
+    private bool _isPlaying;
+    public bool IsPlaying
+    {
+        get => _isPlaying;
+        set => this.RaiseAndSetIfChanged(ref _isPlaying, value);
+    }
+
+    private bool _isSeeking;
+    public bool IsSeeking
+    {
+        get => _isSeeking;
+        set => this.RaiseAndSetIfChanged(ref _isSeeking, value);
+    }
+
+    private string? _currentTrackTitle;
+    public string? CurrentTrackTitle
+    {
+        get => _currentTrackTitle;
+        set => this.RaiseAndSetIfChanged(ref _currentTrackTitle, value);
+    }
+
+    private string? _currentTrackArtist;
+    public string? CurrentTrackArtist
+    {
+        get => _currentTrackArtist;
+        set => this.RaiseAndSetIfChanged(ref _currentTrackArtist, value);
+    }
+
+    private string? _currentTrackCoverPath;
+    public string? CurrentTrackCoverPath
+    {
+        get => _currentTrackCoverPath;
+        set => this.RaiseAndSetIfChanged(ref _currentTrackCoverPath, value);
+    }
+
+    private bool _isLiked;
+    public bool IsLiked
+    {
+        get => _isLiked;
+        set => this.RaiseAndSetIfChanged(ref _isLiked, value);
+    }
 
     private TimeSpan _currentPosition;
     public TimeSpan CurrentPosition
@@ -39,52 +92,20 @@ public class PlayerViewModel : ReactiveObject, IDisposable
         }
     }
 
-    private string? _currentTrackArtist;
-    public string? CurrentTrackArtist
-    {
-        get => _currentTrackArtist;
-        set => this.RaiseAndSetIfChanged(ref _currentTrackArtist, value);
-    }
-
-    private string? _currentTrackCoverPath;
-    public string? CurrentTrackCoverPath
-    {
-        get => _currentTrackCoverPath;
-        set => this.RaiseAndSetIfChanged(ref _currentTrackCoverPath, value);
-    }
-
-    private bool _isLiked;
-    public bool IsLiked
-    {
-        get => _isLiked;
-        set => this.RaiseAndSetIfChanged(ref _isLiked, value);
-    }
-
-    private bool _isPlaying;
-    public bool IsPlaying
-    {
-        get => _isPlaying;
-        set => this.RaiseAndSetIfChanged(ref _isPlaying, value);
-    }
-
-    private string? _currentTrackTitle;
-    public string? CurrentTrackTitle
-    {
-        get => _currentTrackTitle;
-        set => this.RaiseAndSetIfChanged(ref _currentTrackTitle, value);
-    }
-
     public ReactiveCommand<Unit, Unit> PlayCommand { get; private set; }
     public ReactiveCommand<Unit, Unit> PauseCommand { get; private set; }
     public ReactiveCommand<Unit, Unit> StopCommand { get; private set; }
     public ReactiveCommand<Unit, Unit> NextCommand { get; private set; }
     public ReactiveCommand<Unit, Unit> PreviousCommand { get; private set; }
+    public ReactiveCommand<Unit, Unit> ToggleLikeCommand { get; private set; }
 
     // for Avalonia Previewer
     public PlayerViewModel()
     {
         _playbackManager = null!;
+        _libraryService = null!;
         CurrentTrackTitle = "Design Track";
+        CurrentTrackArtist = "Design Artist";
         IsPlaying = false;
 
         PlayCommand = ReactiveCommand.Create(() => { });
@@ -92,12 +113,14 @@ public class PlayerViewModel : ReactiveObject, IDisposable
         StopCommand = ReactiveCommand.Create(() => { });
         NextCommand = ReactiveCommand.Create(() => { });
         PreviousCommand = ReactiveCommand.Create(() => { });
+        ToggleLikeCommand = ReactiveCommand.Create(() => { });
     }
 
-    public PlayerViewModel(IPlaybackManager playbackManager, ListeningSessionService sessionService)
+    public PlayerViewModel(IPlaybackManager playbackManager, ListeningSessionService sessionService, ILibraryService libraryService)
     {
         _playbackManager = playbackManager;
         _sessionService = sessionService;
+        _libraryService = libraryService;
 
         PlayCommand = ReactiveCommand.CreateFromTask(() => _playbackManager.PlayOrResumeAsync());
         PauseCommand = ReactiveCommand.Create(() => _playbackManager.Pause());
@@ -108,6 +131,7 @@ public class PlayerViewModel : ReactiveObject, IDisposable
         });
         NextCommand = ReactiveCommand.CreateFromTask(() => _playbackManager.NextAsync());
         PreviousCommand = ReactiveCommand.CreateFromTask(() => _playbackManager.PreviousAsync());
+        ToggleLikeCommand = ReactiveCommand.CreateFromTask(ToggleLikeAsync);
 
         _playbackManager.Started += OnStarted;
         _playbackManager.Paused += OnPaused;
@@ -122,6 +146,8 @@ public class PlayerViewModel : ReactiveObject, IDisposable
         _progressTimer = new System.Timers.Timer(500);
         _progressTimer.Elapsed += (_, _) =>
         {
+            if (IsSeeking) return;
+
             Avalonia.Threading.Dispatcher.UIThread.Post(() =>
             {
                 CurrentPosition = _playbackManager.CurrentPosition;
@@ -141,6 +167,8 @@ public class PlayerViewModel : ReactiveObject, IDisposable
         Avalonia.Threading.Dispatcher.UIThread.Post(async () =>
         {
             System.Diagnostics.Debug.WriteLine($"[Track] Changed to: {track.Title}, Id={track.Id}");
+            _currentTrackId = track.Id;
+            HasTrack = true;
             CurrentTrackTitle = track.Title;
             CurrentTrackArtist = track.Artist;
             CurrentTrackCoverPath = track.CoverImagePath;
@@ -154,6 +182,14 @@ public class PlayerViewModel : ReactiveObject, IDisposable
                 System.Diagnostics.Debug.WriteLine($"[Track] Exception: {ex.Message}");
             }
         });
+
+    private async Task ToggleLikeAsync()
+    {
+        if (_currentTrackId == 0) return;
+
+        var updated = await _libraryService.ToggleLikeAsync(_currentTrackId);
+        IsLiked = updated.IsLiked;
+    }
 
     public void Dispose()
     {

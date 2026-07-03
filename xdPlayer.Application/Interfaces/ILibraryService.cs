@@ -19,4 +19,6 @@ public interface ILibraryService
     Task<IEnumerable<Track>> SortAsync(IEnumerable<Track> tracks, SortField field, bool ascending);
 
     Task DeleteTrackAsync(int trackId);
+
+    Task<Track> ToggleLikeAsync(int trackId);
 }

@@ -48,7 +48,8 @@
 
      <views:PlayerView
          Grid.Row="2"
-         DataContext="{Binding Player}"/>
+         DataContext="{Binding Player}"
+         IsVisible="{Binding HasTrack}"/>
 
 </Grid>
 

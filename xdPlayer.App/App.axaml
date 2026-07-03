@@ -14,6 +14,8 @@
     <ResourceInclude Source="/Styles/Colors.axaml"/>
 
 </ResourceDictionary.MergedDictionaries>
+        <converters:LikeIconConverter x:Key="LikeIconConverter"/>
+        <converters:TimeSpanConverter x:Key="TimeSpanConverter"/>
 
         <converters:DurationConverter x:Key="DurationConverter"/>
         <converters:CoverConverter x:Key="CoverConverter"/>

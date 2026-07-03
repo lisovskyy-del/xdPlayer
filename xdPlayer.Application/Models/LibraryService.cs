@@ -147,4 +147,20 @@ public class LibraryService : ILibraryService
 
     private static readonly string[] AudioExtensions =
         [".mp3", ".flac", ".wav", ".ogg", ".m4a", ".aac"];
+
+    public async Task<Track> ToggleLikeAsync(int trackId)
+    {
+        using var scope = _scopeFactory.CreateScope();
+        var uow = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+
+        var track = await uow.Tracks.GetByIdAsync(trackId);
+        if (track == null) throw new InvalidOperationException("Track not found");
+
+        track.IsLiked = !track.IsLiked;
+
+        await uow.Tracks.UpdateAsync(track);
+        await uow.SaveChangesAsync();
+
+        return track;
+    }
 }
