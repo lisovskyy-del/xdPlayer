@@ -12,7 +12,6 @@
 <ResourceDictionary.MergedDictionaries>
 
     <ResourceInclude Source="/Styles/Colors.axaml"/>
-    <StyleInclude Source="/Styles/Controls.axaml"/>
 
 </ResourceDictionary.MergedDictionaries>
 

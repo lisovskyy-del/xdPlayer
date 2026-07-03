@@ -1,13 +1,15 @@
-﻿using Avalonia.Controls;
+﻿using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.ComponentModel;
+using System.Reactive.Linq;
 using xdPlayer.App.ViewModels;
 using xdPlayer.Domain.Entities;
-using System.Reactive.Linq;
 
 namespace xdPlayer.App.Views;
 
@@ -100,5 +102,35 @@ public partial class TrackCardView : UserControl
 
         var libraryVm = App.Services.GetRequiredService<LibraryViewModel>();
         await libraryVm.SetTrackCoverCommand.Execute((track, files[0].Path.LocalPath));
+    }
+
+    private void OnCoverPlayPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (!e.GetCurrentPoint(sender as Visual).Properties.IsLeftButtonPressed)
+            return;
+
+        e.Handled = true;
+
+        if (DataContext is not Track track) return;
+
+        var libraryVm = App.Services.GetRequiredService<LibraryViewModel>();
+        libraryVm.PlayTrackCommand.Execute(track).Subscribe();
+    }
+
+    private void OnCoverPlayPointerEntered(object? sender, PointerEventArgs e)
+    {
+        CoverPlayOverlay.Background = new SolidColorBrush(Color.Parse("#99000000"));
+        PlayButtonCircle.Opacity = 1;
+    }
+
+    private void OnCoverPlayPointerExited(object? sender, PointerEventArgs e)
+    {
+        CoverPlayOverlay.Background = new SolidColorBrush(Color.Parse("#00000000"));
+        PlayButtonCircle.Opacity = 0;
+    }
+
+    private void OnCoverPlayDoubleTapped(object? sender, TappedEventArgs e)
+    {
+        e.Handled = true;
     }
 }

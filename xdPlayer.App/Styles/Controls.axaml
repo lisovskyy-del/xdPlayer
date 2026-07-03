@@ -11,9 +11,17 @@
         </Setter>
     </Style>
 
-    <Style Selector="views|TrackCardView Border:pointerover">
-        <Setter Property="Background" Value="#343434"/>
+    <Style Selector="Border#CoverPlayBorder:pointerover Border#CoverPlayOverlay">
+        <Setter Property="Background" Value="#66000000"/>
     </Style>
+
+    <Style Selector="Border#CoverPlayBorder:pointerover Border#PlayButtonCircle">
+        <Setter Property="Opacity" Value="1"/>
+    </Style>
+
+<Style Selector="views|TrackCardView Border.hoverable:pointerover">
+    <Setter Property="Background" Value="#343434"/>
+</Style>
 
 <Style Selector="Button.iconButton.selected /template/ Border">
     <Setter Property="Background" Value="{StaticResource SidebarSelectedBrush}"/>

@@ -1,10 +1,15 @@
-﻿using Avalonia.Controls;
+﻿using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Controls.Shapes;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.LogicalTree;
+using Avalonia.Media;
+using Avalonia.VisualTree;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.ComponentModel;
+using System.Linq;
 using System.Reactive.Linq;
 using xdPlayer.App.ViewModels;
 using xdPlayer.Domain.Entities;
@@ -24,6 +29,22 @@ public partial class LibraryView : UserControl
 
         if (Design.IsDesignMode)
             DataContext = new LibraryViewModel();
+
+        AddHandler(PointerPressedEvent, OnPreviewPointerPressed, RoutingStrategies.Tunnel);
+    }
+
+    private void OnPreviewPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (e.Source is Control source && source.FindAncestorOfType<TextBox>() == null && source is not TextBox)
+        {
+            Focus();
+        }
+    }
+
+    private void OnRootPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (sender is Control control)
+            control.Focus();
     }
 
     private void OnGridPointerPressed(object? sender, PointerPressedEventArgs e)
@@ -103,6 +124,38 @@ public partial class LibraryView : UserControl
         }
     }
 
+    private async void OnListChangeCoverClick(object? sender, RoutedEventArgs e)
+    {
+        if (_contextMenuTrack == null) return;
+
+        var track = _contextMenuTrack;
+
+        var topLevel = Avalonia.Application.Current?.ApplicationLifetime is
+            Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktop
+            ? desktop.MainWindow
+            : null;
+
+        if (topLevel == null) return;
+
+        var files = await topLevel.StorageProvider.OpenFilePickerAsync(new Avalonia.Platform.Storage.FilePickerOpenOptions
+        {
+            Title = "Choose cover image",
+            AllowMultiple = false,
+            FileTypeFilter =
+            [
+                new Avalonia.Platform.Storage.FilePickerFileType("Images")
+            {
+                Patterns = ["*.png", "*.jpg", "*.jpeg", "*.webp"]
+            }
+            ]
+        });
+
+        if (files.Count == 0) return;
+
+        if (DataContext is LibraryViewModel vm)
+            await vm.SetTrackCoverCommand.Execute((track, files[0].Path.LocalPath));
+    }
+
     private void OnListDeleteClick(object? sender, RoutedEventArgs e)
     {
         if (sender is not MenuItem menuItem || menuItem.DataContext is not Track track)
@@ -110,5 +163,36 @@ public partial class LibraryView : UserControl
 
         if (DataContext is LibraryViewModel vm)
             vm.DeleteTrackCommand.Execute(track).Subscribe();
+    }
+
+    private void OnListCoverPlayPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (!e.GetCurrentPoint(sender as Visual).Properties.IsLeftButtonPressed)
+            return;
+
+        e.Handled = true;
+
+        if (sender is not Border border || border.DataContext is not Track track) return;
+
+        if (DataContext is LibraryViewModel vm)
+            vm.PlayTrackCommand.Execute(track).Subscribe();
+    }
+
+    private void OnListCoverPlayPointerEntered(object? sender, PointerEventArgs e)
+    {
+        if (sender is not Border border) return;
+        if (border.GetVisualDescendants().OfType<Border>().FirstOrDefault(b => b.Name == "ListCoverPlayOverlay") is Border overlay)
+            overlay.Background = new SolidColorBrush(Color.Parse("#99000000"));
+        if (border.GetVisualDescendants().OfType<Polygon>().FirstOrDefault(p => p.Name == "ListPlayIcon") is Polygon icon)
+            icon.Opacity = 1;
+    }
+
+    private void OnListCoverPlayPointerExited(object? sender, PointerEventArgs e)
+    {
+        if (sender is not Border border) return;
+        if (border.GetVisualDescendants().OfType<Border>().FirstOrDefault(b => b.Name == "ListCoverPlayOverlay") is Border overlay)
+            overlay.Background = new SolidColorBrush(Color.Parse("#00000000"));
+        if (border.GetVisualDescendants().OfType<Polygon>().FirstOrDefault(p => p.Name == "ListPlayIcon") is Polygon icon)
+            icon.Opacity = 0;
     }
 }

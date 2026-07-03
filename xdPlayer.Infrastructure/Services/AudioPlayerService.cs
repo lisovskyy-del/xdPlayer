@@ -11,6 +11,7 @@ public class AudioPlayerService : IAudioPlayerService
 {
     private WaveOutEvent? _outputDevice; // device of the user
     private AudioFileReader? _audioFile; // opens and plays the audio file
+    private readonly SemaphoreSlim _playLock = new(1, 1);
 
     public bool IsPaused { get; private set; }
 
@@ -31,21 +32,29 @@ public class AudioPlayerService : IAudioPlayerService
 
     public async Task PlayAsync(string path)
     {
-        Stop();
-        IsPaused = false;
-
-        await Task.Run(() =>
+        await _playLock.WaitAsync();
+        try
         {
-            _audioFile = new AudioFileReader(path);
-            _outputDevice = new WaveOutEvent();
+            Stop();
+            IsPaused = false;
 
-            _outputDevice.Init(_audioFile);
-            _outputDevice.PlaybackStopped += OnPlaybackStopped;
+            await Task.Run(() =>
+            {
+                _audioFile = new AudioFileReader(path);
+                _outputDevice = new WaveOutEvent();
 
-            _outputDevice.Play();
-        });
+                _outputDevice.Init(_audioFile);
+                _outputDevice.PlaybackStopped += OnPlaybackStopped;
 
-        PlaybackStarted?.Invoke(this, EventArgs.Empty);
+                _outputDevice.Play();
+            });
+
+            PlaybackStarted?.Invoke(this, EventArgs.Empty);
+        }
+        finally
+        {
+            _playLock.Release();
+        }
     }
 
     public void Pause()

@@ -22,11 +22,18 @@ public partial class MainWindow : Window
         InitializeComponent();
         DataContext = vm;
 
-        PointerPressed += (_, e) =>
-        {
-            var hit = e.Source as Control;
-            while (hit != null && hit is not ListBoxItem)
-                hit = hit.Parent as Control;
-        };
+        Focusable = true;
+
+        AddHandler(PointerPressedEvent, OnGlobalPointerPressed, RoutingStrategies.Tunnel);
+    }
+
+    private void OnGlobalPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (e.Source is not Control source) return;
+
+        if (source is TextBox || source.FindAncestorOfType<TextBox>() != null)
+            return;
+
+        Focus();
     }
 }

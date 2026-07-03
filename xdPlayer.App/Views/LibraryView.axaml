@@ -131,22 +131,57 @@
                             <Grid.ContextMenu>
                                 <ContextMenu Opening="OnListContextMenuOpening">
                                     <MenuItem Header="Add to playlist"/>
+                                    <MenuItem Header="Change cover..." Click="OnListChangeCoverClick"/>
                                     <Separator/>
                                     <MenuItem Header="Delete" Click="OnListDeleteClick"/>
                                 </ContextMenu>
                             </Grid.ContextMenu>
 
-                            <Border Grid.Column="0"
-                                    Width="40" Height="40"
-                                    CornerRadius="4"
-                                    Background="#444"
-                                    ClipToBounds="True">
+<Border Grid.Column="0"
+        x:Name="ListCoverPlayBorder"
+        Width="40" Height="40"
+        CornerRadius="4"
+        Background="#444"
+        ClipToBounds="True"
+        Cursor="Hand"
+        PointerPressed="OnListCoverPlayPointerPressed"
+        PointerEntered="OnListCoverPlayPointerEntered"
+        PointerExited="OnListCoverPlayPointerExited">
 
-                                <Image Source="{Binding CoverImagePath,
-                                                Converter={StaticResource CoverConverter}}"
-                                       Stretch="UniformToFill"/>
+    <Grid>
 
-                            </Border>
+        <Image Source="{Binding CoverImagePath,
+                        Converter={StaticResource CoverConverter}}"
+               Stretch="UniformToFill"/>
+
+        <Border x:Name="ListCoverPlayOverlay"
+                Background="#00000000"
+                IsHitTestVisible="False">
+            <Border.Transitions>
+                <Transitions>
+                    <BrushTransition Property="Background" Duration="0:0:0.12"/>
+                </Transitions>
+            </Border.Transitions>
+        </Border>
+
+        <Polygon x:Name="ListPlayIcon"
+                 Points="0,0 10,5 0,10"
+                 Fill="White"
+                 HorizontalAlignment="Center"
+                 VerticalAlignment="Center"
+                 Margin="1,0,0,0"
+                 Opacity="0"
+                 IsHitTestVisible="False">
+            <Polygon.Transitions>
+                <Transitions>
+                    <DoubleTransition Property="Opacity" Duration="0:0:0.12"/>
+                </Transitions>
+            </Polygon.Transitions>
+        </Polygon>
+
+    </Grid>
+
+</Border>
 
                             <TextBlock Grid.Column="1"
                                        VerticalAlignment="Center"

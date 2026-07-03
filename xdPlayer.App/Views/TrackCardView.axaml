@@ -5,7 +5,7 @@
              x:DataType="entities:Track">
 
 <Border x:Name="Card"
-        Width="220"
+        Width="170"
         Padding="8"
         Margin="4"
         CornerRadius="12"
@@ -34,17 +34,67 @@
 
     <StackPanel Spacing="8">
 
-        <!-- Cover -->
-        <Border Height="200"
-                CornerRadius="8"
-                Background="#404040"
-                ClipToBounds="True">
+<!-- Cover -->
+<Border Height="150"
+        CornerRadius="8"
+        Background="#404040"
+        ClipToBounds="True">
 
-            <Image Stretch="UniformToFill"
-                   Source="{Binding CoverImagePath,
-                            Converter={StaticResource CoverConverter}}"/>
+    <Grid>
+
+<Border x:Name="CoverPlayBorder"
+        Background="Transparent"
+        Cursor="Hand"
+        DoubleTapped="OnCoverPlayDoubleTapped"
+        PointerPressed="OnCoverPlayPointerPressed"
+        PointerEntered="OnCoverPlayPointerEntered"
+        PointerExited="OnCoverPlayPointerExited">
+
+    <Grid>
+
+        <Image Stretch="UniformToFill"
+               Source="{Binding CoverImagePath,
+                        Converter={StaticResource CoverConverter}}"/>
+
+<Border x:Name="CoverPlayOverlay"
+        Background="#00000000"
+        IsHitTestVisible="False">
+    <Border.Transitions>
+        <Transitions>
+            <BrushTransition Property="Background" Duration="0:0:0.12"/>
+        </Transitions>
+    </Border.Transitions>
+</Border>
+
+        <Border x:Name="PlayButtonCircle"
+                Width="48"
+                Height="48"
+                CornerRadius="24"
+                Background="White"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Opacity="0"
+                IsHitTestVisible="False">
+            <Border.Transitions>
+                <Transitions>
+                    <DoubleTransition Property="Opacity" Duration="0:0:0.12"/>
+                </Transitions>
+            </Border.Transitions>
+
+            <Polygon Points="0,0 16,8 0,16"
+                     Fill="#1E1E1E"
+                     HorizontalAlignment="Center"
+                     VerticalAlignment="Center"
+                     Margin="3,0,0,0"/>
 
         </Border>
+
+    </Grid>
+
+</Border>
+    </Grid>
+
+</Border>
 
         <!-- Title -->
         <TextBlock Text="{Binding Title}"
