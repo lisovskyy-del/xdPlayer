@@ -48,10 +48,12 @@
 
             <!-- Center: controls + progress -->
             <StackPanel Grid.Column="1"
-                        VerticalAlignment="Center">
+                        VerticalAlignment="Center"
+                        Spacing="-10">
 
                 <StackPanel Orientation="Horizontal"
                             Spacing="16"
+                            Margin="0,15,0,0"
                             HorizontalAlignment="Center">
 
                     <Button Classes="iconButton" Width="32" Height="32"
@@ -93,7 +95,8 @@
 
                 </StackPanel>
 
-                <Grid ColumnDefinitions="Auto,*,Auto" Width="400">
+                <Grid ColumnDefinitions="Auto,*,Auto" Width="400"
+                      Margin="0,-4,0,0">
 
                     <TextBlock Grid.Column="0"
                                Text="{Binding CurrentPosition, Converter={StaticResource TimeSpanConverter}}"
