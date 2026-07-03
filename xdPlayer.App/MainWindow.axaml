@@ -7,7 +7,7 @@
         Title="xdPlayer"
         Width="900" Height="500"
         MinWidth="700"
-        MinHeight="250"
+        MinHeight="400"
         Background="#1E1E1E">
 
 <Window.DataTemplates>

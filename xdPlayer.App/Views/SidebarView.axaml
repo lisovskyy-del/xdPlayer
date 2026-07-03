@@ -34,7 +34,7 @@
                     Margin="10,0,0,0"
                     VerticalAlignment="Center"
                     IsHitTestVisible="False">
-            <TextBlock Text="🎵" FontSize="14" VerticalAlignment="Center"/>
+            <TextBlock Text="♫" FontSize="14" VerticalAlignment="Center"/>
             <TextBlock Text="All Tracks"
                        VerticalAlignment="Center"
                        FontWeight="SemiBold"

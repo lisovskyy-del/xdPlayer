@@ -53,7 +53,7 @@
 
                 <StackPanel Orientation="Horizontal"
                             Spacing="16"
-                            Margin="0,15,0,0"
+                            Margin="0,8,0,0"
                             HorizontalAlignment="Center">
 
                     <Button Classes="iconButton" Width="32" Height="32"
@@ -61,7 +61,7 @@
                         <TextBlock Text="◀◀" FontSize="12" Foreground="{StaticResource TextBrush}"/>
                     </Button>
 
-                    <Button Classes="iconButton" Width="40" Height="40"
+                    <Button Width="40" Height="40"
                             Command="{Binding PlayCommand}"
                             IsVisible="{Binding !IsPlaying}">
                         <Grid>
@@ -96,7 +96,7 @@
                 </StackPanel>
 
                 <Grid ColumnDefinitions="Auto,*,Auto" Width="400"
-                      Margin="0,-4,0,0">
+                      Margin="0,2,0,0">
 
                     <TextBlock Grid.Column="0"
                                Text="{Binding CurrentPosition, Converter={StaticResource TimeSpanConverter}}"
