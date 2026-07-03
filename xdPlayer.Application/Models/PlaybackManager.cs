@@ -17,6 +17,15 @@ public class PlaybackManager : IPlaybackManager
     public event EventHandler? Finished;
     public event EventHandler<Track>? TrackChanged;
 
+    public float Volume
+    {
+        get => _player.Volume;
+        set => _player.Volume = value;
+    }
+
+    public TimeSpan CurrentPosition => _player.CurrentPosition;
+    public TimeSpan TotalDuration => _player.TotalDuration;
+
     public PlaybackManager(IAudioPlayerService player, PlaybackQueue queue)
     {
         _player = player;
@@ -83,4 +92,6 @@ public class PlaybackManager : IPlaybackManager
             TrackChanged?.Invoke(this, track);
         }
     }
+
+    public void Seek(TimeSpan position) => _player.Seek(position);
 }

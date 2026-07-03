@@ -11,6 +11,33 @@ public class PlayerViewModel : ReactiveObject, IDisposable
 {
     private readonly IPlaybackManager _playbackManager;
     private readonly ListeningSessionService _sessionService;
+    private readonly System.Timers.Timer? _progressTimer;
+
+    private TimeSpan _currentPosition;
+    public TimeSpan CurrentPosition
+    {
+        get => _currentPosition;
+        set => this.RaiseAndSetIfChanged(ref _currentPosition, value);
+    }
+
+    private TimeSpan _totalDuration;
+    public TimeSpan TotalDuration
+    {
+        get => _totalDuration;
+        set => this.RaiseAndSetIfChanged(ref _totalDuration, value);
+    }
+
+    private double _volume = 100;
+    public double Volume
+    {
+        get => _volume;
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _volume, value);
+            if (_playbackManager != null)
+                _playbackManager.Volume = (float)(value / 100.0);
+        }
+    }
 
     private string? _currentTrackArtist;
     public string? CurrentTrackArtist
@@ -90,8 +117,18 @@ public class PlayerViewModel : ReactiveObject, IDisposable
             await _sessionService.OnTrackEndedAsync(completed: true);
         };
 
-
         _playbackManager.TrackChanged += OnTrackChanged;
+
+        _progressTimer = new System.Timers.Timer(500);
+        _progressTimer.Elapsed += (_, _) =>
+        {
+            Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+            {
+                CurrentPosition = _playbackManager.CurrentPosition;
+                TotalDuration = _playbackManager.TotalDuration;
+            });
+        };
+        _progressTimer.Start();
     }
 
     private void OnStarted(object? sender, EventArgs e) =>
@@ -125,5 +162,7 @@ public class PlayerViewModel : ReactiveObject, IDisposable
         _playbackManager.Started -= OnStarted;
         _playbackManager.Paused -= OnPaused;
         _playbackManager.TrackChanged -= OnTrackChanged;
+        _progressTimer?.Stop();
+        _progressTimer?.Dispose();
     }
 }

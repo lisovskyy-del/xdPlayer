@@ -11,6 +11,10 @@ public interface IPlaybackManager
     event EventHandler? Finished;
     event EventHandler<Track> TrackChanged;
 
+    float Volume { get; set; }
+    TimeSpan CurrentPosition { get; }
+    TimeSpan TotalDuration { get; }
+
     Task PlayAsync();
     void Pause();
     void Resume();
@@ -18,4 +22,5 @@ public interface IPlaybackManager
     void Stop();
     Task NextAsync();
     Task PreviousAsync();
+    void Seek(TimeSpan position);
 }
