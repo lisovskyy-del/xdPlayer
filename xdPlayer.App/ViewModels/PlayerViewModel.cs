@@ -12,6 +12,27 @@ public class PlayerViewModel : ReactiveObject, IDisposable
     private readonly IPlaybackManager _playbackManager;
     private readonly ListeningSessionService _sessionService;
 
+    private string? _currentTrackArtist;
+    public string? CurrentTrackArtist
+    {
+        get => _currentTrackArtist;
+        set => this.RaiseAndSetIfChanged(ref _currentTrackArtist, value);
+    }
+
+    private string? _currentTrackCoverPath;
+    public string? CurrentTrackCoverPath
+    {
+        get => _currentTrackCoverPath;
+        set => this.RaiseAndSetIfChanged(ref _currentTrackCoverPath, value);
+    }
+
+    private bool _isLiked;
+    public bool IsLiked
+    {
+        get => _isLiked;
+        set => this.RaiseAndSetIfChanged(ref _isLiked, value);
+    }
+
     private bool _isPlaying;
     public bool IsPlaying
     {
@@ -84,6 +105,9 @@ public class PlayerViewModel : ReactiveObject, IDisposable
         {
             System.Diagnostics.Debug.WriteLine($"[Track] Changed to: {track.Title}, Id={track.Id}");
             CurrentTrackTitle = track.Title;
+            CurrentTrackArtist = track.Artist;
+            CurrentTrackCoverPath = track.CoverImagePath;
+            IsLiked = track.IsLiked;
             try
             {
                 await _sessionService.OnTrackStartedAsync(track.Id);
