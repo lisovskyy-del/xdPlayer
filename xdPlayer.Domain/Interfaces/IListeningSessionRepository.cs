@@ -9,6 +9,7 @@ public interface IListeningSessionRepository
 {
     Task<ListeningSession?> GetByIdAsync(long id);
     Task<ListeningSession?> GetActiveSessionAsync(int trackId);
+    Task<IEnumerable<ListeningSession>> GetSessionsSinceAsync(DateTime from);
     Task AddAsync(ListeningSession session);
     Task UpdateAsync(ListeningSession session);
     Task SaveAsync();

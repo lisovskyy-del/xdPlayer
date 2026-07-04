@@ -181,12 +181,38 @@
         Margin="6,8,6,8"/>
 
 <!-- user footer -->
-<Border Grid.Row="5" Classes="userFooter" Margin="0,12,0,0" Padding="8">
-    <StackPanel Orientation="Horizontal" Spacing="10">
-        <Border Width="28" Height="28" CornerRadius="14"
-                Background="{StaticResource SurfaceBrush}"/>
-        <TextBlock Text="User" VerticalAlignment="Center" Foreground="{StaticResource TextBrush}"/>
-    </StackPanel>
+<Border Grid.Row="5" Classes="userFooter" Margin="0,4,0,0" Padding="10,10">
+    <Grid ColumnDefinitions="Auto,*,Auto">
+
+        <Ellipse Grid.Column="0"
+                 Width="36" Height="36"
+                 Fill="{StaticResource SurfaceBrush}"/>
+
+        <StackPanel Grid.Column="1"
+                    Margin="10,0,0,0"
+                    VerticalAlignment="Center"
+                    Spacing="1">
+
+            <TextBlock Text="User"
+                       FontWeight="SemiBold"
+                       FontSize="13"
+                       Foreground="{StaticResource TextBrush}"/>
+
+            <TextBlock Text="View profile"
+                       FontSize="11"
+                       Opacity="0.6"
+                       Foreground="{StaticResource TextBrush}"/>
+
+        </StackPanel>
+
+        <TextBlock Grid.Column="2"
+                   Text="›"
+                   FontSize="18"
+                   Opacity="0.4"
+                   VerticalAlignment="Center"
+                   Foreground="{StaticResource TextBrush}"/>
+
+    </Grid>
 </Border>
 
         </Grid>

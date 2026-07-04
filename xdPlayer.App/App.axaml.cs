@@ -82,7 +82,7 @@ public partial class App : Avalonia.Application
         services.AddSingleton<ITagService, TagService>();
         services.AddSingleton<ILibraryService, LibraryService>();
         services.AddSingleton<IPlaylistService, PlaylistService>();
-        // services.AddScoped<IStatisticsService, StatisticsService>();
+        services.AddSingleton<IStatisticsService, StatisticsService>();
 
         services.AddSingleton<ListeningSessionService>();
         services.AddScoped<IListeningSessionRepository, ListeningSessionRepository>();
@@ -96,6 +96,7 @@ public partial class App : Avalonia.Application
         services.AddSingleton<SidebarViewModel>();
         services.AddSingleton<PlayerViewModel>();
         services.AddSingleton<MainWindowViewModel>();
+        services.AddScoped<ProfileViewModel>();
 
         // Windows
         services.AddSingleton<MainWindow>();

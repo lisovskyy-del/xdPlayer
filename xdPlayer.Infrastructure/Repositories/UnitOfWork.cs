@@ -1,5 +1,7 @@
-﻿using xdPlayer.Domain.Interfaces;
+﻿using xdPlayer.Domain.Entities;
+using xdPlayer.Domain.Interfaces;
 using xdPlayer.Infrastructure.Data;
+using xdPlayer.Infrastructure.Repositories;
 
 public class UnitOfWork : IUnitOfWork
 {
@@ -9,6 +11,7 @@ public class UnitOfWork : IUnitOfWork
     public IPlaylistRepository Playlists { get; }
     public ITagRepository Tags { get; }
     public IListeningSessionRepository ListeningSessions { get; }
+    public IRepository<UserProfile> UserProfiles { get; }
 
     public UnitOfWork(
         AppDbContext db,
@@ -22,6 +25,7 @@ public class UnitOfWork : IUnitOfWork
         Playlists = playlists;
         Tags = tags;
         ListeningSessions = listeningSessions;
+        UserProfiles = new Repository<UserProfile>(db);
     }
 
     public async Task<int> SaveChangesAsync()

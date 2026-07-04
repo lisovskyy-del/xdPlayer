@@ -16,8 +16,8 @@ public class PlayerViewModel : ReactiveObject, IDisposable
     private readonly ListeningSessionService _sessionService;
     private readonly ILibraryService _libraryService;
     private readonly System.Timers.Timer? _progressTimer;
-    private static readonly IBrush AccentBrushColor = new SolidColorBrush(Color.Parse("#1DB954"));
-    private static readonly IBrush MutedBrushColor = new SolidColorBrush(Color.Parse("#8A8A8A"));
+    private static readonly IBrush AccentBrushColor = new SolidColorBrush(Color.Parse("White"));
+    private static readonly IBrush MutedBrushColor = new SolidColorBrush(Color.Parse("#606060"));
     private RepeatMode _repeatMode = RepeatMode.None;
 
     private int _currentTrackId;

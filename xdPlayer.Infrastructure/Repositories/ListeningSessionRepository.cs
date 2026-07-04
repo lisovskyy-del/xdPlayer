@@ -19,6 +19,12 @@ public class ListeningSessionRepository : IListeningSessionRepository
             .Where(s => s.TrackId == trackId && s.EndedAt == null)
             .FirstOrDefaultAsync();
 
+    public async Task<IEnumerable<ListeningSession>> GetSessionsSinceAsync(DateTime from)
+        => await _db.ListeningSessions
+            .Include(s => s.Track)
+            .Where(s => s.StartedAt >= from && s.EndedAt != null)
+            .ToListAsync();
+
     public async Task AddAsync(ListeningSession session)
         => await _db.ListeningSessions.AddAsync(session);
 
