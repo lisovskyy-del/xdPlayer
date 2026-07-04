@@ -62,6 +62,9 @@ public partial class App : Avalonia.Application
             var playlistVm = Services.GetRequiredService<PlaylistViewModel>();
             await playlistVm.RefreshPlaylistsAsync();
 
+            var statsService = Services.GetRequiredService<IStatisticsService>();
+            await statsService.BackfillDailyStatisticsAsync();
+
             desktop.MainWindow = Services.GetRequiredService<MainWindow>();
         }
 
@@ -78,6 +81,8 @@ public partial class App : Avalonia.Application
         services.AddScoped<IPlaylistRepository, PlaylistRepository>();
         services.AddScoped<ITagRepository, TagRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<IListeningSessionRepository, ListeningSessionRepository>();
+        services.AddScoped<IDailyStatisticsRepository, DailyStatisticsRepository>();
 
         services.AddSingleton<ITagService, TagService>();
         services.AddSingleton<ILibraryService, LibraryService>();
@@ -85,7 +90,6 @@ public partial class App : Avalonia.Application
         services.AddSingleton<IStatisticsService, StatisticsService>();
 
         services.AddSingleton<ListeningSessionService>();
-        services.AddScoped<IListeningSessionRepository, ListeningSessionRepository>();
         services.AddSingleton<PlaybackQueue>();
         services.AddSingleton<IAudioPlayerService, AudioPlayerService>();
         services.AddSingleton<IPlaybackManager, PlaybackManager>();

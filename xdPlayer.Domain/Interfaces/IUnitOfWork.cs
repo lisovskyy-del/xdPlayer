@@ -13,4 +13,6 @@ public interface IUnitOfWork
     IListeningSessionRepository ListeningSessions { get; }
     IRepository<UserProfile> UserProfiles { get; }
     Task<int> SaveChangesAsync();
+
+    IDailyStatisticsRepository DailyStatistics { get; }
 }

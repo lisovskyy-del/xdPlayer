@@ -19,6 +19,8 @@
 
         <converters:DurationConverter x:Key="DurationConverter"/>
         <converters:CoverConverter x:Key="CoverConverter"/>
+
+        <converters:PeriodEqualsConverter x:Key="PeriodEqualsConverter"/>
     </ResourceDictionary>
 
 </Application.Resources>

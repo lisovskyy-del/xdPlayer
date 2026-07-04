@@ -1,6 +1,7 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:xdPlayer.App.ViewModels"
+             xmlns:stats="using:xdPlayer.Application.Interfaces"
              x:Class="xdPlayer.App.Views.ProfileView"
              x:DataType="vm:ProfileViewModel">
 
@@ -50,88 +51,209 @@
             </Border>
 
             <!-- Stats cards -->
-            <UniformGrid Columns="5" Rows="1">
+<!-- Stats cards -->
+<Border Background="{StaticResource CardBrush}"
+        CornerRadius="12"
+        Padding="20,16">
 
-                <Border Background="{StaticResource CardBrush}"
-                        CornerRadius="10"
-                        Margin="0,0,8,0"
-                        Padding="16">
-                    <StackPanel Spacing="4">
-                        <TextBlock Text="{Binding TracksInLibrary}"
-                                   FontSize="22" FontWeight="Bold"
-                                   Foreground="{StaticResource TextBrush}"/>
-                        <TextBlock Text="Tracks in library"
-                                   FontSize="12" Opacity="0.6"
-                                   Foreground="{StaticResource TextBrush}"/>
-                    </StackPanel>
-                </Border>
+    <Grid ColumnDefinitions="*,Auto,*,Auto,*,Auto,*,Auto,*">
 
-                <Border Background="{StaticResource CardBrush}"
-                        CornerRadius="10"
-                        Margin="0,0,8,0"
-                        Padding="16">
-                    <StackPanel Spacing="4">
-                        <TextBlock Text="{Binding LikedTracksCount}"
-                                   FontSize="22" FontWeight="Bold"
-                                   Foreground="{StaticResource TextBrush}"/>
-                        <TextBlock Text="Liked tracks"
-                                   FontSize="12" Opacity="0.6"
-                                   Foreground="{StaticResource TextBrush}"/>
-                    </StackPanel>
-                </Border>
-
-                <Border Background="{StaticResource CardBrush}"
-                        CornerRadius="10"
-                        Margin="0,0,8,0"
-                        Padding="16">
-                    <StackPanel Spacing="4">
-                        <TextBlock Text="{Binding TotalPlayTimeText}"
-                                   FontSize="22" FontWeight="Bold"
-                                   Foreground="{StaticResource TextBrush}"/>
-                        <TextBlock Text="Total play time"
-                                   FontSize="12" Opacity="0.6"
-                                   Foreground="{StaticResource TextBrush}"/>
-                    </StackPanel>
-                </Border>
-
-                <Border Background="{StaticResource CardBrush}"
-                        CornerRadius="10"
-                        Margin="0,0,8,0"
-                        Padding="16">
-                    <StackPanel Spacing="4">
-                        <TextBlock Text="{Binding DaysListened}"
-                                   FontSize="22" FontWeight="Bold"
-                                   Foreground="{StaticResource TextBrush}"/>
-                        <TextBlock Text="Days listened"
-                                   FontSize="12" Opacity="0.6"
-                                   Foreground="{StaticResource TextBrush}"/>
-                    </StackPanel>
-                </Border>
-
-                <Border Background="{StaticResource CardBrush}"
-                        CornerRadius="10"
-                        Padding="16">
-                    <StackPanel Spacing="4">
-                        <TextBlock Text="{Binding MostPlayedGenre}"
-                                   FontSize="22" FontWeight="Bold"
-                                   Foreground="{StaticResource TextBrush}"
-                                   TextTrimming="CharacterEllipsis"/>
-                        <TextBlock Text="Most played genre"
-                                   FontSize="12" Opacity="0.6"
-                                   Foreground="{StaticResource TextBrush}"/>
-                    </StackPanel>
-                </Border>
-
-            </UniformGrid>
-
-            <!-- Placeholder for future sections -->
-            <Border Background="{StaticResource CardBrush}"
-                    CornerRadius="12"
-                    Padding="24">
-                <TextBlock Text="Top 10 Tracks and activity chart coming soon..."
-                           Opacity="0.5"
-                           Foreground="{StaticResource TextBrush}"/>
+        <!-- Tracks in library -->
+        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="12">
+            <Border Width="36" Height="36" CornerRadius="18" Background="{StaticResource SidebarSelectedBrush}">
+                <Viewbox Width="18" Height="18">
+                    <Path Data="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z" Fill="{StaticResource TextBrush}"/>
+                </Viewbox>
             </Border>
+            <StackPanel Spacing="2" VerticalAlignment="Center">
+                <TextBlock Text="{Binding TracksInLibrary}" FontSize="20" FontWeight="Bold" Foreground="{StaticResource TextBrush}"/>
+                <TextBlock Text="Tracks in library" FontSize="11" Opacity="0.6" Foreground="{StaticResource TextBrush}"/>
+            </StackPanel>
+        </StackPanel>
+
+        <Rectangle Grid.Column="1" Width="1" Fill="{StaticResource DividerBrush}" Margin="16,4"/>
+
+        <!-- Liked tracks -->
+        <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="12">
+            <Border Width="36" Height="36" CornerRadius="18" Background="{StaticResource SidebarSelectedBrush}">
+                <Viewbox Width="18" Height="18">
+                    <Path Data="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+                          Fill="{StaticResource TextBrush}"/>
+                </Viewbox>
+            </Border>
+            <StackPanel Spacing="2" VerticalAlignment="Center">
+                <TextBlock Text="{Binding LikedTracksCount}" FontSize="20" FontWeight="Bold" Foreground="{StaticResource TextBrush}"/>
+                <TextBlock Text="Liked tracks" FontSize="11" Opacity="0.6" Foreground="{StaticResource TextBrush}"/>
+            </StackPanel>
+        </StackPanel>
+
+        <Rectangle Grid.Column="3" Width="1" Fill="{StaticResource DividerBrush}" Margin="16,4"/>
+
+        <!-- Total play time -->
+        <StackPanel Grid.Column="4" Orientation="Horizontal" Spacing="12">
+            <Border Width="36" Height="36" CornerRadius="18" Background="{StaticResource SidebarSelectedBrush}">
+                <Viewbox Width="18" Height="18">
+                    <Path Data="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm.5 5H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"
+                          Fill="{StaticResource TextBrush}"/>
+                </Viewbox>
+            </Border>
+            <StackPanel Spacing="2" VerticalAlignment="Center">
+                <TextBlock Text="{Binding TotalPlayTimeText}" FontSize="20" FontWeight="Bold" Foreground="{StaticResource TextBrush}"/>
+                <TextBlock Text="Total play time" FontSize="11" Opacity="0.6" Foreground="{StaticResource TextBrush}"/>
+            </StackPanel>
+        </StackPanel>
+
+        <Rectangle Grid.Column="5" Width="1" Fill="{StaticResource DividerBrush}" Margin="16,4"/>
+
+        <!-- Days listened -->
+        <StackPanel Grid.Column="6" Orientation="Horizontal" Spacing="12">
+            <Border Width="36" Height="36" CornerRadius="18" Background="{StaticResource SidebarSelectedBrush}">
+                <Viewbox Width="18" Height="18">
+                    <Path Data="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"
+                          Fill="{StaticResource TextBrush}"/>
+                </Viewbox>
+            </Border>
+            <StackPanel Spacing="2" VerticalAlignment="Center">
+                <TextBlock Text="{Binding DaysListened}" FontSize="20" FontWeight="Bold" Foreground="{StaticResource TextBrush}"/>
+                <TextBlock Text="Days listened" FontSize="11" Opacity="0.6" Foreground="{StaticResource TextBrush}"/>
+            </StackPanel>
+        </StackPanel>
+
+        <Rectangle Grid.Column="7" Width="1" Fill="{StaticResource DividerBrush}" Margin="16,4"/>
+
+        <!-- Most played genre -->
+        <StackPanel Grid.Column="8" Orientation="Horizontal" Spacing="12">
+            <Border Width="36" Height="36" CornerRadius="18" Background="{StaticResource SidebarSelectedBrush}">
+                <Viewbox Width="18" Height="18">
+                    <Path Data="M1 21h4V9H1v12zM23 10c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"
+                          Fill="{StaticResource TextBrush}"/>
+                </Viewbox>
+            </Border>
+            <StackPanel Spacing="2" VerticalAlignment="Center">
+                <TextBlock Text="{Binding MostPlayedGenre}" FontSize="20" FontWeight="Bold" Foreground="{StaticResource TextBrush}" TextTrimming="CharacterEllipsis"/>
+                <TextBlock Text="Most played genre" FontSize="11" Opacity="0.6" Foreground="{StaticResource TextBrush}"/>
+            </StackPanel>
+        </StackPanel>
+
+    </Grid>
+
+</Border>
+
+<!-- Two-column: Top tracks + Chart -->
+<Grid ColumnDefinitions="*,*" >
+    <Grid.Styles>
+        <Style Selector="Border.section">
+            <Setter Property="Background" Value="{StaticResource CardBrush}"/>
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="Padding" Value="20"/>
+        </Style>
+    </Grid.Styles>
+
+    <!-- Top 10 Tracks -->
+    <Border Grid.Column="0" Classes="section" Margin="0,0,8,0">
+
+        <StackPanel Spacing="14">
+
+            <Grid ColumnDefinitions="*,Auto">
+                <TextBlock Grid.Column="0"
+                           Text="Top 10 Tracks"
+                           FontSize="16" FontWeight="Bold"
+                           Foreground="{StaticResource TextBrush}"/>
+
+                <StackPanel Grid.Column="1"
+                            Orientation="Horizontal"
+                            Spacing="4">
+
+                    <Button Content="7D" Classes="periodButton"
+                            Classes.active="{Binding SelectedPeriod, Converter={StaticResource PeriodEqualsConverter}, ConverterParameter=Days7}"
+                            Command="{Binding SelectPeriodCommand}"
+                            CommandParameter="Days7"/>
+                    <Button Content="30D" Classes="periodButton"
+                            Classes.active="{Binding SelectedPeriod, Converter={StaticResource PeriodEqualsConverter}, ConverterParameter=Days30}"
+                            Command="{Binding SelectPeriodCommand}"
+                            CommandParameter="Days30"/>
+                    <Button Content="90D" Classes="periodButton"
+                            Classes.active="{Binding SelectedPeriod, Converter={StaticResource PeriodEqualsConverter}, ConverterParameter=Days90}"
+                            Command="{Binding SelectPeriodCommand}"
+                            CommandParameter="Days90"/>
+                    <Button Content="1Y" Classes="periodButton"
+                            Classes.active="{Binding SelectedPeriod, Converter={StaticResource PeriodEqualsConverter}, ConverterParameter=Year1}"
+                            Command="{Binding SelectPeriodCommand}"
+                            CommandParameter="Year1"/>
+                    <Button Content="ALL" Classes="periodButton"
+                            Classes.active="{Binding SelectedPeriod, Converter={StaticResource PeriodEqualsConverter}, ConverterParameter=All}"
+                            Command="{Binding SelectPeriodCommand}"
+                            CommandParameter="All"/>
+
+                </StackPanel>
+            </Grid>
+
+<ItemsControl ItemsSource="{Binding TopTracks}">
+    <ItemsControl.ItemTemplate>
+        <DataTemplate x:DataType="stats:TopTrackItem">
+
+            <Grid ColumnDefinitions="36,*,Auto" Margin="0,6">
+
+                <Border Grid.Column="0"
+                        Width="32" Height="32"
+                        CornerRadius="4"
+                        Background="#444"
+                        ClipToBounds="True">
+                    <Image Source="{Binding CoverImagePath, Converter={StaticResource CoverConverter}}"
+                           Stretch="UniformToFill"/>
+                </Border>
+
+                <StackPanel Grid.Column="1"
+                            Margin="10,0,0,0"
+                            VerticalAlignment="Center"
+                            Spacing="1">
+                    <TextBlock Text="{Binding Title}"
+                               FontWeight="SemiBold" FontSize="13"
+                               Foreground="{StaticResource TextBrush}"
+                               TextTrimming="CharacterEllipsis"/>
+                    <TextBlock Text="{Binding Artist}"
+                               FontSize="11" Opacity="0.6"
+                               Foreground="{StaticResource TextBrush}"
+                               TextTrimming="CharacterEllipsis"/>
+                </StackPanel>
+
+                <TextBlock Grid.Column="2"
+                           Text="{Binding PlayCount, StringFormat='{}{0} plays'}"
+                           FontSize="12" Opacity="0.7"
+                           Foreground="{StaticResource TextBrush}"
+                           VerticalAlignment="Center"/>
+
+            </Grid>
+
+        </DataTemplate>
+    </ItemsControl.ItemTemplate>
+</ItemsControl>
+
+            <TextBlock Text="No listening data for this period yet"
+                       IsVisible="{Binding !TopTracks.Count}"
+                       Opacity="0.5" FontSize="12"
+                       Foreground="{StaticResource TextBrush}"/>
+
+        </StackPanel>
+
+    </Border>
+
+    <!-- Activity chart -->
+    <Border Grid.Column="1" Classes="section" Margin="8,0,0,0">
+
+        <StackPanel Spacing="14">
+
+            <TextBlock Text="Activity Over Time"
+                       FontSize="16" FontWeight="Bold"
+                       Foreground="{StaticResource TextBrush}"/>
+
+            <Canvas Name="ChartCanvas" MinHeight="150" VerticalAlignment="Stretch" Margin="0,0,0,20"/>
+
+        </StackPanel>
+
+    </Border>
+
+</Grid>
 
         </StackPanel>
 

@@ -46,6 +46,55 @@ public class StatisticsService : IStatisticsService
             .ToList();
     }
 
+    public async Task BackfillDailyStatisticsAsync()
+    {
+        using var scope = _scopeFactory.CreateScope();
+        var uow = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+
+        var lastRecorded = await uow.DailyStatistics.GetLastRecordedDateAsync();
+        var today = DateOnly.FromDateTime(DateTime.UtcNow.Date);
+
+        var startDate = lastRecorded?.AddDays(1) ?? today.AddDays(-30);
+
+        if (startDate >= today) return;
+
+        var sessions = await uow.ListeningSessions.GetSessionsSinceAsync(
+            startDate.ToDateTime(TimeOnly.MinValue));
+
+        var sessionsByDay = sessions
+            .GroupBy(s => DateOnly.FromDateTime(s.StartedAt.Date))
+            .ToDictionary(g => g.Key, g => g.ToList());
+
+        for (var date = startDate; date < today; date = date.AddDays(1))
+        {
+            var existing = await uow.DailyStatistics.GetByDateAsync(date);
+            if (existing != null) continue;
+
+            var daySessions = sessionsByDay.TryGetValue(date, out var list)
+                ? list
+                : new List<Domain.Entities.ListeningSession>();
+
+            var topTrackId = daySessions
+                .GroupBy(s => s.TrackId)
+                .OrderByDescending(g => g.Count())
+                .Select(g => (int?)g.Key)
+                .FirstOrDefault();
+
+            var stats = new Domain.Entities.DailyStatistics
+            {
+                Date = date,
+                TotalListenedSeconds = daySessions.Sum(s => s.ListenedSeconds),
+                TracksPlayedCount = daySessions.Count,
+                UniqueTracksCount = daySessions.Select(s => s.TrackId).Distinct().Count(),
+                TopTrackId = topTrackId
+            };
+
+            await uow.DailyStatistics.AddAsync(stats);
+        }
+
+        await uow.SaveChangesAsync();
+    }
+
     public async Task<List<DailyPlayCount>> GetPlaysPerDayAsync(StatsPeriod period)
     {
         using var scope = _scopeFactory.CreateScope();

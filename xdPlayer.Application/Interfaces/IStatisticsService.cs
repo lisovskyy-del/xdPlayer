@@ -20,6 +20,7 @@ public interface IStatisticsService
     Task<UserProfile?> GetUserProfileAsync();
     Task<List<TopTrackItem>> GetTopTracksAsync(StatsPeriod period);
     Task<List<DailyPlayCount>> GetPlaysPerDayAsync(StatsPeriod period);
+    Task BackfillDailyStatisticsAsync();
 }
 
 public enum StatsPeriod { Days7, Days30, Days90, Year1, All }

@@ -13,18 +13,22 @@ public class UnitOfWork : IUnitOfWork
     public IListeningSessionRepository ListeningSessions { get; }
     public IRepository<UserProfile> UserProfiles { get; }
 
+    public IDailyStatisticsRepository DailyStatistics { get; }
+
     public UnitOfWork(
         AppDbContext db,
         ITrackRepository tracks,
         IPlaylistRepository playlists,
         ITagRepository tags,
-        IListeningSessionRepository listeningSessions)
+        IListeningSessionRepository listeningSessions,
+        IDailyStatisticsRepository dailyStatistics)
     {
         _db = db;
         Tracks = tracks;
         Playlists = playlists;
         Tags = tags;
         ListeningSessions = listeningSessions;
+        DailyStatistics = dailyStatistics;
         UserProfiles = new Repository<UserProfile>(db);
     }
 
