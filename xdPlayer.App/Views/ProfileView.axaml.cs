@@ -1,6 +1,7 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
+using Avalonia.Interactivity;
 using Avalonia.Media;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -32,6 +33,24 @@ public partial class ProfileView : UserControl
             _chartCanvas.SizeChanged += (_, _) => DrawChart();
 
         AttachChartHandler();
+    }
+
+    private async void OnEditProfileClick(object? sender, RoutedEventArgs e)
+    {
+        if (_vm == null) return;
+
+        var topLevel = TopLevel.GetTopLevel(this) as Window;
+        if (topLevel == null) return;
+
+        var dialog = new EditProfileWindow(_vm.DisplayName, _vm.AvatarPath);
+        await dialog.ShowDialog(topLevel);
+
+        if (dialog.Confirmed && !string.IsNullOrWhiteSpace(dialog.ResultDisplayName))
+        {
+            var statsService = App.Services.GetRequiredService<xdPlayer.Application.Interfaces.IStatisticsService>();
+            await statsService.UpdateUserProfileAsync(dialog.ResultDisplayName, dialog.SelectedAvatarPath);
+            await _vm.LoadAsync();
+        }
     }
 
     private void AttachChartHandler()

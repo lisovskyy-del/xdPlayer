@@ -12,6 +12,13 @@ public class ProfileViewModel : ReactiveObject
 {
     private readonly IStatisticsService _statisticsService;
 
+    private string? _avatarPath;
+    public string? AvatarPath
+    {
+        get => _avatarPath;
+        set => this.RaiseAndSetIfChanged(ref _avatarPath, value);
+    }
+
     private string _displayName = "User";
     public string DisplayName
     {
@@ -106,12 +113,13 @@ public class ProfileViewModel : ReactiveObject
         _ = LoadAsync();
     }
 
-    private async Task LoadAsync()
+    public async Task LoadAsync()
     {
         var profile = await _statisticsService.GetUserProfileAsync();
         if (profile != null)
         {
             DisplayName = profile.DisplayName;
+            AvatarPath = profile.AvatarPath;
             MemberSince = $"Member since {profile.CreatedAt:MMMM yyyy}";
         }
 

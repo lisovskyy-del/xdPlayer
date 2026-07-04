@@ -46,6 +46,32 @@ public class StatisticsService : IStatisticsService
             .ToList();
     }
 
+    public async Task<UserProfile> UpdateUserProfileAsync(string displayName, string? newAvatarFilePath)
+    {
+        using var scope = _scopeFactory.CreateScope();
+        var uow = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+
+        var profiles = await uow.UserProfiles.GetAllAsync();
+        var profile = profiles.FirstOrDefault();
+        if (profile == null) throw new InvalidOperationException("No user profile found");
+
+        profile.DisplayName = displayName;
+
+        if (!string.IsNullOrWhiteSpace(newAvatarFilePath))
+        {
+            Directory.CreateDirectory("AvatarImages");
+            var extension = Path.GetExtension(newAvatarFilePath);
+            var newPath = Path.Combine("AvatarImages", $"{Guid.NewGuid()}{extension}");
+            File.Copy(newAvatarFilePath, newPath, overwrite: true);
+            profile.AvatarPath = newPath;
+        }
+
+        await uow.UserProfiles.UpdateAsync(profile);
+        await uow.SaveChangesAsync();
+
+        return profile;
+    }
+
     public async Task BackfillDailyStatisticsAsync()
     {
         using var scope = _scopeFactory.CreateScope();

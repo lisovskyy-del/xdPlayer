@@ -16,9 +16,14 @@
 
                 <Grid ColumnDefinitions="Auto,*,Auto">
 
-                    <Ellipse Grid.Column="0"
-                             Width="80" Height="80"
-                             Fill="{StaticResource SurfaceBrush}"/>
+<Border Grid.Column="0"
+        Width="80" Height="80"
+        CornerRadius="40"
+        Background="{StaticResource SurfaceBrush}"
+        ClipToBounds="True">
+    <Image Source="{Binding AvatarPath, Converter={StaticResource CoverConverter}}"
+           Stretch="UniformToFill"/>
+</Border>
 
                     <StackPanel Grid.Column="1"
                                 Margin="20,0,0,0"
@@ -37,14 +42,15 @@
 
                     </StackPanel>
 
-                    <Button Grid.Column="2"
-                            Content="Edit Profile"
-                            Background="{StaticResource SurfaceBrush}"
-                            Foreground="{StaticResource TextBrush}"
-                            BorderThickness="0"
-                            CornerRadius="6"
-                            Padding="14,8"
-                            VerticalAlignment="Center"/>
+<Button Grid.Column="2"
+        Content="Edit Profile"
+        Click="OnEditProfileClick"
+        Background="{StaticResource SurfaceBrush}"
+        Foreground="{StaticResource TextBrush}"
+        BorderThickness="0"
+        CornerRadius="6"
+        Padding="14,8"
+        VerticalAlignment="Center"/>
 
                 </Grid>
 
