@@ -18,4 +18,23 @@ public interface IStatisticsService
 {
     Task<ProfileOverview> GetOverviewAsync();
     Task<UserProfile?> GetUserProfileAsync();
+    Task<List<TopTrackItem>> GetTopTracksAsync(StatsPeriod period);
+    Task<List<DailyPlayCount>> GetPlaysPerDayAsync(StatsPeriod period);
+}
+
+public enum StatsPeriod { Days7, Days30, Days90, Year1, All }
+
+public class TopTrackItem
+{
+    public int TrackId { get; set; }
+    public string Title { get; set; } = string.Empty;
+    public string? Artist { get; set; }
+    public string? CoverImagePath { get; set; }
+    public int PlayCount { get; set; }
+}
+
+public class DailyPlayCount
+{
+    public DateOnly Date { get; set; }
+    public int Count { get; set; }
 }

@@ -14,6 +14,69 @@ public class StatisticsService : IStatisticsService
         _scopeFactory = scopeFactory;
     }
 
+    private static DateTime GetPeriodStart(StatsPeriod period) => period switch
+    {
+        StatsPeriod.Days7 => DateTime.UtcNow.AddDays(-7),
+        StatsPeriod.Days30 => DateTime.UtcNow.AddDays(-30),
+        StatsPeriod.Days90 => DateTime.UtcNow.AddDays(-90),
+        StatsPeriod.Year1 => DateTime.UtcNow.AddYears(-1),
+        _ => DateTime.MinValue
+    };
+
+    public async Task<List<TopTrackItem>> GetTopTracksAsync(StatsPeriod period)
+    {
+        using var scope = _scopeFactory.CreateScope();
+        var uow = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+
+        var from = GetPeriodStart(period);
+        var sessions = await uow.ListeningSessions.GetSessionsSinceAsync(from);
+
+        return sessions
+            .GroupBy(s => s.TrackId)
+            .Select(g => new TopTrackItem
+            {
+                TrackId = g.Key,
+                Title = g.First().Track.Title,
+                Artist = g.First().Track.Artist,
+                CoverImagePath = g.First().Track.CoverImagePath,
+                PlayCount = g.Count()
+            })
+            .OrderByDescending(t => t.PlayCount)
+            .Take(10)
+            .ToList();
+    }
+
+    public async Task<List<DailyPlayCount>> GetPlaysPerDayAsync(StatsPeriod period)
+    {
+        using var scope = _scopeFactory.CreateScope();
+        var uow = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+
+        var from = period == StatsPeriod.All
+            ? DateTime.UtcNow.AddDays(-30)
+            : GetPeriodStart(period);
+
+        var sessions = await uow.ListeningSessions.GetSessionsSinceAsync(from);
+
+        var grouped = sessions
+            .GroupBy(s => DateOnly.FromDateTime(s.StartedAt.Date))
+            .ToDictionary(g => g.Key, g => g.Count());
+
+        var result = new List<DailyPlayCount>();
+        var startDate = DateOnly.FromDateTime(from.Date);
+        var endDate = DateOnly.FromDateTime(DateTime.UtcNow.Date);
+
+        for (var date = startDate; date <= endDate; date = date.AddDays(1))
+        {
+            result.Add(new DailyPlayCount
+            {
+                Date = date,
+                Count = grouped.TryGetValue(date, out var count) ? count : 0
+            });
+        }
+
+        return result;
+    }
+
     public async Task<ProfileOverview> GetOverviewAsync()
     {
         using var scope = _scopeFactory.CreateScope();
