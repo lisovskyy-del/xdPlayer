@@ -11,6 +11,7 @@ public class MainWindowViewModel : ReactiveObject
     public PlaylistViewModel Playlist { get; }
     public PlayerViewModel Player { get; }
     public SidebarViewModel Sidebar { get; }
+    public ProfileViewModel Profile { get; }
 
     public ReactiveCommand<Unit, Unit> ShowLibraryCommand { get; }
 
@@ -24,16 +25,19 @@ public class MainWindowViewModel : ReactiveObject
         LibraryViewModel library,
         SidebarViewModel sidebar,
         PlaylistViewModel playlist,
-        PlayerViewModel player)
+        PlayerViewModel player,
+        ProfileViewModel profile)
     {
         Library = library;
         Playlist = playlist;
         Player = player;
         CurrentPage = Library;
         Sidebar = sidebar;
+        Profile = profile;
 
         sidebar.LibraryRequested += ShowLibrary;
         sidebar.PlaylistRequested += ShowPlaylist;
+        sidebar.ProfileRequested += ShowProfile;
 
         ShowLibraryCommand = ReactiveCommand.Create(() =>
         {
@@ -49,5 +53,10 @@ public class MainWindowViewModel : ReactiveObject
     public void ShowPlaylist()
     {
         CurrentPage = Playlist;
+    }
+
+    public void ShowProfile()
+    {
+        CurrentPage = Profile;
     }
 }

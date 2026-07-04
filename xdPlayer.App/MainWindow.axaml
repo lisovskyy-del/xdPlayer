@@ -20,6 +20,10 @@
         <views:PlaylistView/>
     </DataTemplate>
 
+    <DataTemplate DataType="vm:ProfileViewModel">
+        <views:ProfileView/>
+    </DataTemplate>
+
 </Window.DataTemplates>
 
 <Grid RowDefinitions="*,1,Auto">

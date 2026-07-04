@@ -45,4 +45,10 @@ public partial class SidebarView : UserControl
         if (DataContext is SidebarViewModel vm)
             vm.ShowLibraryCommand.Execute().Subscribe();
     }
+
+    private void OnUserFooterPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (DataContext is SidebarViewModel vm)
+            vm.ShowProfileCommand.Execute().Subscribe();
+    }
 }

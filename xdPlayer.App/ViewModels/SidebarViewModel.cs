@@ -13,6 +13,7 @@ public class SidebarViewModel : ReactiveObject
 
     public Action? LibraryRequested;
     public Action? PlaylistRequested;
+    public Action? ProfileRequested;
 
     private bool _isLibrarySelected = true;
     public bool IsLibrarySelected
@@ -31,6 +32,7 @@ public class SidebarViewModel : ReactiveObject
     public ReactiveCommand<Unit, Unit> ShowLibraryCommand { get; }
     public ReactiveCommand<Playlist, Unit> OpenPlaylistCommand { get; }
     public ReactiveCommand<(Track track, Playlist playlist), Unit> AddToPlaylistCommand { get; }
+    public ReactiveCommand<Unit, Unit> ShowProfileCommand { get; }
 
     public ReactiveCommand<Unit, Unit> ToggleAddPlaylistCommand { get; }
     public ReactiveCommand<Unit, Unit> ConfirmAddPlaylistCommand { get; }
@@ -44,6 +46,11 @@ public class SidebarViewModel : ReactiveObject
         {
             SelectedPlaylist = null;
             LibraryRequested?.Invoke();
+        });
+
+        ShowProfileCommand = ReactiveCommand.Create(() =>
+        {
+            ProfileRequested?.Invoke();
         });
 
         OpenPlaylistCommand = ReactiveCommand.Create<Playlist>(playlist =>

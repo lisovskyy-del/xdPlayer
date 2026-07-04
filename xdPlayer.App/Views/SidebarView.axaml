@@ -181,7 +181,12 @@
         Margin="6,8,6,8"/>
 
 <!-- user footer -->
-<Border Grid.Row="5" Classes="userFooter" Margin="0,4,0,0" Padding="10,10">
+<Border Grid.Row="5"
+        Classes="userFooter"
+        Cursor="Hand"
+        PointerPressed="OnUserFooterPointerPressed"
+        Margin="0,4,0,0"
+        Padding="10,10">
     <Grid ColumnDefinitions="Auto,*,Auto">
 
         <Ellipse Grid.Column="0"
@@ -193,7 +198,7 @@
                     VerticalAlignment="Center"
                     Spacing="1">
 
-            <TextBlock Text="User"
+            <TextBlock Text="User Name"
                        FontWeight="SemiBold"
                        FontSize="13"
                        Foreground="{StaticResource TextBrush}"/>

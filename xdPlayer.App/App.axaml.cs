@@ -96,7 +96,7 @@ public partial class App : Avalonia.Application
         services.AddSingleton<SidebarViewModel>();
         services.AddSingleton<PlayerViewModel>();
         services.AddSingleton<MainWindowViewModel>();
-        services.AddScoped<ProfileViewModel>();
+        services.AddSingleton<ProfileViewModel>();
 
         // Windows
         services.AddSingleton<MainWindow>();
