@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using xdPlayer.Domain.Entities;
+using xdPlayer.Domain.Playback;
 
 namespace xdPlayer.Application.Interfaces;
 
@@ -14,6 +15,8 @@ public interface IPlaybackManager
     float Volume { get; set; }
     TimeSpan CurrentPosition { get; }
     TimeSpan TotalDuration { get; }
+    PlaybackMode PlaybackMode { get; }
+    RepeatMode RepeatMode { get; set; }
 
     Task PlayAsync();
     void Pause();
@@ -23,4 +26,5 @@ public interface IPlaybackManager
     Task NextAsync();
     Task PreviousAsync();
     void Seek(TimeSpan position);
+    void ToggleShuffle();
 }

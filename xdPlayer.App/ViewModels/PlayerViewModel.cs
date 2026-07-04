@@ -1,10 +1,12 @@
-﻿using ReactiveUI;
+﻿using Avalonia.Media;
+using ReactiveUI;
 using System;
 using System.Reactive;
 using System.Threading.Tasks;
 using xdPlayer.Application.Interfaces;
 using xdPlayer.Application.Models;
 using xdPlayer.Domain.Entities;
+using xdPlayer.Domain.Playback;
 
 namespace xdPlayer.App.ViewModels;
 
@@ -14,6 +16,9 @@ public class PlayerViewModel : ReactiveObject, IDisposable
     private readonly ListeningSessionService _sessionService;
     private readonly ILibraryService _libraryService;
     private readonly System.Timers.Timer? _progressTimer;
+    private static readonly IBrush AccentBrushColor = new SolidColorBrush(Color.Parse("#1DB954"));
+    private static readonly IBrush MutedBrushColor = new SolidColorBrush(Color.Parse("#8A8A8A"));
+    private RepeatMode _repeatMode = RepeatMode.None;
 
     private int _currentTrackId;
 
@@ -92,12 +97,41 @@ public class PlayerViewModel : ReactiveObject, IDisposable
         }
     }
 
+    public IBrush ShuffleIconBrush => IsShuffleEnabled ? AccentBrushColor : MutedBrushColor;
+
+    private bool _isShuffleEnabled;
+    public bool IsShuffleEnabled
+    {
+        get => _isShuffleEnabled;
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _isShuffleEnabled, value);
+            this.RaisePropertyChanged(nameof(ShuffleIconBrush));
+        }
+    }
+
+    public IBrush RepeatIconBrush => RepeatMode != RepeatMode.None ? AccentBrushColor : MutedBrushColor;
+    public bool IsRepeatOne => RepeatMode == RepeatMode.One;
+
+    public RepeatMode RepeatMode
+    {
+        get => _repeatMode;
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _repeatMode, value);
+            this.RaisePropertyChanged(nameof(RepeatIconBrush));
+            this.RaisePropertyChanged(nameof(IsRepeatOne));
+        }
+    }
+
     public ReactiveCommand<Unit, Unit> PlayCommand { get; private set; }
     public ReactiveCommand<Unit, Unit> PauseCommand { get; private set; }
     public ReactiveCommand<Unit, Unit> StopCommand { get; private set; }
     public ReactiveCommand<Unit, Unit> NextCommand { get; private set; }
     public ReactiveCommand<Unit, Unit> PreviousCommand { get; private set; }
     public ReactiveCommand<Unit, Unit> ToggleLikeCommand { get; private set; }
+    public ReactiveCommand<Unit, Unit> ShuffleCommand { get; private set; }
+    public ReactiveCommand<Unit, Unit> RepeatCommand { get; private set; }
 
     // for Avalonia Previewer
     public PlayerViewModel()
@@ -114,6 +148,8 @@ public class PlayerViewModel : ReactiveObject, IDisposable
         NextCommand = ReactiveCommand.Create(() => { });
         PreviousCommand = ReactiveCommand.Create(() => { });
         ToggleLikeCommand = ReactiveCommand.Create(() => { });
+        ShuffleCommand = ReactiveCommand.Create(() => { });
+        RepeatCommand = ReactiveCommand.Create(() => { });
     }
 
     public PlayerViewModel(IPlaybackManager playbackManager, ListeningSessionService sessionService, ILibraryService libraryService)
@@ -155,6 +191,25 @@ public class PlayerViewModel : ReactiveObject, IDisposable
             });
         };
         _progressTimer.Start();
+
+        ShuffleCommand = ReactiveCommand.Create(() =>
+        {
+            _playbackManager.ToggleShuffle();
+            IsShuffleEnabled = _playbackManager.PlaybackMode == PlaybackMode.Shuffle;
+        });
+
+        RepeatCommand = ReactiveCommand.Create(() =>
+        {
+            var next = RepeatMode switch
+            {
+                RepeatMode.None => RepeatMode.All,
+                RepeatMode.All => RepeatMode.One,
+                RepeatMode.One => RepeatMode.None,
+                _ => RepeatMode.None
+            };
+            _playbackManager.RepeatMode = next;
+            RepeatMode = next;
+        });
     }
 
     private void OnStarted(object? sender, EventArgs e) =>

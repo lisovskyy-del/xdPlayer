@@ -47,53 +47,96 @@
             </StackPanel>
 
             <!-- Center: controls + progress -->
-            <StackPanel Grid.Column="1"
-                        VerticalAlignment="Center"
-                        Spacing="-10">
+<StackPanel Grid.Column="1"
+            VerticalAlignment="Center"
+            Spacing="-10">
 
-                <StackPanel Orientation="Horizontal"
-                            Spacing="16"
-                            Margin="0,8,0,0"
-                            HorizontalAlignment="Center">
+    <StackPanel Orientation="Horizontal"
+                Spacing="16"
+                Margin="0,8,0,0"
+                HorizontalAlignment="Center">
 
-                    <Button Classes="iconButton" Width="32" Height="32"
-                            Command="{Binding PreviousCommand}">
-                        <TextBlock Text="◀◀" FontSize="12" Foreground="{StaticResource TextBrush}"/>
-                    </Button>
+        <Button Classes="iconButton" Width="28" Height="28"
+                Command="{Binding ShuffleCommand}">
+            <Viewbox Width="16" Height="16">
+                <Path Data="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"
+                      Fill="{Binding ShuffleIconBrush}"/>
+            </Viewbox>
+        </Button>
 
-                    <Button Width="40" Height="40"
-                            Command="{Binding PlayCommand}"
-                            IsVisible="{Binding !IsPlaying}">
-                        <Grid>
-                            <Ellipse Width="40" Height="40" Fill="White"/>
-                            <Polygon Points="0,0 14,7 0,14"
-                                     Fill="#1E1E1E"
-                                     HorizontalAlignment="Center"
-                                     VerticalAlignment="Center"
-                                     Margin="2,0,0,0"/>
-                        </Grid>
-                    </Button>
+        <Button Classes="iconButton" Width="32" Height="32"
+                Command="{Binding PreviousCommand}">
+            <TextBlock Text="◀◀" FontSize="12" Foreground="{StaticResource TextBrush}"/>
+        </Button>
 
-                    <Button Classes="iconButton" Width="40" Height="40"
-                            Command="{Binding PauseCommand}"
-                            IsVisible="{Binding IsPlaying}">
-                        <Grid>
-                            <Ellipse Width="40" Height="40" Fill="White"/>
-                            <StackPanel Orientation="Horizontal" Spacing="4"
-                                        HorizontalAlignment="Center"
-                                        VerticalAlignment="Center">
-                                <Rectangle Width="4" Height="14" Fill="#1E1E1E"/>
-                                <Rectangle Width="4" Height="14" Fill="#1E1E1E"/>
-                            </StackPanel>
-                        </Grid>
-                    </Button>
+<Button Width="40" Height="40"
+        Background="Transparent"
+        Command="{Binding PlayCommand}"
+        IsVisible="{Binding !IsPlaying}">
 
-                    <Button Classes="iconButton" Width="32" Height="32"
-                            Command="{Binding NextCommand}">
-                        <TextBlock Text="▶▶" FontSize="12" Foreground="{StaticResource TextBrush}"/>
-                    </Button>
+<Button.Styles>
+    <Style Selector="Button:pointerover /template/ ContentPresenter">
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Background" Value="Transparent"/>
+    </Style>
+</Button.Styles>
 
-                </StackPanel>
+    <Grid>
+        <Ellipse Width="40" Height="40" Fill="White"/>
+        <Polygon Points="0,0 14,7 0,14"
+                 Fill="#1E1E1E"
+                 HorizontalAlignment="Center"
+                 VerticalAlignment="Center"
+                 Margin="2,0,0,0"/>
+    </Grid>
+</Button>
+
+<Button Width="40" Height="40"
+        Background="Transparent"
+        Command="{Binding PauseCommand}"
+        IsVisible="{Binding IsPlaying}">
+
+<Button.Styles>
+    <Style Selector="Button:pointerover /template/ ContentPresenter">
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Background" Value="Transparent"/>
+    </Style>
+</Button.Styles>
+
+    <Grid>
+        <Ellipse Width="40" Height="40" Fill="White"/>
+        <StackPanel Orientation="Horizontal" Spacing="4"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center">
+            <Rectangle Width="4" Height="14" Fill="#1E1E1E"/>
+            <Rectangle Width="4" Height="14" Fill="#1E1E1E"/>
+        </StackPanel>
+    </Grid>
+</Button>
+
+        <Button Classes="iconButton" Width="32" Height="32"
+                Command="{Binding NextCommand}">
+            <TextBlock Text="▶▶" FontSize="12" Foreground="{StaticResource TextBrush}"/>
+        </Button>
+
+        <Button Classes="iconButton" Width="28" Height="28"
+                Command="{Binding RepeatCommand}">
+            <Grid>
+                <Viewbox Width="16" Height="16">
+                    <Path Data="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"
+                          Fill="{Binding RepeatIconBrush}"/>
+                </Viewbox>
+                <TextBlock Text="1"
+                           FontSize="8"
+                           FontWeight="Bold"
+                           Foreground="{Binding RepeatIconBrush}"
+                           HorizontalAlignment="Right"
+                           VerticalAlignment="Bottom"
+                           IsVisible="{Binding IsRepeatOne}"/>
+            </Grid>
+        </Button>
+
+    </StackPanel>
 
                 <Grid ColumnDefinitions="Auto,*,Auto" Width="400"
                       Margin="0,2,0,0">

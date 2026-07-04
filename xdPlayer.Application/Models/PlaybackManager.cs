@@ -25,6 +25,13 @@ public class PlaybackManager : IPlaybackManager
 
     public TimeSpan CurrentPosition => _player.CurrentPosition;
     public TimeSpan TotalDuration => _player.TotalDuration;
+    public PlaybackMode PlaybackMode => Queue.PlaybackMode;
+
+    public RepeatMode RepeatMode
+    {
+        get => Queue.RepeatMode;
+        set => Queue.RepeatMode = value;
+    }
 
     public PlaybackManager(IAudioPlayerService player, PlaybackQueue queue)
     {
@@ -34,6 +41,19 @@ public class PlaybackManager : IPlaybackManager
         _player.PlaybackFinished += OnPlaybackFinished;
         _player.PlaybackStarted += (s, e) => Started?.Invoke(this, EventArgs.Empty);
         _player.PlaybackPaused += (s, e) => Paused?.Invoke(this, EventArgs.Empty);
+    }
+
+    public void ToggleShuffle()
+    {
+        if (Queue.PlaybackMode == PlaybackMode.Shuffle)
+        {
+            Queue.PlaybackMode = PlaybackMode.Normal;
+        }
+        else
+        {
+            Queue.Shuffle();
+            Queue.PlaybackMode = PlaybackMode.Shuffle;
+        }
     }
 
     private async void OnPlaybackFinished(object? sender, EventArgs e)
