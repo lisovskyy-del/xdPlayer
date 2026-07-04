@@ -12,34 +12,69 @@
           Margin="20,20,20,20">
 
         <!-- Cover -->
-<Border x:Name="PlaylistCoverHoverBorder"
-        Width="120"
-        Height="120"
-        CornerRadius="8"
-        Background="#333"
-        ClipToBounds="True"
-        Cursor="Hand"
-        PointerPressed="OnPlaylistCoverPointerPressed">
+        <Border Width="120"
+                Height="120"
+                CornerRadius="8"
+                Background="#333"
+                ClipToBounds="True">
 
-    <Grid>
+            <Grid>
 
-         <Image Source="{Binding SelectedPlaylistCoverPath,
-                Converter={StaticResource CoverConverter}}"
-                Stretch="UniformToFill"/>
+                <Border x:Name="PlaylistCoverHoverBorder"
+                        Background="Transparent"
+                        Cursor="Hand"
+                        PointerPressed="OnPlaylistCoverPointerPressed">
 
-        <Border x:Name="PlaylistCoverOverlay"
-                Background="#00000000"
-                IsHitTestVisible="False">
-            <Border.Transitions>
-                <Transitions>
-                    <BrushTransition Property="Background" Duration="0:0:0.12"/>
-                </Transitions>
-            </Border.Transitions>
+                    <Border.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Change cover..." Click="OnChangeCoverClick"/>
+                            <Separator/>
+                            <MenuItem Header="Delete playlist" Click="OnDeletePlaylistFromHeaderClick"/>
+                        </ContextMenu>
+                    </Border.ContextMenu>
+
+                    <Grid>
+
+                        <Image Source="{Binding SelectedPlaylistCoverPath,
+                                        Converter={StaticResource CoverConverter}}"
+                                Stretch="UniformToFill"/>
+
+                        <Border x:Name="PlaylistCoverOverlay"
+                                Background="#00000000"
+                                IsHitTestVisible="False">
+                            <Border.Transitions>
+                                <Transitions>
+                                    <BrushTransition Property="Background" Duration="0:0:0.12"/>
+                                </Transitions>
+                            </Border.Transitions>
+                        </Border>
+
+                        <Border x:Name="PlaylistPlayButtonCircle"
+                                Width="44" Height="44"
+                                CornerRadius="22"
+                                Background="White"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Opacity="0"
+                                IsHitTestVisible="False">
+                            <Border.Transitions>
+                                <Transitions>
+                                    <DoubleTransition Property="Opacity" Duration="0:0:0.12"/>
+                                </Transitions>
+                            </Border.Transitions>
+                            <Polygon Points="0,0 14,7 0,14"
+                                     Fill="#1E1E1E"
+                                     HorizontalAlignment="Center"
+                                     VerticalAlignment="Center"
+                                     Margin="2,0,0,0"/>
+                        </Border>
+
+                    </Grid>
+
+                </Border>
+            </Grid>
+
         </Border>
-
-    </Grid>
-
-</Border>
 
         <!-- Info -->
         <StackPanel Grid.Column="1"
@@ -68,37 +103,37 @@
           RowDefinitions="Auto,*"
           Background="{StaticResource BackgroundBrush}">
 
-<!-- Column headers -->
-<Grid Grid.Row="0"
-      ColumnDefinitions="40,*,160,70"
-      Margin="20,12,20,8">
+        <!-- Column headers -->
+        <Grid Grid.Row="0"
+              ColumnDefinitions="40,*,160,70"
+              Margin="20,12,20,8">
 
-    <TextBlock Grid.Column="0"
-               Text="#"
-               FontSize="11"
-               FontWeight="Bold"
-               Opacity="0.5"/>
+            <TextBlock Grid.Column="0"
+                       Text="#"
+                       FontSize="11"
+                       FontWeight="Bold"
+                       Opacity="0.5"/>
 
-    <TextBlock Grid.Column="1"
-               Text="TITLE"
-               FontSize="11"
-               FontWeight="Bold"
-               Opacity="0.5"/>
+            <TextBlock Grid.Column="1"
+                       Text="TITLE"
+                       FontSize="11"
+                       FontWeight="Bold"
+                       Opacity="0.5"/>
 
-    <TextBlock Grid.Column="2"
-               Text="ARTIST"
-               FontSize="11"
-               FontWeight="Bold"
-               Opacity="0.5"/>
+            <TextBlock Grid.Column="2"
+                       Text="ARTIST"
+                       FontSize="11"
+                       FontWeight="Bold"
+                       Opacity="0.5"/>
 
-    <TextBlock Grid.Column="3"
-               Text="DURATION"
-               FontSize="11"
-               FontWeight="Bold"
-               Opacity="0.5"
-               HorizontalAlignment="Right"/>
+            <TextBlock Grid.Column="3"
+                       Text="DURATION"
+                       FontSize="11"
+                       FontWeight="Bold"
+                       Opacity="0.5"
+                       HorizontalAlignment="Right"/>
 
-</Grid>
+        </Grid>
 
         <!-- Track rows -->
         <ListBox Grid.Row="1"
@@ -110,49 +145,50 @@
 
                 <DataTemplate>
 
-<Border Classes="trackRow"
-        Padding="10">
+                    <Border Classes="trackRow"
+                            Padding="10">
 
-    <Grid ColumnDefinitions="40,*,160,70"
-          PointerPressed="OnTrackPointerPressed"
-          DoubleTapped="OnTrackDoubleTapped">
+                        <Grid ColumnDefinitions="40,*,160,70"
+                              Cursor="Hand"
+                              PointerPressed="OnTrackPointerPressed"
+                              PointerReleased="OnTrackGridPointerReleased">
 
-        <Grid.ContextMenu>
-            <ContextMenu>
-                <MenuItem Header="Remove from playlist" Click="OnRemoveTrackClick"/>
-            </ContextMenu>
-        </Grid.ContextMenu>
+                            <Grid.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="Remove from playlist" Click="OnRemoveTrackClick"/>
+                                </ContextMenu>
+                            </Grid.ContextMenu>
 
-        <!-- Id -->
-        <TextBlock Grid.Column="0"
-                   VerticalAlignment="Center"
-                   Text="{Binding Id}"
-                   Opacity="0.6"/>
+                            <!-- Id -->
+                            <TextBlock Grid.Column="0"
+                                       VerticalAlignment="Center"
+                                       Text="{Binding Id}"
+                                       Opacity="0.6"/>
 
-        <!-- Title -->
-        <TextBlock Grid.Column="1"
-                   VerticalAlignment="Center"
-                   Text="{Binding Title}"
-                   FontWeight="SemiBold"
-                   TextTrimming="CharacterEllipsis"/>
+                            <!-- Title -->
+                            <TextBlock Grid.Column="1"
+                                       VerticalAlignment="Center"
+                                       Text="{Binding Title}"
+                                       FontWeight="SemiBold"
+                                       TextTrimming="CharacterEllipsis"/>
 
-        <!-- Artist -->
-        <TextBlock Grid.Column="2"
-                   VerticalAlignment="Center"
-                   Text="{Binding Artist}"
-                   Opacity="0.7"
-                   TextTrimming="CharacterEllipsis"/>
+                            <!-- Artist -->
+                            <TextBlock Grid.Column="2"
+                                       VerticalAlignment="Center"
+                                       Text="{Binding Artist}"
+                                       Opacity="0.7"
+                                       TextTrimming="CharacterEllipsis"/>
 
-        <!-- Duration -->
-        <TextBlock Grid.Column="3"
-                   VerticalAlignment="Center"
-                   HorizontalAlignment="Right"
-                   Text="{Binding DurationSeconds,
-                   Converter={StaticResource DurationConverter}}"/>
+                            <!-- Duration -->
+                            <TextBlock Grid.Column="3"
+                                       VerticalAlignment="Center"
+                                       HorizontalAlignment="Right"
+                                       Text="{Binding DurationSeconds,
+                                       Converter={StaticResource DurationConverter}}"/>
 
-    </Grid>
+                        </Grid>
 
-</Border>
+                    </Border>
 
                 </DataTemplate>
 

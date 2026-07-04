@@ -92,6 +92,7 @@ public class PlaylistViewModel : ReactiveObject
     public ReactiveCommand<Unit, Unit> CreatePlaylistCommand { get; }
     public ReactiveCommand<Playlist, Unit> DeletePlaylistCommand { get; }
     public ReactiveCommand<Track, Unit> PlayTrackCommand { get; }
+    public ReactiveCommand<Playlist, Unit> PlayPlaylistCommand { get; }
     public ReactiveCommand<Track, Unit> RemoveTrackCommand { get; }
     public ReactiveCommand<(int fromIndex, int toIndex), Unit> MoveTrackCommand { get; }
     public ReactiveCommand<(Track track, Playlist playlist), Unit> AddTrackToPlaylistCommand { get; }
@@ -112,6 +113,7 @@ public class PlaylistViewModel : ReactiveObject
         CreatePlaylistCommand = ReactiveCommand.Create(() => { });
         DeletePlaylistCommand = ReactiveCommand.Create<Playlist>(_ => { });
         PlayTrackCommand = ReactiveCommand.Create<Track>(_ => { });
+        PlayPlaylistCommand = ReactiveCommand.Create<Playlist>(_ => { });
         RemoveTrackCommand = ReactiveCommand.Create<Track>(_ => { });
         MoveTrackCommand = ReactiveCommand.Create<(int, int)>(_ => { });
         AddTrackToPlaylistCommand = ReactiveCommand.Create<(Track, Playlist)>(_ => { });
@@ -129,6 +131,7 @@ public class PlaylistViewModel : ReactiveObject
         CreatePlaylistCommand = ReactiveCommand.CreateFromTask(CreatePlaylistAsync);
         DeletePlaylistCommand = ReactiveCommand.CreateFromTask<Playlist>(DeletePlaylistAsync);
         PlayTrackCommand = ReactiveCommand.CreateFromTask<Track>(PlayTrackAsync);
+        PlayPlaylistCommand = ReactiveCommand.CreateFromTask<Playlist>(PlayPlaylistAsync);
         RemoveTrackCommand = ReactiveCommand.CreateFromTask<Track>(RemoveTrackAsync);
         MoveTrackCommand = ReactiveCommand.CreateFromTask<(int fromIndex, int toIndex)>(MoveTrackAsync);
         AddTrackToPlaylistCommand = ReactiveCommand.CreateFromTask<(Track track, Playlist playlist)>(AddTrackToPlaylistAsync);
@@ -146,6 +149,27 @@ public class PlaylistViewModel : ReactiveObject
         Playlists.Clear();
         foreach (var p in playlists)
             Playlists.Add(p);
+    }
+
+    private async Task PlayPlaylistAsync(Playlist playlist)
+    {
+        var full = await _playlistService.GetWithTracksAsync(playlist.Id);
+        if (full == null) return;
+
+        var tracks = full.PlaylistTracks
+            .OrderBy(pt => pt.Position)
+            .Select(pt => pt.Track)
+            .Where(t => t != null)
+            .Cast<Track>()
+            .ToList();
+
+        if (tracks.Count == 0) return;
+
+        _queue.Clear();
+        foreach (var t in tracks)
+            _queue.Add(t);
+        _queue.SetIndex(0);
+        await _playbackManager.PlayAsync();
     }
 
     private async Task MoveTrackAsync((int fromIndex, int toIndex) args)

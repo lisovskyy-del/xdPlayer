@@ -130,21 +130,56 @@
 
         <Grid.ContextMenu>
             <ContextMenu>
+                <MenuItem Header="Change cover..." Click="OnChangePlaylistCoverClick"/>
+                <Separator/>
                 <MenuItem Header="Delete playlist" Click="OnDeletePlaylistClick"/>
             </ContextMenu>
         </Grid.ContextMenu>
 
         <Border Grid.Column="0"
+                x:Name="SidebarPlaylistCoverBorder"
                 Width="48"
                 Height="48"
                 CornerRadius="6"
                 Background="{StaticResource SurfaceBrush}"
                 ClipToBounds="True"
+                Cursor="Hand"
+                PointerPressed="OnSidebarPlaylistCoverPointerPressed"
+                PointerExited="OnSidebarPlaylistCoverPointerExited"
                 VerticalAlignment="Center">
 
-            <Image Source="{Binding CoverImagePath,
-                            Converter={StaticResource CoverConverter}}"
-                   Stretch="UniformToFill"/>
+            <Grid>
+
+                <Image Source="{Binding CoverImagePath,
+                                Converter={StaticResource CoverConverter}}"
+                       Stretch="UniformToFill"/>
+
+                <Border x:Name="SidebarPlaylistCoverOverlay"
+                        Background="#00000000"
+                        IsHitTestVisible="False">
+                    <Border.Transitions>
+                        <Transitions>
+                            <BrushTransition Property="Background" Duration="0:0:0.12"/>
+                        </Transitions>
+                    </Border.Transitions>
+                </Border>
+
+                <Polygon Points="0,0 8,4 0,8"
+                         Fill="White"
+                         HorizontalAlignment="Center"
+                         VerticalAlignment="Center"
+                         Margin="1,0,0,0"
+                         Opacity="0"
+                         Name="SidebarPlaylistPlayIcon"
+                         IsHitTestVisible="False">
+                    <Polygon.Transitions>
+                        <Transitions>
+                            <DoubleTransition Property="Opacity" Duration="0:0:0.12"/>
+                        </Transitions>
+                    </Polygon.Transitions>
+                </Polygon>
+
+            </Grid>
 
         </Border>
 

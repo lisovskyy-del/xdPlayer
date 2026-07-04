@@ -1,4 +1,5 @@
-﻿using Avalonia.Controls;
+﻿using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
@@ -14,13 +15,13 @@ public partial class PlaylistView : UserControl
 {
     private Track? _draggedTrack;
     private bool _isDragging;
+    private Point _dragStartPosition;
 
     public PlaylistView()
     {
         if (!Design.IsDesignMode)
         {
             var vm = App.Services?.GetRequiredService<PlaylistViewModel>();
-            System.Diagnostics.Debug.WriteLine($"[PlaylistView] VM HashCode: {vm?.GetHashCode()}");
             DataContext = vm;
         }
 
@@ -28,17 +29,6 @@ public partial class PlaylistView : UserControl
 
         if (Design.IsDesignMode)
             DataContext = new PlaylistViewModel();
-
-        PointerReleased += OnTrackPointerReleased;
-    }
-
-    private void OnTrackDoubleTapped(object? sender, TappedEventArgs e)
-    {
-        if (sender is Grid grid && grid.DataContext is Track track)
-        {
-            if (DataContext is PlaylistViewModel vm)
-                vm.PlayTrackCommand.Execute(track).Subscribe();
-        }
     }
 
     private void OnTrackPointerPressed(object? sender, PointerPressedEventArgs e)
@@ -47,10 +37,11 @@ public partial class PlaylistView : UserControl
         {
             _draggedTrack = track;
             _isDragging = true;
+            _dragStartPosition = e.GetPosition(this);
         }
     }
 
-    private void OnTrackPointerReleased(object? sender, PointerReleasedEventArgs e)
+    private void OnTrackGridPointerReleased(object? sender, PointerReleasedEventArgs e)
     {
         if (!_isDragging || _draggedTrack == null)
         {
@@ -59,11 +50,28 @@ public partial class PlaylistView : UserControl
             return;
         }
 
-        var position = e.GetPosition(this);
-        var targetElement = this.InputHitTest(position);
+        var releasePosition = e.GetPosition(this);
+        var distance = Math.Sqrt(
+            Math.Pow(releasePosition.X - _dragStartPosition.X, 2) +
+            Math.Pow(releasePosition.Y - _dragStartPosition.Y, 2));
 
+        // Якщо курсор майже не рухався — це клік, не drag&drop
+        if (distance < 4)
+        {
+            if (sender is Grid clickedGrid && clickedGrid.DataContext is Track clickedTrack &&
+                DataContext is PlaylistViewModel playVm)
+            {
+                playVm.PlayTrackCommand.Execute(clickedTrack).Subscribe();
+            }
+
+            _draggedTrack = null;
+            _isDragging = false;
+            return;
+        }
+
+        var targetElement = this.InputHitTest(releasePosition);
         var element = targetElement as Control;
-        while (element != null && !(element is Grid grid && grid.DataContext is Track))
+        while (element != null && !(element is Grid g && g.DataContext is Track))
             element = element.Parent as Control;
 
         if (element is Grid targetGrid && targetGrid.DataContext is Track targetTrack &&
@@ -72,19 +80,9 @@ public partial class PlaylistView : UserControl
             var fromIndex = vm.CurrentTracks.IndexOf(_draggedTrack);
             var toIndex = vm.CurrentTracks.IndexOf(targetTrack);
 
-            System.Diagnostics.Debug.WriteLine($"[DnD] from={_draggedTrack.Title}({fromIndex}) to={targetTrack.Title}({toIndex})");
-
             if (fromIndex >= 0 && toIndex >= 0 && fromIndex != toIndex)
             {
-                System.Diagnostics.Debug.WriteLine($"[DnD] Executing MoveTrackCommand from={fromIndex} to={toIndex}");
-                vm.MoveTrackCommand.Execute((fromIndex, toIndex)).Subscribe(
-                    _ => System.Diagnostics.Debug.WriteLine("[DnD] Command executed"),
-                    ex => System.Diagnostics.Debug.WriteLine($"[DnD] Command error: {ex.Message}")
-                );
-            }
-            else
-            {
-                System.Diagnostics.Debug.WriteLine($"[DnD] Skipped: fromIndex={fromIndex} toIndex={toIndex}");
+                vm.MoveTrackCommand.Execute((fromIndex, toIndex)).Subscribe();
             }
         }
 
@@ -92,44 +90,19 @@ public partial class PlaylistView : UserControl
         _isDragging = false;
     }
 
-    private void OnTrackDrop(object? sender, DragEventArgs e)
-    {
-        if (_draggedTrack == null) return;
-        if (sender is not Grid grid) return;
-        if (grid.DataContext is not Track targetTrack) return;
-        if (DataContext is not PlaylistViewModel vm) return;
-
-        var fromIndex = vm.CurrentTracks.IndexOf(_draggedTrack);
-        var toIndex = vm.CurrentTracks.IndexOf(targetTrack);
-
-        if (fromIndex < 0 || toIndex < 0 || fromIndex == toIndex) return;
-
-        System.Diagnostics.Debug.WriteLine($"[DnD] Executing MoveTrackCommand from={fromIndex} to={toIndex}");
-        vm.MoveTrackCommand.Execute((fromIndex, toIndex)).Subscribe(
-            _ => System.Diagnostics.Debug.WriteLine("[DnD] Command executed"),
-            ex => System.Diagnostics.Debug.WriteLine($"[DnD] Command error: {ex.Message}")
-        );
-    }
-
     private async void OnDeletePlaylistClick(object? sender, RoutedEventArgs e)
     {
         if (sender is Button button && button.DataContext is Playlist playlist)
         {
-            System.Diagnostics.Debug.WriteLine($"[View] DataContext VM HashCode: {(DataContext as PlaylistViewModel)?.GetHashCode()}");
-            System.Diagnostics.Debug.WriteLine($"[View] Delete clicked for playlist: {playlist.Name}");
             if (DataContext is PlaylistViewModel vm)
-            {
-                System.Diagnostics.Debug.WriteLine($"[View] Executing DeletePlaylistCommand");
-                vm.DeletePlaylistCommand.Execute(playlist).Subscribe(
-                    _ => System.Diagnostics.Debug.WriteLine("[View] Command completed"),
-                    ex => System.Diagnostics.Debug.WriteLine($"[View] Command error: {ex.Message}")
-                );
-            }
-            else
-            {
-                System.Diagnostics.Debug.WriteLine($"[View] DataContext is {DataContext?.GetType().Name}");
-            }
+                vm.DeletePlaylistCommand.Execute(playlist).Subscribe();
         }
+    }
+
+    private void OnDeletePlaylistFromHeaderClick(object? sender, RoutedEventArgs e)
+    {
+        if (DataContext is not PlaylistViewModel vm || vm.SelectedPlaylist == null) return;
+        vm.DeletePlaylistCommand.Execute(vm.SelectedPlaylist).Subscribe();
     }
 
     private async void OnRemoveTrackClick(object? sender, RoutedEventArgs e)
@@ -141,7 +114,17 @@ public partial class PlaylistView : UserControl
         }
     }
 
-    private async void OnPlaylistCoverPointerPressed(object? sender, PointerPressedEventArgs e)
+    private void OnPlaylistCoverPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (!e.GetCurrentPoint(sender as Visual).Properties.IsLeftButtonPressed)
+            return;
+
+        if (DataContext is not PlaylistViewModel vm || vm.SelectedPlaylist == null) return;
+
+        vm.PlayPlaylistCommand.Execute(vm.SelectedPlaylist).Subscribe();
+    }
+
+    private async void OnChangeCoverClick(object? sender, RoutedEventArgs e)
     {
         if (DataContext is not PlaylistViewModel vm || vm.SelectedPlaylist == null) return;
 
@@ -159,9 +142,9 @@ public partial class PlaylistView : UserControl
             FileTypeFilter =
             [
                 new FilePickerFileType("Images")
-            {
-                Patterns = ["*.png", "*.jpg", "*.jpeg", "*.webp"]
-            }
+                {
+                    Patterns = ["*.png", "*.jpg", "*.jpeg", "*.webp"]
+                }
             ]
         });
 
