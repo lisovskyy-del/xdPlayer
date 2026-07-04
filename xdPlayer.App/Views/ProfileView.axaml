@@ -17,8 +17,8 @@
                 <Grid ColumnDefinitions="Auto,*,Auto">
 
 <Border Grid.Column="0"
-        Width="80" Height="80"
-        CornerRadius="40"
+        Width="110" Height="110"
+        CornerRadius="55"
         Background="{StaticResource SurfaceBrush}"
         ClipToBounds="True">
     <Image Source="{Binding AvatarPath, Converter={StaticResource CoverConverter}}"
@@ -43,20 +43,26 @@
                     </StackPanel>
 
 <Button Grid.Column="2"
-        Content="Edit Profile"
         Click="OnEditProfileClick"
         Background="{StaticResource SurfaceBrush}"
         Foreground="{StaticResource TextBrush}"
         BorderThickness="0"
         CornerRadius="6"
         Padding="14,8"
-        VerticalAlignment="Center"/>
+        VerticalAlignment="Center">
+    <StackPanel Orientation="Horizontal" Spacing="8">
+        <Viewbox Width="14" Height="14">
+            <Path Data="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
+                  Fill="{StaticResource TextBrush}"/>
+        </Viewbox>
+        <TextBlock Text="Edit Profile"/>
+    </StackPanel>
+</Button>
 
                 </Grid>
 
             </Border>
 
-            <!-- Stats cards -->
 <!-- Stats cards -->
 <Border Background="{StaticResource CardBrush}"
         CornerRadius="12"
@@ -66,10 +72,11 @@
 
         <!-- Tracks in library -->
         <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="12">
-            <Border Width="36" Height="36" CornerRadius="18" Background="{StaticResource SidebarSelectedBrush}">
-                <Viewbox Width="18" Height="18">
-                    <Path Data="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z" Fill="{StaticResource TextBrush}"/>
-                </Viewbox>
+            <Border Width="36" Height="36" HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="18" Background="{StaticResource SidebarSelectedBrush}">
+<Viewbox Width="18" Height="18" HorizontalAlignment="Center" VerticalAlignment="Center">
+    <Path Data="M9 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h6V3H9z"
+          Fill="{StaticResource TextBrush}"/>
+</Viewbox>
             </Border>
             <StackPanel Spacing="2" VerticalAlignment="Center">
                 <TextBlock Text="{Binding TracksInLibrary}" FontSize="20" FontWeight="Bold" Foreground="{StaticResource TextBrush}"/>
@@ -244,20 +251,22 @@
 
     </Border>
 
-    <!-- Activity chart -->
-    <Border Grid.Column="1" Classes="section" Margin="8,0,0,0">
+<!-- Activity chart -->
+<Border Grid.Column="1" Classes="section" Margin="8,0,0,0">
 
-        <StackPanel Spacing="14">
+    <Grid RowDefinitions="Auto,*">
 
-            <TextBlock Text="Activity Over Time"
-                       FontSize="16" FontWeight="Bold"
-                       Foreground="{StaticResource TextBrush}"/>
+        <TextBlock Grid.Row="0"
+                   Text="Activity Over Time"
+                   FontSize="16" FontWeight="Bold"
+                   Foreground="{StaticResource TextBrush}"
+                   Margin="0,0,0,14"/>
 
-            <Canvas Name="ChartCanvas" MinHeight="150" VerticalAlignment="Stretch" Margin="0,0,0,20"/>
+        <Canvas Grid.Row="1" Name="ChartCanvas" Margin="0,0,0,20"/>
 
-        </StackPanel>
+    </Grid>
 
-    </Border>
+</Border>
 
 </Grid>
 

@@ -189,19 +189,25 @@
         Padding="10,10">
     <Grid ColumnDefinitions="Auto,*,Auto">
 
-        <Ellipse Grid.Column="0"
-                 Width="36" Height="36"
-                 Fill="{StaticResource SurfaceBrush}"/>
+        <Border Grid.Column="0"
+                Width="36" Height="36"
+                CornerRadius="18"
+                Background="{StaticResource SurfaceBrush}"
+                ClipToBounds="True">
+            <Image Source="{Binding ProfileAvatarPath, Converter={StaticResource CoverConverter}}"
+                   Stretch="UniformToFill"/>
+        </Border>
 
         <StackPanel Grid.Column="1"
                     Margin="10,0,0,0"
                     VerticalAlignment="Center"
                     Spacing="1">
 
-            <TextBlock Text="User Name"
+            <TextBlock Text="{Binding ProfileDisplayName}"
                        FontWeight="SemiBold"
                        FontSize="13"
-                       Foreground="{StaticResource TextBrush}"/>
+                       Foreground="{StaticResource TextBrush}"
+                       TextTrimming="CharacterEllipsis"/>
 
             <TextBlock Text="View profile"
                        FontSize="11"

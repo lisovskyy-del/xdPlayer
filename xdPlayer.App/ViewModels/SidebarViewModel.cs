@@ -10,6 +10,10 @@ namespace xdPlayer.App.ViewModels;
 public class SidebarViewModel : ReactiveObject
 {
     private readonly PlaylistViewModel _playlistVm;
+    private readonly ProfileViewModel _profileVm;
+
+    public string ProfileDisplayName => _profileVm.DisplayName;
+    public string? ProfileAvatarPath => _profileVm.AvatarPath;
 
     public Action? LibraryRequested;
     public Action? PlaylistRequested;
@@ -38,9 +42,17 @@ public class SidebarViewModel : ReactiveObject
     public ReactiveCommand<Unit, Unit> ConfirmAddPlaylistCommand { get; }
     public ReactiveCommand<Unit, Unit> CancelAddPlaylistCommand { get; }
 
-    public SidebarViewModel(PlaylistViewModel playlistVm)
+    public SidebarViewModel(PlaylistViewModel playlistVm, ProfileViewModel profileVm)
     {
         _playlistVm = playlistVm;
+        _profileVm = profileVm;
+
+        _profileVm.WhenAnyValue(x => x.DisplayName, x => x.AvatarPath)
+            .Subscribe(_ =>
+        {
+            this.RaisePropertyChanged(nameof(ProfileDisplayName));
+            this.RaisePropertyChanged(nameof(ProfileAvatarPath));
+        });
 
         ShowLibraryCommand = ReactiveCommand.Create(() =>
         {
