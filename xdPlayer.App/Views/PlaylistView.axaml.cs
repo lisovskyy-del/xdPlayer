@@ -2,6 +2,7 @@
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -29,6 +30,18 @@ public partial class PlaylistView : UserControl
 
         if (Design.IsDesignMode)
             DataContext = new PlaylistViewModel();
+    }
+
+    private void OnPlaylistCoverPointerEntered(object? sender, PointerEventArgs e)
+    {
+        PlaylistCoverOverlay.Background = new SolidColorBrush(Color.Parse("#99000000"));
+        PlaylistPlayButtonCircle.Opacity = 1;
+    }
+
+    private void OnPlaylistCoverPointerExited(object? sender, PointerEventArgs e)
+    {
+        PlaylistCoverOverlay.Background = new SolidColorBrush(Color.Parse("#00000000"));
+        PlaylistPlayButtonCircle.Opacity = 0;
     }
 
     private void OnTrackPointerPressed(object? sender, PointerPressedEventArgs e)

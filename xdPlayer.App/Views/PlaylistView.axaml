@@ -23,6 +23,8 @@
                 <Border x:Name="PlaylistCoverHoverBorder"
                         Background="Transparent"
                         Cursor="Hand"
+                        PointerEntered="OnPlaylistCoverPointerEntered"
+                        PointerExited="OnPlaylistCoverPointerExited"
                         PointerPressed="OnPlaylistCoverPointerPressed">
 
                     <Border.ContextMenu>
@@ -150,6 +152,7 @@
 
                         <Grid ColumnDefinitions="40,*,160,70"
                               Cursor="Hand"
+                              Background="Transparent"
                               PointerPressed="OnTrackPointerPressed"
                               PointerReleased="OnTrackGridPointerReleased">
 

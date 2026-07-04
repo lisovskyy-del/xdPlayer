@@ -103,11 +103,15 @@ public class PlaylistService : IPlaylistService
             return;
         }
 
+        var nextPosition = playlist.PlaylistTracks.Count > 0
+            ? playlist.PlaylistTracks.Max(pt => pt.Position) + 1
+            : 0;
+
         playlist.PlaylistTracks.Add(new PlaylistTrack
         {
             PlaylistId = playlistId,
             TrackId = trackId,
-            Position = playlist.PlaylistTracks.Count,
+            Position = nextPosition,
         });
 
         playlist.UpdatedAt = DateTime.UtcNow;

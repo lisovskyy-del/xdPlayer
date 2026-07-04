@@ -126,7 +126,8 @@
 
     <Grid Height="60"
           ColumnDefinitions="48,*"
-          Margin="10,0">
+          Margin="10,0"
+          Background="Transparent">
 
         <Grid.ContextMenu>
             <ContextMenu>
@@ -136,17 +137,18 @@
             </ContextMenu>
         </Grid.ContextMenu>
 
-        <Border Grid.Column="0"
-                x:Name="SidebarPlaylistCoverBorder"
-                Width="48"
-                Height="48"
-                CornerRadius="6"
-                Background="{StaticResource SurfaceBrush}"
-                ClipToBounds="True"
-                Cursor="Hand"
-                PointerPressed="OnSidebarPlaylistCoverPointerPressed"
-                PointerExited="OnSidebarPlaylistCoverPointerExited"
-                VerticalAlignment="Center">
+<Border Grid.Column="0"
+        x:Name="SidebarPlaylistCoverBorder"
+        Width="48"
+        Height="48"
+        CornerRadius="6"
+        Background="{StaticResource SurfaceBrush}"
+        ClipToBounds="True"
+        Cursor="Hand"
+        PointerPressed="OnSidebarPlaylistCoverPointerPressed"
+        PointerEntered="OnSidebarPlaylistCoverPointerEntered"
+        PointerExited="OnSidebarPlaylistCoverPointerExited"
+        VerticalAlignment="Center">
 
             <Grid>
 

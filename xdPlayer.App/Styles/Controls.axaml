@@ -19,14 +19,6 @@
         <Setter Property="Opacity" Value="1"/>
     </Style>
 
-    <Style Selector="Border#PlaylistCoverHoverBorder:pointerover Border#PlaylistCoverOverlay">
-    <Setter Property="Background" Value="#99000000"/>
-</Style>
-
-<Style Selector="Border#PlaylistCoverHoverBorder:pointerover Border#PlaylistPlayButtonCircle">
-    <Setter Property="Opacity" Value="1"/>
-</Style>
-
 <Style Selector="views|TrackCardView Border.hoverable:pointerover">
     <Setter Property="Background" Value="#343434"/>
 </Style>
