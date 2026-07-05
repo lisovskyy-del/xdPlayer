@@ -15,6 +15,15 @@
         <Setter Property="Background" Value="#66000000"/>
     </Style>
 
+
+    <Style Selector="Slider:horizontal /template/ RepeatButton#PART_DecreaseButton">
+    <Setter Property="Background" Value="{DynamicResource AccentBrush}"/>
+</Style>
+
+<Style Selector="Slider:horizontal /template/ Thumb">
+    <Setter Property="Background" Value="{DynamicResource AccentBrush}"/>
+</Style>
+
     <Style Selector="Border#CoverPlayBorder:pointerover Border#PlayButtonCircle">
         <Setter Property="Opacity" Value="1"/>
     </Style>
