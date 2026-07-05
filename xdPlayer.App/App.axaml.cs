@@ -65,6 +65,10 @@ public partial class App : Avalonia.Application
             var statsService = Services.GetRequiredService<IStatisticsService>();
             await statsService.BackfillDailyStatisticsAsync();
 
+            var themeService = Services.GetRequiredService<IThemeService>();
+            var settings = await themeService.LoadSettingsAsync();
+            themeService.ApplyAccentColor(settings.AccentColor);
+
             desktop.MainWindow = Services.GetRequiredService<MainWindow>();
         }
 
@@ -84,6 +88,7 @@ public partial class App : Avalonia.Application
         services.AddScoped<IListeningSessionRepository, ListeningSessionRepository>();
         services.AddScoped<IDailyStatisticsRepository, DailyStatisticsRepository>();
 
+        services.AddSingleton<IThemeService, ThemeService>();
         services.AddSingleton<ITagService, TagService>();
         services.AddSingleton<ILibraryService, LibraryService>();
         services.AddSingleton<IPlaylistService, PlaylistService>();
@@ -95,6 +100,7 @@ public partial class App : Avalonia.Application
         services.AddSingleton<IPlaybackManager, PlaybackManager>();
         services.AddSingleton<IMetadataReader, TagLibMetadataReader>();
 
+        services.AddSingleton<SettingsViewModel>();
         services.AddSingleton<LibraryViewModel>();
         services.AddSingleton<PlaylistViewModel>();
         services.AddSingleton<SidebarViewModel>();

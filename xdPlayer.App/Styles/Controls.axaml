@@ -86,6 +86,21 @@
     <Setter Property="Background" Value="#40000000"/>
 </Style>
 
+<Style Selector="Button.periodButton">
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="BorderThickness" Value="0"/>
+    <Setter Property="CornerRadius" Value="4"/>
+    <Setter Property="Padding" Value="8,4"/>
+    <Setter Property="FontSize" Value="11"/>
+    <Setter Property="Foreground" Value="{StaticResource TextMutedBrush}"/>
+    <Setter Property="Cursor" Value="Hand"/>
+</Style>
+
+<Style Selector="Button.periodButton.active">
+    <Setter Property="Background" Value="{DynamicResource AccentBrush}"/>
+    <Setter Property="Foreground" Value="White"/>
+</Style>
+
 
     <!-- Small icon button (e.g. "+" add playlist) -->
 <Style Selector="Button.iconButton">

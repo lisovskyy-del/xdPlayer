@@ -25,4 +25,6 @@ public class UserProfile
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime LastActiveAt { get; set; } = DateTime.UtcNow;
+
+    public bool MusicBrainzEnabled { get; set; } = true;
 }

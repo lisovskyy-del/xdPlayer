@@ -53,6 +53,12 @@ public partial class SidebarView : UserControl
             icon.Opacity = 0;
     }
 
+    private void OnSettingsRowPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (DataContext is SidebarViewModel vm)
+            vm.ShowSettingsCommand.Execute().Subscribe();
+    }
+
     private async void OnChangePlaylistCoverClick(object? sender, RoutedEventArgs e)
     {
         if (sender is not MenuItem menuItem || menuItem.DataContext is not Playlist playlist) return;

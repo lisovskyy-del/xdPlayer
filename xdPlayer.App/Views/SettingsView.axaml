@@ -1,0 +1,107 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:xdPlayer.App.ViewModels"
+             x:Class="xdPlayer.App.Views.SettingsView"
+             x:DataType="vm:SettingsViewModel">
+
+    <ScrollViewer>
+
+        <StackPanel Margin="32,28" Spacing="24" MaxWidth="500" HorizontalAlignment="Left">
+
+            <TextBlock Text="Settings"
+                       FontSize="26"
+                       FontWeight="Bold"
+                       Foreground="{StaticResource TextBrush}"/>
+
+            <!-- Appearance -->
+            <Border Background="{StaticResource CardBrush}"
+                    CornerRadius="12"
+                    Padding="20">
+
+                <StackPanel Spacing="12">
+
+                    <TextBlock Text="APPEARANCE"
+                               FontSize="11" FontWeight="Bold"
+                               Opacity="0.5"
+                               Foreground="{StaticResource TextBrush}"/>
+
+                    <TextBlock Text="Accent color"
+                               FontSize="13"
+                               Foreground="{StaticResource TextBrush}"/>
+
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+
+                        <Border Width="28" Height="28" CornerRadius="14" Background="#1A56DB"
+                                Cursor="Hand" Tag="#1A56DB" PointerPressed="OnPresetColorPointerPressed"/>
+                        <Border Width="28" Height="28" CornerRadius="14" Background="#1DB954"
+                                Cursor="Hand" Tag="#1DB954" PointerPressed="OnPresetColorPointerPressed"/>
+                        <Border Width="28" Height="28" CornerRadius="14" Background="#E11D48"
+                                Cursor="Hand" Tag="#E11D48" PointerPressed="OnPresetColorPointerPressed"/>
+                        <Border Width="28" Height="28" CornerRadius="14" Background="#F59E0B"
+                                Cursor="Hand" Tag="#F59E0B" PointerPressed="OnPresetColorPointerPressed"/>
+                        <Border Width="28" Height="28" CornerRadius="14" Background="#8B5CF6"
+                                Cursor="Hand" Tag="#8B5CF6" PointerPressed="OnPresetColorPointerPressed"/>
+                        <Border Width="28" Height="28" CornerRadius="14" Background="#FFFFFF"
+                                Cursor="Hand" Tag="#FFFFFF" PointerPressed="OnPresetColorPointerPressed"/>
+
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,4,0,0">
+                        <TextBox Width="120"
+                                 Text="{Binding AccentColorHex}"
+                                 Watermark="#RRGGBB"/>
+                        <Button Content="Apply"
+                                Command="{Binding ApplyHexColorCommand}"
+                                Background="{StaticResource SurfaceBrush}"
+                                Foreground="{StaticResource TextBrush}"
+                                BorderThickness="0"
+                                CornerRadius="4"
+                                Padding="12,6"/>
+                    </StackPanel>
+
+                </StackPanel>
+
+            </Border>
+
+            <!-- Metadata -->
+            <Border Background="{StaticResource CardBrush}"
+                    CornerRadius="12"
+                    Padding="20">
+
+                <StackPanel Spacing="12">
+
+                    <TextBlock Text="METADATA"
+                               FontSize="11" FontWeight="Bold"
+                               Opacity="0.5"
+                               Foreground="{StaticResource TextBrush}"/>
+
+                    <Grid ColumnDefinitions="*,Auto">
+
+                        <StackPanel Grid.Column="0" Spacing="2">
+                            <TextBlock Text="Enrich via MusicBrainz"
+                                       FontSize="13"
+                                       Foreground="{StaticResource TextBrush}"/>
+                            <TextBlock Text="Automatically fetch missing covers, genre, and artist info"
+                                       FontSize="11"
+                                       Opacity="0.5"
+                                       Foreground="{StaticResource TextBrush}"
+                                       TextWrapping="Wrap"/>
+                        </StackPanel>
+
+                        <ToggleSwitch Grid.Column="1"
+                                      OnContent=""
+                                      OffContent=""
+                                      IsChecked="{Binding MusicBrainzEnabled}"
+                                      Margin="5,0,0,0"/>
+
+                    </Grid>
+
+                </StackPanel>
+
+            </Border>
+
+        </StackPanel>
+
+    </ScrollViewer>
+
+</UserControl>

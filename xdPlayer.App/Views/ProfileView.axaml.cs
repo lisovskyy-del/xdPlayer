@@ -86,6 +86,12 @@ public partial class ProfileView : UserControl
 
         if (width <= 0 || height <= 0) return;
 
+        var accentBrush = (IBrush?)Avalonia.Application.Current?.Resources["AccentBrush"]
+            ?? Brushes.White;
+
+        var accentColor = accentBrush is ISolidColorBrush solid ? solid.Color : Colors.White;
+        var areaFillColor = Color.FromArgb(0x33, accentColor.R, accentColor.G, accentColor.B);
+
         var maxValue = Math.Max(data.Max(d => d.Count), 1);
         var stepX = width / (data.Count - 1);
 
@@ -108,13 +114,13 @@ public partial class ProfileView : UserControl
         var area = new Polygon
         {
             Points = areaPoints,
-            Fill = new SolidColorBrush(Color.Parse("#1FFFFFFF"))
+            Fill = new SolidColorBrush(areaFillColor)
         };
 
         var line = new Polyline
         {
             Points = linePoints,
-            Stroke = new SolidColorBrush(Color.Parse("#CCCCCC")),
+            Stroke = accentBrush,
             StrokeThickness = 2
         };
 
