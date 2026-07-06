@@ -54,10 +54,13 @@ public class PlaylistService : IPlaylistService
         var playlist = await uow.Playlists.GetByIdAsync(playlistId);
         if (playlist == null) throw new InvalidOperationException("Playlist not found");
 
-        Directory.CreateDirectory("PlaylistCovers");
+        var oldCoverPath = playlist.CoverImagePath;
+
+        var coversDir = Path.Combine(AppContext.BaseDirectory, "PlaylistCovers");
+        Directory.CreateDirectory(coversDir);
 
         var extension = Path.GetExtension(imageFilePath);
-        var newCoverPath = Path.Combine("PlaylistCovers", $"{Guid.NewGuid()}{extension}");
+        var newCoverPath = Path.Combine(coversDir, $"{Guid.NewGuid()}{extension}");
 
         File.Copy(imageFilePath, newCoverPath, overwrite: true);
 
@@ -66,6 +69,12 @@ public class PlaylistService : IPlaylistService
 
         await uow.Playlists.UpdateAsync(playlist);
         await uow.SaveChangesAsync();
+
+        if (!string.IsNullOrWhiteSpace(oldCoverPath) && oldCoverPath != newCoverPath && File.Exists(oldCoverPath))
+        {
+            try { File.Delete(oldCoverPath); }
+            catch { }
+        }
 
         return playlist;
     }
@@ -161,7 +170,17 @@ public class PlaylistService : IPlaylistService
     {
         using var scope = _scopeFactory.CreateScope();
         var uow = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+
+        var playlist = await uow.Playlists.GetByIdAsync(playlistId);
+        var coverPath = playlist?.CoverImagePath;
+
         await uow.Playlists.DeleteWithTracksAsync(playlistId);
+
+        if (!string.IsNullOrWhiteSpace(coverPath) && File.Exists(coverPath))
+        {
+            try { File.Delete(coverPath); }
+            catch { }
+        }
     }
 
     public async Task<IEnumerable<Playlist>> GetAllWithTracksAsync()

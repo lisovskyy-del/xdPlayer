@@ -13,11 +13,20 @@ public class LibraryService : ILibraryService
 {
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly IMetadataReader _metadata;
+    private readonly IMetadataEnrichmentService _enrichmentService;
 
-    public LibraryService(IServiceScopeFactory scopeFactory, IMetadataReader metadata)
+    public LibraryService(IServiceScopeFactory scopeFactory, IMetadataReader metadata, IMetadataEnrichmentService enrichmentService)
     {
         _scopeFactory = scopeFactory;
         _metadata = metadata;
+        _enrichmentService = enrichmentService;
+    }
+
+    public async Task<Track?> GetByIdAsync(int id)
+    {
+        using var scope = _scopeFactory.CreateScope();
+        var uow = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+        return await uow.Tracks.GetByIdAsync(id);
     }
 
     public async Task<Track> AddFileAsync(string filePath)
@@ -37,6 +46,20 @@ public class LibraryService : ILibraryService
 
         await uow.Tracks.AddAsync(track);
         await uow.SaveChangesAsync();
+
+        var profiles = await uow.UserProfiles.GetAllAsync();
+        var profile = profiles.FirstOrDefault();
+        if (profile?.MusicBrainzEnabled == true &&
+            (string.IsNullOrWhiteSpace(track.Genre) || string.IsNullOrWhiteSpace(track.MusicBrainzId)) || string.IsNullOrEmpty(track.CoverImagePath))
+        {
+            System.Diagnostics.Debug.WriteLine($"[Library] Enqueuing track {track.Id} for enrichment (MusicBrainzEnabled={profile.MusicBrainzEnabled})");
+            _enrichmentService.EnqueueForEnrichment(track.Id);
+        }
+        else
+        {
+            System.Diagnostics.Debug.WriteLine($"[Library] Skipping enrichment for track {track.Id}: enabled={profile?.MusicBrainzEnabled}, genre='{track.Genre}', mbid='{track.MusicBrainzId}'");
+        }
+
         return track;
     }
 
@@ -81,6 +104,8 @@ public class LibraryService : ILibraryService
         var track = await uow.Tracks.GetByIdAsync(trackId);
         if (track == null) throw new InvalidOperationException("Track not found");
 
+        var oldCoverPath = track.CoverImagePath;
+
         Directory.CreateDirectory("Covers");
 
         var extension = Path.GetExtension(imageFilePath);
@@ -92,6 +117,12 @@ public class LibraryService : ILibraryService
 
         await uow.Tracks.UpdateAsync(track);
         await uow.SaveChangesAsync();
+
+        if (!string.IsNullOrWhiteSpace(oldCoverPath) && oldCoverPath != newCoverPath && File.Exists(oldCoverPath))
+        {
+            try { File.Delete(oldCoverPath); }
+            catch { }
+        }
 
         return track;
     }
@@ -141,8 +172,16 @@ public class LibraryService : ILibraryService
         var track = await uow.Tracks.GetByIdAsync(trackId);
         if (track == null) return;
 
+        var coverPath = track.CoverImagePath;
+
         await uow.Tracks.DeleteAsync(track);
         await uow.SaveChangesAsync();
+
+        if (!string.IsNullOrWhiteSpace(coverPath) && File.Exists(coverPath))
+        {
+            try { File.Delete(coverPath); }
+            catch {  }
+        }
     }
 
     private static readonly string[] AudioExtensions =

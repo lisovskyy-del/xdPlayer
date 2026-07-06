@@ -96,9 +96,9 @@ public class LibraryViewModel : ReactiveObject
         SetListViewCommand = ReactiveCommand.Create(() => { IsGridView = false; });
     }
 
-    public LibraryViewModel(ILibraryService libraryService, PlaybackQueue queue, 
-        IPlaybackManager playbackManager, IPlaylistService playlistService,
-        ITagService tagService)
+    public LibraryViewModel(ILibraryService libraryService, PlaybackQueue queue,
+    IPlaybackManager playbackManager, IPlaylistService playlistService,
+    ITagService tagService, IMetadataEnrichmentService enrichmentService)
     {
         _libraryService = libraryService;
         _queue = queue;
@@ -131,6 +131,19 @@ public class LibraryViewModel : ReactiveObject
         {
             await _playlistService.AddTrackAsync(args.playlist.Id, args.track.Id);
         });
+
+        enrichmentService.TrackEnriched += (_, trackId) =>
+        {
+            Avalonia.Threading.Dispatcher.UIThread.Post(async () =>
+            {
+                var updated = await _libraryService.GetByIdAsync(trackId);
+                if (updated == null) return;
+
+                var index = Tracks.ToList().FindIndex(t => t.Id == trackId);
+                if (index >= 0)
+                    Tracks[index] = updated;
+            });
+        };
     }
 
     private async Task LoadTracksAsync()

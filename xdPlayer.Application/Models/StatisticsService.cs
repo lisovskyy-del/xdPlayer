@@ -59,9 +59,11 @@ public class StatisticsService : IStatisticsService
 
         if (!string.IsNullOrWhiteSpace(newAvatarFilePath))
         {
-            Directory.CreateDirectory("AvatarImages");
+            var coversDir = Path.Combine(AppContext.BaseDirectory, "AvatarImages");
+            Directory.CreateDirectory(coversDir);
+
             var extension = Path.GetExtension(newAvatarFilePath);
-            var newPath = Path.Combine("AvatarImages", $"{Guid.NewGuid()}{extension}");
+            var newPath = Path.Combine(coversDir, $"{Guid.NewGuid()}{extension}");
             File.Copy(newAvatarFilePath, newPath, overwrite: true);
             profile.AvatarPath = newPath;
         }

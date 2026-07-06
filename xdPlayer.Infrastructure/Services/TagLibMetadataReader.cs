@@ -19,7 +19,8 @@ public class TagLibMetadataReader : IMetadataReader
 
             byte[] imageBytes = picture.Data.Data;
 
-            Directory.CreateDirectory("Covers");
+            var coversDir = Path.Combine(AppContext.BaseDirectory, "Covers");
+            Directory.CreateDirectory(coversDir);
 
             coverPath = Path.Combine("Covers", $"{Guid.NewGuid()}.jpg");
 

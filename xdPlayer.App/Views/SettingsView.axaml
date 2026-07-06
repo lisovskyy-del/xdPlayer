@@ -81,7 +81,8 @@
                             <TextBlock Text="Enrich via MusicBrainz"
                                        FontSize="13"
                                        Foreground="{StaticResource TextBrush}"/>
-                            <TextBlock Text="Automatically fetch missing covers, genre, and artist info"
+                            <TextBlock Text="Automatically fetch missing covers, genre, and artist info
+                            (Takes 2-3 seconds for each track)"
                                        FontSize="11"
                                        Opacity="0.5"
                                        Foreground="{StaticResource TextBrush}"
