@@ -3,13 +3,25 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:views="using:xdPlayer.App.Views">
 
-    <Style Selector="views|TrackCardView Border">
-        <Setter Property="Transitions">
-            <Transitions>
-                <BrushTransition Property="Background" Duration="0:0:0.15"/>
-            </Transitions>
-        </Setter>
-    </Style>
+<Style Selector="views|TrackCardView Border.trackCard">
+    <Setter Property="Background"
+            Value="{DynamicResource CardBrush}"/>
+
+    <Setter Property="CornerRadius"
+            Value="12"/>
+
+    <Setter Property="Transitions">
+        <Transitions>
+            <BrushTransition Property="Background"
+                             Duration="0:0:0.15"/>
+        </Transitions>
+    </Setter>
+</Style>
+
+<Style Selector="views|TrackCardView:pointerover Border.trackCard">
+    <Setter Property="Background"
+            Value="#383838"/>
+</Style>
 
     <Style Selector="Border#CoverPlayBorder:pointerover Border#CoverPlayOverlay">
         <Setter Property="Background" Value="#66000000"/>
@@ -56,6 +68,10 @@
 
 <Style Selector="Border.sidebarRow.selected:pointerover">
     <Setter Property="Background" Value="{StaticResource SidebarSelectedBrush}"/>
+</Style>
+
+<Style Selector="Border.sidebarRow:pointerover">
+    <Setter Property="Background" Value="{StaticResource SidebarHoverBrush}"/>
 </Style>
 
     <!-- Playlist ListBoxItem -->

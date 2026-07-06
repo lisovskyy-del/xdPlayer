@@ -15,9 +15,30 @@ namespace xdPlayer.App.Views;
 
 public partial class TrackCardView : UserControl
 {
+    private readonly IBrush _hoverBrush =
+        new SolidColorBrush(Color.Parse("#363636"));
+
     public TrackCardView()
     {
         InitializeComponent();
+    }
+
+    private void OnCardPointerEntered(object? sender, PointerEventArgs e)
+    {
+        Card.Background = _hoverBrush;
+
+        PlayButtonCircle.Width = 52;
+        PlayButtonCircle.Height = 52;
+    }
+
+    private void OnCardPointerExited(object? sender, PointerEventArgs e)
+    {
+        Card.Background =
+            (IBrush)Avalonia.Application.Current!
+                .Resources["CardBrush"];
+
+        PlayButtonCircle.Width = 48;
+        PlayButtonCircle.Height = 48;
     }
 
     private void OnContextMenuOpening(object? sender, CancelEventArgs e)
@@ -119,14 +140,18 @@ public partial class TrackCardView : UserControl
 
     private void OnCoverPlayPointerEntered(object? sender, PointerEventArgs e)
     {
-        CoverPlayOverlay.Background = new SolidColorBrush(Color.Parse("#99000000"));
+        CoverPlayOverlay.Background = new SolidColorBrush(Color.Parse("#77000000"));
         PlayButtonCircle.Opacity = 1;
+        PlayButtonCircle.RenderTransform =
+            new ScaleTransform(1, 1);
     }
 
     private void OnCoverPlayPointerExited(object? sender, PointerEventArgs e)
     {
         CoverPlayOverlay.Background = new SolidColorBrush(Color.Parse("#00000000"));
         PlayButtonCircle.Opacity = 0;
+        PlayButtonCircle.RenderTransform =
+            new ScaleTransform(0.9, 0.9);
     }
 
     private void OnCoverPlayDoubleTapped(object? sender, TappedEventArgs e)

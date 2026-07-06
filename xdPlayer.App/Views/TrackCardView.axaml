@@ -4,7 +4,8 @@
              x:Class="xdPlayer.App.Views.TrackCardView"
              x:DataType="entities:Track">
 
-<Border x:Name="Card"
+<Border Classes="trackCard"
+        x:Name="Card"
         Width="170"
         Padding="8"
         Margin="4"
@@ -12,7 +13,29 @@
         Background="{DynamicResource CardBrush}"
         BoxShadow="0 4 16 0 #33000000"
         PointerPressed="OnPointerPressed"
-        DoubleTapped="OnDoubleTapped">
+        DoubleTapped="OnDoubleTapped"
+        PointerEntered="OnCardPointerEntered"
+        PointerExited="OnCardPointerExited"
+        BorderBrush="Transparent">
+
+    <Border.RenderTransform>
+        <ScaleTransform ScaleX="1"
+                        ScaleY="1"/>
+    </Border.RenderTransform>
+
+<Border.Transitions>
+    <Transitions>
+
+        <BrushTransition
+            Property="Background"
+            Duration="0:0:0.12"/>
+
+        <BrushTransition
+            Property="BorderBrush"
+            Duration="0:0:0.12"/>
+
+    </Transitions>
+</Border.Transitions>
 
 <Border.ContextMenu>
 
@@ -36,7 +59,7 @@
 
 <!-- Cover -->
 <Border Height="150"
-        CornerRadius="8"
+        CornerRadius="10"
         Background="#404040"
         ClipToBounds="True">
 
@@ -52,7 +75,8 @@
 
     <Grid>
 
-        <Image Stretch="UniformToFill"
+        <Image x:Name="CoverImage"
+               Stretch="UniformToFill"
                Source="{Binding CoverImagePath,
                         Converter={StaticResource CoverConverter}}"/>
 
@@ -75,11 +99,15 @@
                 VerticalAlignment="Center"
                 Opacity="0"
                 IsHitTestVisible="False">
-            <Border.Transitions>
-                <Transitions>
-                    <DoubleTransition Property="Opacity" Duration="0:0:0.12"/>
-                </Transitions>
-            </Border.Transitions>
+
+    <Border.Transitions>
+        <Transitions>
+
+            <DoubleTransition
+                Property="Opacity"
+                Duration="0:0:0.12"/>
+        </Transitions>
+    </Border.Transitions>
 
             <Polygon Points="0,0 16,8 0,16"
                      Fill="#1E1E1E"

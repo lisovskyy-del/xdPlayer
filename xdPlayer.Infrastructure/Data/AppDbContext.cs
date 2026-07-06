@@ -35,7 +35,8 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<PlaylistTrack>()
             .HasOne(pt => pt.Track)
             .WithMany(t => t.PlaylistTracks)
-            .HasForeignKey(pt => pt.TrackId);
+            .HasForeignKey(pt => pt.TrackId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<TrackTag>()
             .HasKey(tt => new { tt.TrackId, tt.TagId });
@@ -43,7 +44,14 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<TrackTag>()
             .HasOne(tt => tt.Track)
             .WithMany(t => t.TrackTags)
-            .HasForeignKey(tt => tt.TrackId);
+            .HasForeignKey(tt => tt.TrackId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<TrackTag>()
+            .HasOne(tt => tt.Tag)
+            .WithMany(t => t.TrackTags)
+            .HasForeignKey(tt => tt.TagId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<DailyStatistics>()
             .HasIndex(d => d.Date)
@@ -52,5 +60,17 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<Track>()
             .HasIndex(t => t.FilePath)
             .IsUnique();
+
+        modelBuilder.Entity<ListeningSession>()
+            .HasOne(ls => ls.Track)
+            .WithMany(t => t.ListeningSessions)
+            .HasForeignKey(ls => ls.TrackId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<DailyStatistics>()
+            .HasOne(ds => ds.TopTrack)
+            .WithMany()
+            .HasForeignKey(ds => ds.TopTrackId)
+            .OnDelete(DeleteBehavior.SetNull);
     }
 }
