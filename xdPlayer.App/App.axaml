@@ -21,6 +21,8 @@
         <converters:CoverConverter x:Key="CoverConverter"/>
 
         <converters:PeriodEqualsConverter x:Key="PeriodEqualsConverter"/>
+
+        <converters:TrackPlayingMultiConverter x:Key="TrackPlayingMultiConverter"/>
     </ResourceDictionary>
 
 </Application.Resources>

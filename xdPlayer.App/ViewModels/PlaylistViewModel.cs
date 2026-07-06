@@ -60,6 +60,13 @@ public class PlaylistViewModel : ReactiveObject
         }
     }
 
+    private int _currentlyPlayingTrackId;
+    public int CurrentlyPlayingTrackId
+    {
+        get => _currentlyPlayingTrackId;
+        set => this.RaiseAndSetIfChanged(ref _currentlyPlayingTrackId, value);
+    }
+
     public string? SelectedPlaylistCoverPath
     {
         get => _selectedPlaylistCoverPath;
@@ -136,6 +143,13 @@ public class PlaylistViewModel : ReactiveObject
         MoveTrackCommand = ReactiveCommand.CreateFromTask<(int fromIndex, int toIndex)>(MoveTrackAsync);
         AddTrackToPlaylistCommand = ReactiveCommand.CreateFromTask<(Track track, Playlist playlist)>(AddTrackToPlaylistAsync);
         SetPlaylistCoverCommand = ReactiveCommand.CreateFromTask<(Playlist playlist, string filePath)>(SetPlaylistCoverAsync);
+
+        var playerVm = App.Services.GetRequiredService<PlayerViewModel>();
+        CurrentlyPlayingTrackId = playerVm.CurrentTrackId;
+        playerVm.CurrentTrackChanged += (_, trackId) =>
+        {
+            Avalonia.Threading.Dispatcher.UIThread.Post(() => CurrentlyPlayingTrackId = trackId);
+        };
 
         System.Diagnostics.Debug.WriteLine($"[VM] DeletePlaylistCommand is null: {DeletePlaylistCommand == null}");
 

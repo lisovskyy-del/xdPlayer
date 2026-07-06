@@ -18,17 +18,48 @@ public partial class TrackCardView : UserControl
     private readonly IBrush _hoverBrush =
         new SolidColorBrush(Color.Parse("#363636"));
 
+    private PlayerViewModel? _playerVm;
+
     public TrackCardView()
     {
         InitializeComponent();
+
+        DataContextChanged += (_, _) => UpdatePlayingState();
+
+        _playerVm = App.Services?.GetRequiredService<PlayerViewModel>();
+        if (_playerVm != null)
+            _playerVm.CurrentTrackChanged += OnCurrentTrackChanged;
+
+        Unloaded += (_, _) =>
+        {
+            if (_playerVm != null)
+                _playerVm.CurrentTrackChanged -= OnCurrentTrackChanged;
+        };
+
+        UpdatePlayingState();
+    }
+
+    private void OnCurrentTrackChanged(object? sender, int trackId)
+    {
+        Avalonia.Threading.Dispatcher.UIThread.Post(UpdatePlayingState);
+    }
+
+    private void UpdatePlayingState()
+    {
+        if (DataContext is not Track track || _playerVm == null)
+        {
+            Card.BorderBrush = Brushes.Transparent;
+            return;
+        }
+
+        Card.BorderBrush = track.Id == _playerVm.CurrentTrackId
+            ? (IBrush)Avalonia.Application.Current!.Resources["AccentBrush"]
+            : Brushes.Transparent;
     }
 
     private void OnCardPointerEntered(object? sender, PointerEventArgs e)
     {
         Card.Background = _hoverBrush;
-
-        PlayButtonCircle.Width = 52;
-        PlayButtonCircle.Height = 52;
     }
 
     private void OnCardPointerExited(object? sender, PointerEventArgs e)
@@ -36,9 +67,6 @@ public partial class TrackCardView : UserControl
         Card.Background =
             (IBrush)Avalonia.Application.Current!
                 .Resources["CardBrush"];
-
-        PlayButtonCircle.Width = 48;
-        PlayButtonCircle.Height = 48;
     }
 
     private void OnContextMenuOpening(object? sender, CancelEventArgs e)
@@ -95,6 +123,30 @@ public partial class TrackCardView : UserControl
         libraryVm.DeleteTrackCommand.Execute(track).Subscribe();
     }
 
+    private void OnCoverPlayPointerEntered(object? sender, PointerEventArgs e)
+    {
+        CoverPlayOverlay.Background = new SolidColorBrush(Color.Parse("#77000000"));
+        PlayButtonCircle.Opacity = 1;
+
+        if (PlayButtonCircle.RenderTransform is ScaleTransform scale)
+        {
+            scale.ScaleX = 1;
+            scale.ScaleY = 1;
+        }
+    }
+
+    private void OnCoverPlayPointerExited(object? sender, PointerEventArgs e)
+    {
+        CoverPlayOverlay.Background = new SolidColorBrush(Color.Parse("#00000000"));
+        PlayButtonCircle.Opacity = 0;
+
+        if (PlayButtonCircle.RenderTransform is ScaleTransform scale)
+        {
+            scale.ScaleX = 0.9;
+            scale.ScaleY = 0.9;
+        }
+    }
+
     private async void OnChangeCoverClick(object? sender, RoutedEventArgs e)
     {
         if (DataContext is not Track track) return;
@@ -136,22 +188,6 @@ public partial class TrackCardView : UserControl
 
         var libraryVm = App.Services.GetRequiredService<LibraryViewModel>();
         libraryVm.PlayTrackCommand.Execute(track).Subscribe();
-    }
-
-    private void OnCoverPlayPointerEntered(object? sender, PointerEventArgs e)
-    {
-        CoverPlayOverlay.Background = new SolidColorBrush(Color.Parse("#77000000"));
-        PlayButtonCircle.Opacity = 1;
-        PlayButtonCircle.RenderTransform =
-            new ScaleTransform(1, 1);
-    }
-
-    private void OnCoverPlayPointerExited(object? sender, PointerEventArgs e)
-    {
-        CoverPlayOverlay.Background = new SolidColorBrush(Color.Parse("#00000000"));
-        PlayButtonCircle.Opacity = 0;
-        PlayButtonCircle.RenderTransform =
-            new ScaleTransform(0.9, 0.9);
     }
 
     private void OnCoverPlayDoubleTapped(object? sender, TappedEventArgs e)

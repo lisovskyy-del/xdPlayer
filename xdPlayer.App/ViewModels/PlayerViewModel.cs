@@ -32,6 +32,8 @@ public class PlayerViewModel : ReactiveObject, IDisposable
 
     private int _currentTrackId;
 
+    public int CurrentTrackId => _currentTrackId;
+
     private bool _hasTrack;
     public bool HasTrack
     {
@@ -134,6 +136,8 @@ public class PlayerViewModel : ReactiveObject, IDisposable
         }
     }
 
+    public event EventHandler<int>? CurrentTrackChanged;
+
     public ReactiveCommand<Unit, Unit> PlayCommand { get; private set; }
     public ReactiveCommand<Unit, Unit> PauseCommand { get; private set; }
     public ReactiveCommand<Unit, Unit> StopCommand { get; private set; }
@@ -231,13 +235,15 @@ public class PlayerViewModel : ReactiveObject, IDisposable
     private void OnTrackChanged(object? sender, Track track) =>
         Avalonia.Threading.Dispatcher.UIThread.Post(async () =>
         {
-            System.Diagnostics.Debug.WriteLine($"[Track] Changed to: {track.Title}, Id={track.Id}");
             _currentTrackId = track.Id;
             HasTrack = true;
             CurrentTrackTitle = track.Title;
             CurrentTrackArtist = track.Artist;
             CurrentTrackCoverPath = track.CoverImagePath;
             IsLiked = track.IsLiked;
+
+            CurrentTrackChanged?.Invoke(this, track.Id);
+
             try
             {
                 await _sessionService.OnTrackStartedAsync(track.Id);

@@ -16,6 +16,7 @@
         DoubleTapped="OnDoubleTapped"
         PointerEntered="OnCardPointerEntered"
         PointerExited="OnCardPointerExited"
+        BorderThickness="2"
         BorderBrush="Transparent">
 
     <Border.RenderTransform>
@@ -90,32 +91,40 @@
     </Border.Transitions>
 </Border>
 
-        <Border x:Name="PlayButtonCircle"
-                Width="48"
-                Height="48"
-                CornerRadius="24"
-                Background="White"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                Opacity="0"
-                IsHitTestVisible="False">
+<Border x:Name="PlayButtonCircle"
+        Width="48"
+        Height="48"
+        CornerRadius="24"
+        Background="White"
+        HorizontalAlignment="Center"
+        VerticalAlignment="Center"
+        Opacity="0"
+        IsHitTestVisible="False">
+
+<Border.RenderTransform>
+    <ScaleTransform ScaleX="0.9" ScaleY="0.9">
+        <ScaleTransform.Transitions>
+            <Transitions>
+                <DoubleTransition Property="ScaleX" Duration="0:0:0.12"/>
+                <DoubleTransition Property="ScaleY" Duration="0:0:0.12"/>
+            </Transitions>
+        </ScaleTransform.Transitions>
+    </ScaleTransform>
+</Border.RenderTransform>
 
     <Border.Transitions>
         <Transitions>
-
-            <DoubleTransition
-                Property="Opacity"
-                Duration="0:0:0.12"/>
+            <DoubleTransition Property="Opacity" Duration="0:0:0.12"/>
         </Transitions>
     </Border.Transitions>
 
-            <Polygon Points="0,0 16,8 0,16"
-                     Fill="#1E1E1E"
-                     HorizontalAlignment="Center"
-                     VerticalAlignment="Center"
-                     Margin="3,0,0,0"/>
+    <Polygon Points="0,0 16,8 0,16"
+             Fill="#1E1E1E"
+             HorizontalAlignment="Center"
+             VerticalAlignment="Center"
+             Margin="3,0,0,0"/>
 
-        </Border>
+</Border>
 
     </Grid>
 

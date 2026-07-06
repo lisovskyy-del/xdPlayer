@@ -20,6 +20,13 @@ public class LibraryViewModel : ReactiveObject
     private readonly IPlaylistService _playlistService;
     private readonly ITagService _tagService;
 
+    private int _currentlyPlayingTrackId;
+    public int CurrentlyPlayingTrackId
+    {
+        get => _currentlyPlayingTrackId;
+        set => this.RaiseAndSetIfChanged(ref _currentlyPlayingTrackId, value);
+    }
+
     private bool _isGridView = true;
     public bool IsGridView
     {
@@ -125,6 +132,13 @@ public class LibraryViewModel : ReactiveObject
         _ = LoadTracksAsync();
         _ = LoadPlaylistsAsync();
         _ = LoadTagsAsync();
+
+        var playerVm = App.Services.GetRequiredService<PlayerViewModel>();
+        CurrentlyPlayingTrackId = playerVm.CurrentTrackId;
+        playerVm.CurrentTrackChanged += (_, trackId) =>
+        {
+            Avalonia.Threading.Dispatcher.UIThread.Post(() => CurrentlyPlayingTrackId = trackId);
+        };
 
         AddToPlaylistCommand = ReactiveCommand.CreateFromTask<(Track track, Playlist playlist)>(
         async args =>

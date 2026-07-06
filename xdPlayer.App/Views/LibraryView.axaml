@@ -4,7 +4,8 @@
              xmlns:entities="using:xdPlayer.Domain.Entities"
              xmlns:views="using:xdPlayer.App.Views"
              x:Class="xdPlayer.App.Views.LibraryView"
-             x:DataType="vm:LibraryViewModel">
+             x:DataType="vm:LibraryViewModel"
+             x:Name="RootControl">
 
 <Grid RowDefinitions="Auto,Auto,Auto,*">
 
@@ -131,7 +132,14 @@
             <ListBox.ItemTemplate>
                 <DataTemplate x:DataType="entities:Track">
 
-                    <Border Classes="trackRow" Padding="10">
+<Border Classes="trackRow" Padding="10" BorderThickness="2">
+
+    <Border.BorderBrush>
+        <MultiBinding Converter="{StaticResource TrackPlayingMultiConverter}">
+            <Binding Path="Id"/>
+            <Binding Path="DataContext.CurrentlyPlayingTrackId" ElementName="RootControl"/>
+        </MultiBinding>
+    </Border.BorderBrush>
 
                         <Grid ColumnDefinitions="48,*,160,70"
                               DoubleTapped="OnListTrackDoubleTapped"

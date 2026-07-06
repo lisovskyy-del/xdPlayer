@@ -2,7 +2,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:xdPlayer.App.ViewModels"
              x:Class="xdPlayer.App.Views.PlaylistView"
-             x:DataType="vm:PlaylistViewModel">
+             x:DataType="vm:PlaylistViewModel"
+             x:Name="RootControl">
 
 <Grid RowDefinitions="Auto,Auto,*">
 
@@ -147,8 +148,14 @@
 
                 <DataTemplate>
 
-                    <Border Classes="trackRow"
-                            Padding="10">
+<Border Classes="trackRow" Padding="10" BorderThickness="2">
+
+    <Border.BorderBrush>
+        <MultiBinding Converter="{StaticResource TrackPlayingMultiConverter}">
+            <Binding Path="Id"/>
+            <Binding Path="DataContext.CurrentlyPlayingTrackId" ElementName="RootControl"/>
+        </MultiBinding>
+    </Border.BorderBrush>
 
                         <Grid ColumnDefinitions="40,*,160,70"
                               Cursor="Hand"
