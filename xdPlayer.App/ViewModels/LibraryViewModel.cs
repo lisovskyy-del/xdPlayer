@@ -343,4 +343,17 @@ public class LibraryViewModel : ReactiveObject
         foreach (var t in tags)
             AllTags.Add(t);
     }
+
+    public async Task<Track?> RefreshTrackAsync(int trackId)
+    {
+        var updated = await _libraryService.GetByIdAsync(trackId);
+        if (updated == null)
+            return null;
+
+        var index = Tracks.ToList().FindIndex(t => t.Id == trackId);
+        if (index >= 0)
+            Tracks[index] = updated;
+
+        return updated;
+    }
 }

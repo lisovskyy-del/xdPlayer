@@ -46,7 +46,7 @@
             <MenuItem Header="No playlists" IsEnabled="False"/>
         </MenuItem>
 
-        <MenuItem Header="Change cover..." Click="OnChangeCoverClick"/>
+        <MenuItem Header="Edit track..." Click="OnEditTrackClick"></MenuItem>
 
         <Separator/>
 

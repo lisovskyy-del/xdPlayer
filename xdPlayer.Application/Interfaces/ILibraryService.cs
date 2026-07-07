@@ -23,4 +23,7 @@ public interface ILibraryService
     Task DeleteTrackAsync(int trackId);
 
     Task<Track> ToggleLikeAsync(int trackId);
+
+    Task<Track> UpdateTrackMetadataAsync(int trackId, string title, string? artist, string? album, string? genre, int? year, string? musicBrainzId);
+    Task<Track> ResetMetadataFromFileAsync(int trackId);
 }

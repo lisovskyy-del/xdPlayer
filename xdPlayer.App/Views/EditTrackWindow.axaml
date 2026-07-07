@@ -1,0 +1,270 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:xdPlayer.App.ViewModels"
+        xmlns:entities="using:xdPlayer.Domain.Entities"
+        x:Class="xdPlayer.App.Views.EditTrackWindow"
+        x:DataType="vm:EditTrackViewModel"
+        Title="Edit Track"
+        Width="1200" Height="800"
+        CanResize="False"
+        Background="{StaticResource SidebarBackgroundBrush}">
+
+    <Grid RowDefinitions="Auto,Auto,*,Auto" Margin="24">
+
+        <!-- Header -->
+        <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" Margin="0,0,0,16">
+
+            <Border Grid.Column="0"
+                    Width="36" Height="36"
+                    CornerRadius="18"
+                    Background="{StaticResource SurfaceBrush}">
+                <Viewbox Width="16" Height="16" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Path Data="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
+                          Fill="{StaticResource TextBrush}"/>
+                </Viewbox>
+            </Border>
+
+            <StackPanel Grid.Column="1" Margin="12,0,0,0" VerticalAlignment="Center" Spacing="2">
+                <TextBlock Text="Edit Track" FontSize="18" FontWeight="Bold" Foreground="{StaticResource TextBrush}"/>
+                <TextBlock Text="Edit information and metadata for this track" FontSize="12" Opacity="0.6" Foreground="{StaticResource TextBrush}"/>
+            </StackPanel>
+
+            <Button Grid.Column="2"
+                    Content="✕"
+                    Click="OnCancelClick"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Foreground="{StaticResource TextMutedBrush}"
+                    FontSize="16"
+                    VerticalAlignment="Top"/>
+
+        </Grid>
+
+        <Border Grid.Row="1" Height="1" Background="{StaticResource DividerBrush}" Margin="0,0,0,20"/>
+
+        <!-- Main content -->
+        <ScrollViewer Grid.Row="2">
+
+            <Grid ColumnDefinitions="180,*" ColumnSpacing="24">
+
+                <!-- Left: cover -->
+                <StackPanel Grid.Column="0" Spacing="8">
+
+                    <Border Width="180" Height="180"
+                            CornerRadius="8"
+                            Background="#333"
+                            ClipToBounds="True">
+                        <Image Source="{Binding CoverImagePath, Converter={StaticResource CoverConverter}}"
+                               Stretch="UniformToFill"/>
+                    </Border>
+
+                    <Button Content="📷 Change Cover"
+                            Command="{Binding ChangeCoverCommand}"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Center"
+                            Background="{StaticResource SurfaceBrush}"
+                            Foreground="{StaticResource TextBrush}"
+                            BorderThickness="0"
+                            CornerRadius="6"
+                            Padding="0,8"/>
+
+                    <TextBlock Text="JPG, PNG or webp."
+                               FontSize="10"
+                               Opacity="0.5"
+                               TextWrapping="Wrap"
+                               Foreground="{StaticResource TextBrush}"/>
+
+                </StackPanel>
+
+                <!-- Right: fields -->
+                <StackPanel Grid.Column="1" Spacing="16">
+
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="16">
+
+                        <StackPanel Grid.Column="0" Spacing="6">
+                            <TextBlock Text="Title" FontSize="12" Opacity="0.6" Foreground="{StaticResource TextBrush}"/>
+                            <TextBox Text="{Binding Title}"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" Spacing="6">
+                            <TextBlock Text="Artist" FontSize="12" Opacity="0.6" Foreground="{StaticResource TextBrush}"/>
+                            <TextBox Text="{Binding Artist}"/>
+                        </StackPanel>
+
+                    </Grid>
+
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="16">
+
+                        <StackPanel Grid.Column="0" Spacing="6">
+                            <TextBlock Text="Album" FontSize="12" Opacity="0.6" Foreground="{StaticResource TextBrush}"/>
+                            <TextBox Text="{Binding Album}"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" Spacing="6">
+                            <TextBlock Text="Genre" FontSize="12" Opacity="0.6" Foreground="{StaticResource TextBrush}"/>
+                            <TextBox Text="{Binding Genre}"/>
+                        </StackPanel>
+
+                    </Grid>
+
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="16">
+
+                        <StackPanel Grid.Column="0" Spacing="6">
+                            <TextBlock Text="Year" FontSize="12" Opacity="0.6" Foreground="{StaticResource TextBrush}"/>
+                            <NumericUpDown Value="{Binding Year}" FormatString="0" Minimum="0" Maximum="2100"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" Spacing="6">
+                            <TextBlock Text="MusicBrainz ID (optional)" FontSize="12" Opacity="0.6" Foreground="{StaticResource TextBrush}"/>
+                            <TextBox Text="{Binding MusicBrainzId}" Watermark="e.g. 3e89f1d3-5c1a-4e5b-9d5f-0a1b2c3d4e5f"/>
+                        </StackPanel>
+
+                    </Grid>
+
+                    <!-- Tags -->
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="Tags" FontSize="12" Opacity="0.6" Foreground="{StaticResource TextBrush}"/>
+
+                        <Border Background="{StaticResource SurfaceBrush}" CornerRadius="6" Padding="8">
+                            <WrapPanel ItemSpacing="6" LineSpacing="6">
+
+                                <ItemsControl ItemsSource="{Binding Tags}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <WrapPanel ItemSpacing="6" LineSpacing="6"/>
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="entities:Tag">
+                                            <Border Background="{StaticResource SidebarSelectedBrush}"
+                                                    CornerRadius="12"
+                                                    Padding="10,4">
+                                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                                    <TextBlock Text="{Binding Name}" FontSize="12" Foreground="{StaticResource TextBrush}"/>
+                                                    <Button Content="✕"
+                                                            FontSize="10"
+                                                            Background="Transparent"
+                                                            BorderThickness="0"
+                                                            Padding="0"
+                                                            Foreground="{StaticResource TextMutedBrush}"
+                                                            Command="{Binding $parent[ItemsControl].((vm:EditTrackViewModel)DataContext).RemoveTagCommand}"
+                                                            CommandParameter="{Binding}"/>
+                                                </StackPanel>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+
+                                <TextBox Text="{Binding NewTagText}"
+                                         Watermark="+ Add tag"
+                                         BorderThickness="0"
+                                         Background="Transparent"
+                                         Width="100"
+                                         KeyDown="OnNewTagKeyDown"/>
+
+                            </WrapPanel>
+                        </Border>
+                    </StackPanel>
+
+                    <!-- Liked toggle -->
+                    <Border Background="{StaticResource SurfaceBrush}" CornerRadius="8" Padding="14">
+                        <Grid ColumnDefinitions="Auto,*,Auto">
+                            <Viewbox Grid.Column="0" Width="18" Height="18" VerticalAlignment="Center">
+                                <Path Data="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+                                      Fill="{StaticResource TextBrush}"/>
+                            </Viewbox>
+                            <StackPanel Grid.Column="1" Margin="12,0,0,0" VerticalAlignment="Center" Spacing="1">
+                                <TextBlock Text="Liked" FontSize="13" Foreground="{StaticResource TextBrush}"/>
+                                <TextBlock Text="Mark this track as liked" FontSize="11" Opacity="0.5" Foreground="{StaticResource TextBrush}"/>
+                            </StackPanel>
+                            <ToggleSwitch Grid.Column="2" OnContent="" OffContent="" IsChecked="{Binding IsLiked}"/>
+                        </Grid>
+                    </Border>
+
+                    <!-- Info grid -->
+                    <Border Background="{StaticResource SurfaceBrush}" CornerRadius="8" Padding="16">
+                        <Grid ColumnDefinitions="*,*,*" RowDefinitions="Auto,Auto,Auto" RowSpacing="14">
+
+                            <StackPanel Grid.Row="0" Grid.Column="0" Spacing="2">
+                                <TextBlock Text="File" FontSize="11" Opacity="0.5" Foreground="{StaticResource TextBrush}"/>
+                                <TextBlock Text="{Binding FilePath}" FontSize="12" Foreground="{StaticResource TextBrush}" TextTrimming="CharacterEllipsis"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Row="0" Grid.Column="1" Spacing="2">
+                                <TextBlock Text="Play count" FontSize="11" Opacity="0.5" Foreground="{StaticResource TextBrush}"/>
+                                <TextBlock Text="{Binding PlayCount}" FontSize="12" Foreground="{StaticResource TextBrush}"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Row="0" Grid.Column="2" Spacing="2">
+                                <TextBlock Text="Last played" FontSize="11" Opacity="0.5" Foreground="{StaticResource TextBrush}"/>
+                                <TextBlock Text="{Binding LastPlayedText}" FontSize="12" Foreground="{StaticResource TextBrush}"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Row="1" Grid.Column="0" Spacing="2">
+                                <TextBlock Text="Duration" FontSize="11" Opacity="0.5" Foreground="{StaticResource TextBrush}"/>
+                                <TextBlock Text="{Binding DurationText}" FontSize="12" Foreground="{StaticResource TextBrush}"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Row="1" Grid.Column="1" Spacing="2">
+                                <TextBlock Text="Total listened" FontSize="11" Opacity="0.5" Foreground="{StaticResource TextBrush}"/>
+                                <TextBlock Text="{Binding TotalListenedText}" FontSize="12" Foreground="{StaticResource TextBrush}"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Row="1" Grid.Column="2" Spacing="2">
+                                <TextBlock Text="Folder" FontSize="11" Opacity="0.5" Foreground="{StaticResource TextBrush}"/>
+                                <TextBlock Text="{Binding Folder}" FontSize="12" Foreground="{StaticResource TextBrush}" TextTrimming="CharacterEllipsis"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Row="2" Grid.Column="0" Spacing="2">
+                                <TextBlock Text="Added" FontSize="11" Opacity="0.5" Foreground="{StaticResource TextBrush}"/>
+                                <TextBlock Text="{Binding AddedText}" FontSize="12" Foreground="{StaticResource TextBrush}"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Row="2" Grid.Column="1" Spacing="2">
+                                <TextBlock Text="MusicBrainz ID" FontSize="11" Opacity="0.5" Foreground="{StaticResource TextBrush}"/>
+                                <TextBlock Text="{Binding MusicBrainzId}" FontSize="12" Foreground="{StaticResource TextBrush}" TextTrimming="CharacterEllipsis"/>
+                            </StackPanel>
+
+                        </Grid>
+                    </Border>
+
+                </StackPanel>
+
+            </Grid>
+
+        </ScrollViewer>
+
+        <!-- Footer -->
+        <Grid Grid.Row="3" ColumnDefinitions="Auto,*,Auto,Auto" Margin="0,20,0,0">
+
+            <Button Grid.Column="0"
+                    Content="↻ Reset from file"
+                    Command="{Binding ResetFromFileCommand}"
+                    Background="Transparent"
+                    Foreground="{StaticResource TextMutedBrush}"
+                    BorderThickness="0"/>
+
+            <Button Grid.Column="2"
+                    Content="Cancel"
+                    Command="{Binding CancelCommand}"
+                    Background="{StaticResource SurfaceBrush}"
+                    Foreground="{StaticResource TextBrush}"
+                    BorderThickness="0"
+                    CornerRadius="6"
+                    Padding="16,8"
+                    Margin="0,0,8,0"/>
+
+            <Button Grid.Column="3"
+                    Content="Save Changes"
+                    Command="{Binding SaveCommand}"
+                    Background="{DynamicResource AccentBrush}"
+                    Foreground="White"
+                    BorderThickness="0"
+                    CornerRadius="6"
+                    Padding="16,8"/>
+
+        </Grid>
+
+    </Grid>
+
+</Window>

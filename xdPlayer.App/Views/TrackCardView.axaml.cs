@@ -57,6 +57,27 @@ public partial class TrackCardView : UserControl
             : Brushes.Transparent;
     }
 
+    private async void OnEditTrackClick(object? sender, RoutedEventArgs e)
+    {
+        if (DataContext is not Track track) return;
+
+        var topLevel = Avalonia.Application.Current?.ApplicationLifetime is
+            Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktop
+            ? desktop.MainWindow
+            : null;
+
+        if (topLevel == null) return;
+
+        var editWindow = new EditTrackWindow(track);
+        await editWindow.ShowDialog(topLevel);
+
+        if (editWindow.Confirmed)
+        {
+            var libraryVm = App.Services.GetRequiredService<LibraryViewModel>();
+            var updated = await libraryVm.RefreshTrackAsync(track.Id);
+        }
+    }
+
     private void OnCardPointerEntered(object? sender, PointerEventArgs e)
     {
         Card.Background = _hoverBrush;
@@ -145,36 +166,6 @@ public partial class TrackCardView : UserControl
             scale.ScaleX = 0.9;
             scale.ScaleY = 0.9;
         }
-    }
-
-    private async void OnChangeCoverClick(object? sender, RoutedEventArgs e)
-    {
-        if (DataContext is not Track track) return;
-
-        var topLevel = Avalonia.Application.Current?.ApplicationLifetime is
-            Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktop
-            ? desktop.MainWindow
-            : null;
-
-        if (topLevel == null) return;
-
-        var files = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
-        {
-            Title = "Choose cover image",
-            AllowMultiple = false,
-            FileTypeFilter =
-            [
-                new FilePickerFileType("Images")
-            {
-                Patterns = ["*.png", "*.jpg", "*.jpeg", "*.webp"]
-            }
-            ]
-        });
-
-        if (files.Count == 0) return;
-
-        var libraryVm = App.Services.GetRequiredService<LibraryViewModel>();
-        await libraryVm.SetTrackCoverCommand.Execute((track, files[0].Path.LocalPath));
     }
 
     private void OnCoverPlayPointerPressed(object? sender, PointerPressedEventArgs e)

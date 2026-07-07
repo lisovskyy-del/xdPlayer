@@ -48,4 +48,17 @@ public class TagLibMetadataReader : IMetadataReader
             AddedAt = DateTime.UtcNow,
         };
     }
+
+    public void WriteMetadata(string filePath, string title, string? artist, string? album, string? genre, int? year)
+    {
+        var file = TagLib.File.Create(filePath);
+
+        file.Tag.Title = title;
+        file.Tag.Performers = artist != null ? new[] { artist } : Array.Empty<string>();
+        file.Tag.Album = album;
+        file.Tag.Genres = genre != null ? new[] { genre } : Array.Empty<string>();
+        if (year.HasValue) file.Tag.Year = (uint)year.Value;
+
+        file.Save();
+    }
 }

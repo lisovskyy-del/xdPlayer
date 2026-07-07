@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using xdPlayer.Application.Helpers;
 using xdPlayer.Application.Interfaces;
@@ -196,6 +197,71 @@ public class LibraryService : ILibraryService
         if (track == null) throw new InvalidOperationException("Track not found");
 
         track.IsLiked = !track.IsLiked;
+
+        await uow.Tracks.UpdateAsync(track);
+        await uow.SaveChangesAsync();
+
+        return track;
+    }
+
+    public async Task<Track> UpdateTrackMetadataAsync(int trackId, string title, string? artist, string? album, string? genre, int? year, string? musicBrainzId)
+    {
+        using var scope = _scopeFactory.CreateScope();
+        var uow = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+
+        var track = await uow.Tracks.GetByIdAsync(trackId);
+        if (track == null) throw new InvalidOperationException("Track not found");
+
+        track.Title = title;
+        track.Artist = artist;
+        track.Album = album;
+        track.Genre = genre;
+        track.Year = year;
+        track.MusicBrainzId = musicBrainzId;
+
+        await uow.Tracks.UpdateAsync(track);
+        await uow.SaveChangesAsync();
+
+        try
+        {
+            _metadata.WriteMetadata(track.FilePath, title, artist, album, genre, year);
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[Library] Failed to write tags to file: {ex.Message}");
+        }
+
+        return track;
+    }
+
+    public async Task<Track> ResetMetadataFromFileAsync(int trackId)
+    {
+        using var scope = _scopeFactory.CreateScope();
+        var uow = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+
+        var track = await uow.Tracks.GetByIdAsync(trackId);
+        if (track == null) throw new InvalidOperationException("Track not found");
+
+        var fresh = _metadata.ReadMetadata(track.FilePath);
+
+        track.Title = fresh.Title;
+        track.Artist = fresh.Artist;
+        track.Album = fresh.Album;
+        track.Genre = fresh.Genre;
+        track.Year = fresh.Year;
+        track.DurationSeconds = fresh.DurationSeconds;
+
+        // Обкладинку оновлюємо лише якщо файл дійсно має нову — прибираємо стару, якщо замінюємо
+        if (!string.IsNullOrWhiteSpace(fresh.CoverImagePath) && fresh.CoverImagePath != track.CoverImagePath)
+        {
+            var oldCover = track.CoverImagePath;
+            track.CoverImagePath = fresh.CoverImagePath;
+
+            if (!string.IsNullOrWhiteSpace(oldCover) && File.Exists(oldCover))
+            {
+                try { File.Delete(oldCover); } catch { }
+            }
+        }
 
         await uow.Tracks.UpdateAsync(track);
         await uow.SaveChangesAsync();
