@@ -4,6 +4,7 @@
         Title="Edit Profile"
         Width="340" Height="380"
         CanResize="False"
+        Icon="avares://xdPlayer.App/Assets/xdPlayer.ico"
         Background="{StaticResource SidebarBackgroundBrush}">
 
     <StackPanel Margin="24" Spacing="16">

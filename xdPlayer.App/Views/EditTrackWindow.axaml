@@ -4,6 +4,7 @@
         xmlns:entities="using:xdPlayer.Domain.Entities"
         x:Class="xdPlayer.App.Views.EditTrackWindow"
         x:DataType="vm:EditTrackViewModel"
+        Icon="avares://xdPlayer.App/Assets/xdPlayer.ico"
         Title="Edit Track"
         Width="1200" Height="800"
         CanResize="False"
