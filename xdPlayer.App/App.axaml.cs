@@ -73,31 +73,38 @@ public partial class App : Avalonia.Application
                 });
             });
 
-            var trayIcons = new TrayIcons
+            var trayIcon = new TrayIcon
             {
-                new TrayIcon
-                {
-                    Icon = new WindowIcon(new Bitmap(AssetLoader.Open(iconUri))),
-                    ToolTipText = "xdPlayer",
+                Icon = new WindowIcon(new Bitmap(AssetLoader.Open(iconUri))),
+                ToolTipText = "xdPlayer",
 
-                    Menu = new NativeMenu
+                Menu = new NativeMenu
+                {
+                    Items =
+                {
+            new NativeMenuItem("Open")
+            {
+                Command = new ActionCommand(restoreWindowAction)
+            },
+            new NativeMenuItemSeparator(),
+            new NativeMenuItem("Exit")
+            {
+                Command = new ActionCommand(() =>
+                {
+                    Dispatcher.UIThread.Post(() =>
                     {
-                        Items =
-                        {
-                            new NativeMenuItem("Exit")
-                            {
-                                Command = new ActionCommand(() =>
-                                {
-                                    Dispatcher.UIThread.Post(() =>
-                                    {
-                                        mainWindow.ForceShutdown();
-                                        desktop.Shutdown();
-                                    });
-                                })
-                            }
-                        }
-                    }
+                        mainWindow.ForceShutdown();
+                        desktop.Shutdown();
+                    });
+                })
+            }
+        }
                 }
+            };
+
+            trayIcon.Clicked += (sender, args) =>
+            {
+                restoreWindowAction();
             };
 
             desktop.Exit += async (_, _) =>
@@ -128,7 +135,7 @@ public partial class App : Avalonia.Application
             themeService.ApplyAccentColor(settings.AccentColor);
 
 
-            Avalonia.Application.Current!.SetValue(TrayIcon.IconsProperty, trayIcons);
+            var trayIcons = new TrayIcons { trayIcon };
         }
 
         base.OnFrameworkInitializationCompleted();
