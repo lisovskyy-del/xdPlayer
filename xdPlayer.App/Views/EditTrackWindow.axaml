@@ -20,7 +20,7 @@
                     Background="{StaticResource SurfaceBrush}">
                 <Viewbox Width="16" Height="16" HorizontalAlignment="Center" VerticalAlignment="Center">
                     <Path Data="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
-                          Fill="{StaticResource TextBrush}"/>
+                          Fill="{DynamicResource AccentBrush}"/>
                 </Viewbox>
             </Border>
 
@@ -34,7 +34,7 @@
                     Click="OnCancelClick"
                     Background="Transparent"
                     BorderThickness="0"
-                    Foreground="{StaticResource TextMutedBrush}"
+                    Foreground="{DynamicResource AccentBrush}"
                     FontSize="16"
                     VerticalAlignment="Top"/>
 
@@ -128,7 +128,8 @@
                         <Border Background="{StaticResource SurfaceBrush}" CornerRadius="6" Padding="8">
                             <WrapPanel ItemSpacing="6" LineSpacing="6">
 
-                                <ItemsControl ItemsSource="{Binding Tags}">
+                                <ItemsControl ItemsSource="{Binding Tags}"
+                                              VerticalAlignment="Center">
                                     <ItemsControl.ItemsPanel>
                                         <ItemsPanelTemplate>
                                             <WrapPanel ItemSpacing="6" LineSpacing="6"/>
@@ -136,7 +137,7 @@
                                     </ItemsControl.ItemsPanel>
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate x:DataType="entities:Tag">
-                                            <Border Background="{StaticResource SidebarSelectedBrush}"
+                                            <Border Background="{DynamicResource AccentBrush}"
                                                     CornerRadius="12"
                                                     Padding="10,4">
                                                 <StackPanel Orientation="Horizontal" Spacing="6">
@@ -171,7 +172,7 @@
                         <Grid ColumnDefinitions="Auto,*,Auto">
                             <Viewbox Grid.Column="0" Width="18" Height="18" VerticalAlignment="Center">
                                 <Path Data="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
-                                      Fill="{StaticResource TextBrush}"/>
+                                      Fill="{DynamicResource AccentBrush}"/>
                             </Viewbox>
                             <StackPanel Grid.Column="1" Margin="12,0,0,0" VerticalAlignment="Center" Spacing="1">
                                 <TextBlock Text="Liked" FontSize="13" Foreground="{StaticResource TextBrush}"/>
@@ -241,7 +242,7 @@
                     Content="↻ Reset from file"
                     Command="{Binding ResetFromFileCommand}"
                     Background="Transparent"
-                    Foreground="{StaticResource TextMutedBrush}"
+                    Foreground="{DynamicResource AccentBrush}"
                     BorderThickness="0"/>
 
             <Button Grid.Column="2"

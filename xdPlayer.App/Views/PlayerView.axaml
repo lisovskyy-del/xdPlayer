@@ -41,7 +41,7 @@
                         Width="28" Height="28"
                         Command="{Binding ToggleLikeCommand}">
                     <TextBlock Text="{Binding IsLiked, Converter={StaticResource LikeIconConverter}}"
-                               FontSize="14"/>
+                               FontSize="14" Foreground="{DynamicResource AccentBrush}"/>
                 </Button>
 
             </StackPanel>
@@ -177,7 +177,8 @@
                            FontSize="18"
                            Width="20"
                            Opacity="0.8"
-                           VerticalAlignment="Center"/>
+                           VerticalAlignment="Center"
+                           Foreground="{DynamicResource AccentBrush}"/>
 
                 <Slider Width="100"
                         Minimum="0"

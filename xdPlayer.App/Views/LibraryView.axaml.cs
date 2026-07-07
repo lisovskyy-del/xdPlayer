@@ -124,11 +124,13 @@ public partial class LibraryView : UserControl
         }
     }
 
-    private async void OnListChangeCoverClick(object? sender, RoutedEventArgs e)
+    private async void OnEditTrackClick(object? sender, RoutedEventArgs e)
     {
-        if (_contextMenuTrack == null) return;
+        if (sender is not MenuItem menuItem)
+            return;
 
-        var track = _contextMenuTrack;
+        if (menuItem.DataContext is not Track track)
+            return;
 
         var topLevel = Avalonia.Application.Current?.ApplicationLifetime is
             Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktop
@@ -137,23 +139,14 @@ public partial class LibraryView : UserControl
 
         if (topLevel == null) return;
 
-        var files = await topLevel.StorageProvider.OpenFilePickerAsync(new Avalonia.Platform.Storage.FilePickerOpenOptions
+        var editWindow = new EditTrackWindow(track);
+        await editWindow.ShowDialog(topLevel);
+
+        if (editWindow.Confirmed)
         {
-            Title = "Choose cover image",
-            AllowMultiple = false,
-            FileTypeFilter =
-            [
-                new Avalonia.Platform.Storage.FilePickerFileType("Images")
-            {
-                Patterns = ["*.png", "*.jpg", "*.jpeg", "*.webp"]
-            }
-            ]
-        });
-
-        if (files.Count == 0) return;
-
-        if (DataContext is LibraryViewModel vm)
-            await vm.SetTrackCoverCommand.Execute((track, files[0].Path.LocalPath));
+            var libraryVm = App.Services.GetRequiredService<LibraryViewModel>();
+            await libraryVm.RefreshTrackAsync(track.Id);
+        }
     }
 
     private void OnListDeleteClick(object? sender, RoutedEventArgs e)

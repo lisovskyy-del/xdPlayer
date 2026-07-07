@@ -18,6 +18,11 @@
     </Setter>
 </Style>
 
+<Style Selector="ToggleSwitch:checked /template/ Border#SwitchKnobBounds">
+    <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+</Style>
+
+
 <Style Selector="views|TrackCardView:pointerover Border.trackCard">
     <Setter Property="Background"
             Value="#383838"/>

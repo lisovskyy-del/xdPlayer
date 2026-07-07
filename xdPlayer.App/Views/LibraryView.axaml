@@ -149,7 +149,7 @@
                             <Grid.ContextMenu>
                                 <ContextMenu Opening="OnListContextMenuOpening">
                                     <MenuItem Header="Add to playlist"/>
-                                    <MenuItem Header="Change cover..." Click="OnListChangeCoverClick"/>
+                                    <MenuItem Header="Edit Track..." Click="OnEditTrackClick"/>
                                     <Separator/>
                                     <MenuItem Header="Delete" Click="OnListDeleteClick"/>
                                 </ContextMenu>
