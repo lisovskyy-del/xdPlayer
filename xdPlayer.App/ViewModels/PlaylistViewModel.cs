@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
+using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using xdPlayer.Application.Interfaces;
@@ -240,6 +241,8 @@ public class PlaylistViewModel : ReactiveObject
 
     private async Task DeletePlaylistAsync(Playlist playlist)
     {
+        bool wasSelected = SelectedPlaylist?.Id == playlist.Id;
+
         await _playlistService.DeleteAsync(playlist.Id);
 
         await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
@@ -251,6 +254,13 @@ public class PlaylistViewModel : ReactiveObject
             if (toRemove != null)
                 Playlists.Remove(toRemove);
         });
+
+        if (wasSelected)
+        {
+            var sidebarVm = App.Services.GetRequiredService<SidebarViewModel>();
+
+            sidebarVm.ShowLibraryCommand.Execute().Subscribe();
+        }
 
         var libraryVm = App.Services.GetRequiredService<LibraryViewModel>();
         await libraryVm.RefreshPlaylistsAsync();

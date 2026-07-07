@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reactive.Linq;
 using xdPlayer.Domain.Entities;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace xdPlayer.App.ViewModels;
 
