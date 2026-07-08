@@ -280,8 +280,20 @@ public class PlaylistViewModel : ReactiveObject
     private async Task RemoveTrackAsync(Track track)
     {
         if (SelectedPlaylist == null) return;
-        await _playlistService.RemoveTrackAsync(SelectedPlaylist.Id, track.Id);
+        var playlistId = SelectedPlaylist.Id;
+
+        await _playlistService.RemoveTrackAsync(playlistId, track.Id);
         CurrentTracks.Remove(track);
+
+        await RefreshPlaylistsAsync();
+
+        var refreshed = Playlists.FirstOrDefault(p => p.Id == playlistId);
+        if (refreshed != null)
+        {
+            _selectedPlaylist = refreshed;
+            SelectedPlaylistCoverPath = refreshed.CoverImagePath;
+            this.RaisePropertyChanged(nameof(SelectedPlaylist));
+        }
     }
 
     public async Task RefreshAsync()

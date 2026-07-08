@@ -15,9 +15,6 @@ namespace xdPlayer.App.Views;
 
 public partial class TrackCardView : UserControl
 {
-    private readonly IBrush _hoverBrush =
-        new SolidColorBrush(Color.Parse("#363636"));
-
     private PlayerViewModel? _playerVm;
 
     public TrackCardView()
@@ -76,18 +73,6 @@ public partial class TrackCardView : UserControl
             var libraryVm = App.Services.GetRequiredService<LibraryViewModel>();
             var updated = await libraryVm.RefreshTrackAsync(track.Id);
         }
-    }
-
-    private void OnCardPointerEntered(object? sender, PointerEventArgs e)
-    {
-        Card.Background = _hoverBrush;
-    }
-
-    private void OnCardPointerExited(object? sender, PointerEventArgs e)
-    {
-        Card.Background =
-            (IBrush)Avalonia.Application.Current!
-                .Resources["CardBrush"];
     }
 
     private void OnContextMenuOpening(object? sender, CancelEventArgs e)

@@ -4,29 +4,27 @@
     xmlns:views="using:xdPlayer.App.Views">
 
 <Style Selector="views|TrackCardView Border.trackCard">
-    <Setter Property="Background"
-            Value="{DynamicResource CardBrush}"/>
-
-    <Setter Property="CornerRadius"
-            Value="12"/>
-
+    <Setter Property="Background" Value="{DynamicResource CardBrush}"/>
+    <Setter Property="CornerRadius" Value="12"/>
     <Setter Property="Transitions">
         <Transitions>
-            <BrushTransition Property="Background"
-                             Duration="0:0:0.15"/>
+            <BrushTransition Property="Background" Duration="0:0:0.15"/>
         </Transitions>
     </Setter>
+</Style>
+
+<Style Selector="views|TrackCardView Border.trackCard:pointerover">
+    <Setter Property="Background" Value="#363636"/>
+</Style>
+
+<Style Selector="Border.trackCard:pointerover">
+    <Setter Property="Background" Value="#363636"/>
 </Style>
 
 <Style Selector="ToggleSwitch:checked /template/ Border#SwitchKnobBounds">
     <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
 </Style>
 
-
-<Style Selector="views|TrackCardView:pointerover Border.trackCard">
-    <Setter Property="Background"
-            Value="#383838"/>
-</Style>
 
     <Style Selector="Border#CoverPlayBorder:pointerover Border#CoverPlayOverlay">
         <Setter Property="Background" Value="#66000000"/>
@@ -44,10 +42,6 @@
     <Style Selector="Border#CoverPlayBorder:pointerover Border#PlayButtonCircle">
         <Setter Property="Opacity" Value="1"/>
     </Style>
-
-<Style Selector="views|TrackCardView Border.hoverable:pointerover">
-    <Setter Property="Background" Value="#343434"/>
-</Style>
 
 <Style Selector="Button.iconButton.selected /template/ Border">
     <Setter Property="Background" Value="{StaticResource SidebarSelectedBrush}"/>

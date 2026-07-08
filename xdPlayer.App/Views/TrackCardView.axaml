@@ -10,12 +10,9 @@
         Padding="8"
         Margin="4"
         CornerRadius="12"
-        Background="{DynamicResource CardBrush}"
         BoxShadow="0 4 16 0 #33000000"
         PointerPressed="OnPointerPressed"
         DoubleTapped="OnDoubleTapped"
-        PointerEntered="OnCardPointerEntered"
-        PointerExited="OnCardPointerExited"
         BorderThickness="2"
         BorderBrush="Transparent">
 
