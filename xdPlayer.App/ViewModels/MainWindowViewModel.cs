@@ -49,8 +49,9 @@ public class MainWindowViewModel : ReactiveObject
         });
     }
 
-    public void ShowLibrary()
+    public async void ShowLibrary()
     {
+        await Library.RebuildQueueFromLibraryAsync();
         CurrentPage = Library;
     }
 

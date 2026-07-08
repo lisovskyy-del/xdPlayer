@@ -157,9 +157,12 @@
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
 
-                                <TextBox Text="{Binding NewTagText}"
+                                <AutoCompleteBox Text="{Binding NewTagText}"
                                          Watermark="+ Add tag"
                                          BorderThickness="0"
+                                         ItemsSource="{Binding AllAvailableTags}"
+                                         ValueMemberBinding="{Binding Name}"
+                                         FilterMode="StartsWith"
                                          Background="Transparent"
                                          Width="100"
                                          KeyDown="OnNewTagKeyDown"/>

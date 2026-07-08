@@ -12,4 +12,6 @@ public interface ITrackRepository : IRepository<Track>
     Task<IEnumerable<Track>> GetByGenreAsync(string genre);
     Task<IEnumerable<Track>> GetPagedAsync(int page, int pageSize);
     Task<int> GetTotalCountAsync();
+
+    Task<Track?> GetByIdWithTagsAsync(int id);
 }

@@ -356,4 +356,11 @@ public class LibraryViewModel : ReactiveObject
 
         return updated;
     }
+
+    public async Task RebuildQueueFromLibraryAsync()
+    {
+        _queue.Clear();
+        foreach (var t in Tracks)
+            _queue.Add(t);
+    }
 }

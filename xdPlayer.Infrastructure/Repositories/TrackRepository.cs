@@ -38,4 +38,10 @@ public class TrackRepository : Repository<Track>, ITrackRepository
 
     public async Task<int> GetTotalCountAsync() =>
         await _context.Tracks.CountAsync();
+
+    public async Task<Track?> GetByIdWithTagsAsync(int id) =>
+    await _context.Tracks
+        .Include(t => t.TrackTags)
+        .ThenInclude(tt => tt.Tag)
+        .FirstOrDefaultAsync(t => t.Id == id);
 }

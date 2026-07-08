@@ -81,6 +81,7 @@ public class EditTrackViewModel : ReactiveObject
     }
 
     public ObservableCollection<Tag> Tags { get; } = [];
+    public ObservableCollection<Tag> AllAvailableTags { get; } = [];
 
     // Read-only info
     public string FilePath => _track.FilePath;
@@ -135,6 +136,16 @@ public class EditTrackViewModel : ReactiveObject
         AddTagCommand = ReactiveCommand.CreateFromTask(AddTagAsync);
         RemoveTagCommand = ReactiveCommand.CreateFromTask<Tag>(RemoveTagAsync);
         ChangeCoverCommand = ReactiveCommand.Create(() => RequestChangeCover?.Invoke());
+
+        _ = LoadAllTagsAsync();
+    }
+
+    private async Task LoadAllTagsAsync()
+    {
+        var all = await _tagService.GetAllAsync();
+        AllAvailableTags.Clear();
+        foreach (var t in all)
+            AllAvailableTags.Add(t);
     }
 
     private async Task SaveAsync()

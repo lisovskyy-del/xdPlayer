@@ -6,6 +6,7 @@ namespace xdPlayer.Application.Interfaces;
 public interface ILibraryService
 {
     Task<Track?> GetByIdAsync(int id);
+    Task<Track?> GetByIdWithTagsAsync(int id);
 
     Task<Track> AddFileAsync(string filePath);
     Task<IEnumerable<Track>> AddFolderAsync(string folderPath);

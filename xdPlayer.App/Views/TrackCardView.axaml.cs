@@ -9,6 +9,7 @@ using System;
 using System.ComponentModel;
 using System.Reactive.Linq;
 using xdPlayer.App.ViewModels;
+using xdPlayer.Application.Interfaces;
 using xdPlayer.Domain.Entities;
 
 namespace xdPlayer.App.Views;
@@ -58,6 +59,10 @@ public partial class TrackCardView : UserControl
     {
         if (DataContext is not Track track) return;
 
+        var libraryService = App.Services.GetRequiredService<ILibraryService>();
+        var fullTrack = await libraryService.GetByIdWithTagsAsync(track.Id);
+        if (fullTrack == null) return;
+
         var topLevel = Avalonia.Application.Current?.ApplicationLifetime is
             Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktop
             ? desktop.MainWindow
@@ -65,13 +70,13 @@ public partial class TrackCardView : UserControl
 
         if (topLevel == null) return;
 
-        var editWindow = new EditTrackWindow(track);
+        var editWindow = new EditTrackWindow(fullTrack);
         await editWindow.ShowDialog(topLevel);
 
         if (editWindow.Confirmed)
         {
             var libraryVm = App.Services.GetRequiredService<LibraryViewModel>();
-            var updated = await libraryVm.RefreshTrackAsync(track.Id);
+            await libraryVm.RefreshTrackAsync(track.Id);
         }
     }
 

@@ -30,6 +30,13 @@ public class LibraryService : ILibraryService
         return await uow.Tracks.GetByIdAsync(id);
     }
 
+    public async Task<Track?> GetByIdWithTagsAsync(int id)
+    {
+        using var scope = _scopeFactory.CreateScope();
+        var uow = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+        return await uow.Tracks.GetByIdWithTagsAsync(id);
+    }
+
     public async Task<Track> AddFileAsync(string filePath)
     {
         using var scope = _scopeFactory.CreateScope();
