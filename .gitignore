@@ -9,6 +9,7 @@
 xdPlayer.App/Covers/
 xdPlayer.App/PlaylistCovers/
 xdPlayer.App/xdPlayer.db
+xdPlayer.App/AvatarImages
 
 # db
 *.db
