@@ -2,6 +2,7 @@
 using xdPlayer.Application.Interfaces;
 using xdPlayer.Domain.Entities;
 using xdPlayer.Domain.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace xdPlayer.Application.Services;
 
@@ -30,9 +31,19 @@ public class TagService : ITagService
         if (existing != null) return existing;
 
         var tag = new Tag { Name = name, Color = color };
-        await uow.Tags.AddAsync(tag);
-        await uow.SaveChangesAsync();
-        return tag;
+
+        try
+        {
+            await uow.Tags.AddAsync(tag);
+            await uow.SaveChangesAsync();
+            return tag;
+        }
+        catch (DbUpdateException)
+        {
+            var raceWinner = await uow.Tags.GetByNameAsync(name);
+            if (raceWinner != null) return raceWinner;
+            throw;
+        }
     }
 
     public async Task DeleteAsync(int tagId)

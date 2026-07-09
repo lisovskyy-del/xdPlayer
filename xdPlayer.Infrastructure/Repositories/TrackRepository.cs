@@ -44,4 +44,9 @@ public class TrackRepository : Repository<Track>, ITrackRepository
         .Include(t => t.TrackTags)
         .ThenInclude(tt => tt.Tag)
         .FirstOrDefaultAsync(t => t.Id == id);
+
+    public async Task<Track?> GetByFilePathAsync(string filePath) =>
+    await _context.Tracks
+        .AsNoTracking()
+        .FirstOrDefaultAsync(t => t.FilePath == filePath);
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System.Diagnostics;
+using System.Threading;
 using xdPlayer.Domain.Entities;
 using xdPlayer.Domain.Interfaces;
 
@@ -8,6 +9,7 @@ namespace xdPlayer.Application.Models;
 public class ListeningSessionService
 {
     private readonly IServiceScopeFactory _scopeFactory;
+    private readonly SemaphoreSlim _lock = new(1, 1);
     private ListeningSession? _currentSession;
 
     public ListeningSessionService(IServiceScopeFactory scopeFactory)
@@ -17,45 +19,59 @@ public class ListeningSessionService
 
     public async Task OnTrackStartedAsync(int trackId)
     {
-        Console.WriteLine($"[Session] OnTrackStartedAsync called, trackId={trackId}");
-
         if (trackId == 0) return;
 
-        if (_currentSession != null)
+        await _lock.WaitAsync();
+        try
         {
-            using var closeScope = _scopeFactory.CreateScope();
-            var closeUow = closeScope.ServiceProvider.GetRequiredService<IUnitOfWork>();
-            await EndCurrentSessionAsync(closeUow, completed: false);
+            if (_currentSession != null)
+            {
+                using var closeScope = _scopeFactory.CreateScope();
+                var closeUow = closeScope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+                await EndCurrentSessionInternalAsync(closeUow, completed: false);
+            }
+
+            using var scope = _scopeFactory.CreateScope();
+            var uow = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+
+            _currentSession = new ListeningSession
+            {
+                TrackId = trackId,
+                StartedAt = DateTime.UtcNow,
+            };
+
+            await uow.ListeningSessions.AddAsync(_currentSession);
+            await uow.SaveChangesAsync();
+            Debug.WriteLine($"[Session] Saved, Id={_currentSession.Id}");
         }
-
-        using var scope = _scopeFactory.CreateScope();
-        var uow = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
-
-        _currentSession = new ListeningSession
+        finally
         {
-            TrackId = trackId,
-            StartedAt = DateTime.UtcNow,
-        };
-
-        await uow.ListeningSessions.AddAsync(_currentSession);
-        await uow.SaveChangesAsync();
-        Console.WriteLine($"[Session] Saved, Id={_currentSession.Id}");
+            _lock.Release();
+        }
     }
 
     public async Task OnTrackEndedAsync(bool completed)
     {
-        Debug.WriteLine($"[Session] OnTrackEndedAsync called, completed={completed}");
-        if (_currentSession == null)
+        await _lock.WaitAsync();
+        try
         {
-            Debug.WriteLine("[Session] _currentSession is null, skipping");
-            return;
+            if (_currentSession == null)
+            {
+                Debug.WriteLine("[Session] _currentSession is null, skipping");
+                return;
+            }
+
+            using var scope = _scopeFactory.CreateScope();
+            var uow = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+            await EndCurrentSessionInternalAsync(uow, completed);
         }
-        using var scope = _scopeFactory.CreateScope();
-        var uow = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
-        await EndCurrentSessionAsync(uow, completed);
+        finally
+        {
+            _lock.Release();
+        }
     }
 
-    private async Task EndCurrentSessionAsync(IUnitOfWork uow, bool completed)
+    private async Task EndCurrentSessionInternalAsync(IUnitOfWork uow, bool completed)
     {
         if (_currentSession == null) return;
 

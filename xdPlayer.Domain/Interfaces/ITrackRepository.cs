@@ -14,4 +14,6 @@ public interface ITrackRepository : IRepository<Track>
     Task<int> GetTotalCountAsync();
 
     Task<Track?> GetByIdWithTagsAsync(int id);
+
+    Task<Track?> GetByFilePathAsync(string filePath);
 }

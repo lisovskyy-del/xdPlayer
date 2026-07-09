@@ -43,7 +43,7 @@ public class LibraryService : ILibraryService
         var uow = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
 
         var all = await uow.Tracks.GetAllAsync();
-        var existing = all.FirstOrDefault(t => t.FilePath == filePath);
+        var existing = await uow.Tracks.GetByFilePathAsync(filePath);
         if (existing != null) return existing;
 
         var meta = _metadata.ReadMetadata(filePath);

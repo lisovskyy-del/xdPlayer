@@ -47,6 +47,16 @@ public class AppDbContext : DbContext
             .HasForeignKey(tt => tt.TrackId)
             .OnDelete(DeleteBehavior.Cascade);
 
+        modelBuilder.Entity<Tag>()
+            .HasIndex(t => t.Name)
+            .IsUnique();
+
+        modelBuilder.Entity<ListeningSession>()
+            .HasIndex(ls => ls.StartedAt);
+
+        modelBuilder.Entity<PlaylistTrack>()
+            .HasIndex(pt => new { pt.PlaylistId, pt.Position });
+
         modelBuilder.Entity<TrackTag>()
             .HasOne(tt => tt.Tag)
             .WithMany(t => t.TrackTags)
