@@ -47,4 +47,14 @@
     <ProjectReference Include="..\xdPlayer.Infrastructure\xdPlayer.Infrastructure.csproj" />
 	  <AvaloniaResource Include="Assets\**"></AvaloniaResource>
   </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="version.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="version.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 </Project>
