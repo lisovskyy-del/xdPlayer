@@ -20,6 +20,9 @@ public class LibraryViewModel : ReactiveObject
     private readonly IPlaylistService _playlistService;
     private readonly ITagService _tagService;
 
+
+    private int _searchGeneration;
+
     private int _currentlyPlayingTrackId;
     public int CurrentlyPlayingTrackId
     {
@@ -129,8 +132,6 @@ public class LibraryViewModel : ReactiveObject
 
         _ = LoadTracksAsync();
         _ = LoadPlaylistsAsync();
-        _ = LoadTracksAsync();
-        _ = LoadPlaylistsAsync();
         _ = LoadTagsAsync();
 
         var playerVm = App.Services.GetRequiredService<PlayerViewModel>();
@@ -174,12 +175,26 @@ public class LibraryViewModel : ReactiveObject
 
     private async Task SearchAsync(string query)
     {
+        var generation = ++_searchGeneration;
+
         if (string.IsNullOrWhiteSpace(query))
         {
-            await LoadTracksAsync();
+            var tracks = await _libraryService.GetAllAsync();
+            if (generation != _searchGeneration) return;
+
+            Tracks.Clear();
+            _queue.Clear();
+            foreach (var t in tracks)
+            {
+                Tracks.Add(t);
+                _queue.Add(t);
+            }
             return;
         }
+
         var results = await _libraryService.SearchAsync(query);
+        if (generation != _searchGeneration) return;
+
         Tracks.Clear();
         foreach (var t in results)
             Tracks.Add(t);

@@ -46,6 +46,8 @@ public class PlaylistViewModel : ReactiveObject
     private string _newPlaylistName = string.Empty;
     private string? _selectedPlaylistCoverPath;
 
+    private int _loadTracksGeneration;
+
     public ObservableCollection<Playlist> Playlists { get; } = [];
     public ObservableCollection<Track> CurrentTracks { get; } = [];
 
@@ -215,13 +217,16 @@ public class PlaylistViewModel : ReactiveObject
 
     private async Task LoadTracksAsync(int playlistId)
     {
+        var generation = ++_loadTracksGeneration;
+
         var playlist = await _playlistService.GetWithTracksAsync(playlistId);
+        if (generation != _loadTracksGeneration) return;
+
         CurrentTracks.Clear();
         if (playlist == null) return;
-        System.Diagnostics.Debug.WriteLine($"[Playlist] Tracks count: {playlist.PlaylistTracks.Count}");
-        foreach (var pt in playlist.PlaylistTracks)
+
+        foreach (var pt in playlist.PlaylistTracks.OrderBy(pt => pt.Position))
         {
-            System.Diagnostics.Debug.WriteLine($"[Playlist] Track: {pt.Track?.Title}");
             if (pt.Track != null)
                 CurrentTracks.Add(pt.Track);
         }

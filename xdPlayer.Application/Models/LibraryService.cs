@@ -42,7 +42,6 @@ public class LibraryService : ILibraryService
         using var scope = _scopeFactory.CreateScope();
         var uow = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
 
-        var all = await uow.Tracks.GetAllAsync();
         var existing = await uow.Tracks.GetByFilePathAsync(filePath);
         if (existing != null) return existing;
 

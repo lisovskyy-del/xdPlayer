@@ -160,7 +160,7 @@ public class StatisticsService : IStatisticsService
         var uow = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
 
         var allTracks = (await uow.Tracks.GetAllAsync()).ToList();
-        var likedTracks = allTracks.Where(t => t.IsLiked).ToList();
+        var likedCount = (await uow.Tracks.GetLikedAsync()).Count();
 
         var totalPlayTimeSeconds = (int)allTracks.Sum(t => t.TotalListenedSeconds);
 
@@ -180,7 +180,7 @@ public class StatisticsService : IStatisticsService
         return new ProfileOverview
         {
             TracksInLibrary = allTracks.Count,
-            LikedTracksCount = likedTracks.Count,
+            LikedTracksCount = likedCount,
             TotalPlayTimeSeconds = totalPlayTimeSeconds,
             DaysListened = daysListened,
             MostPlayedGenre = mostPlayedGenre ?? "—"

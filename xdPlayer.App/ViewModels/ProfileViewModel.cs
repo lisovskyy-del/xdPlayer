@@ -12,6 +12,8 @@ public class ProfileViewModel : ReactiveObject
 {
     private readonly IStatisticsService _statisticsService;
 
+    private int _periodGeneration;
+
     private string? _avatarPath;
     public string? AvatarPath
     {
@@ -75,8 +77,9 @@ public class ProfileViewModel : ReactiveObject
         set
         {
             this.RaiseAndSetIfChanged(ref _selectedPeriod, value);
-            _ = LoadTopTracksAsync();
-            _ = LoadChartAsync();
+            var generation = ++_periodGeneration;
+            _ = LoadTopTracksAsync(generation);
+            _ = LoadChartAsync(generation);
         }
     }
 
@@ -132,21 +135,26 @@ public class ProfileViewModel : ReactiveObject
         var hours = overview.TotalPlayTimeSeconds / 3600;
         TotalPlayTimeText = $"{hours} h";
 
-        await LoadTopTracksAsync();
-        await LoadChartAsync();
+        var generation = ++_periodGeneration;
+        await LoadTopTracksAsync(generation);
+        await LoadChartAsync(generation);
     }
 
-    private async Task LoadTopTracksAsync()
+    private async Task LoadTopTracksAsync(int generation)
     {
         var tracks = await _statisticsService.GetTopTracksAsync(SelectedPeriod);
+        if (generation != _periodGeneration) return;
+
         TopTracks.Clear();
         foreach (var t in tracks)
             TopTracks.Add(t);
     }
 
-    private async Task LoadChartAsync()
+    private async Task LoadChartAsync(int generation)
     {
         var data = await _statisticsService.GetPlaysPerDayAsync(SelectedPeriod);
+        if (generation != _periodGeneration) return;
+
         ChartData.Clear();
         foreach (var d in data)
             ChartData.Add(d);
