@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using xdPlayer.Updater.Services;
 
 namespace xdPlayer.Launcher.Services;
 

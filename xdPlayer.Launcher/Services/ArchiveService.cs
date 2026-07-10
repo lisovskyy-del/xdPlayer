@@ -5,6 +5,32 @@ namespace xdPlayer.Launcher.Services;
 
 public static class ArchiveService
 {
+    public static void Install()
+    {
+        foreach (var file in Directory.GetFiles(
+                     PathService.ExtractedDirectory,
+                     "*",
+                     SearchOption.AllDirectories))
+        {
+            var relativePath = Path.GetRelativePath(
+                PathService.ExtractedDirectory,
+                file);
+
+            if (relativePath.Equals("xdPlayer.exe",
+                StringComparison.OrdinalIgnoreCase))
+                continue;
+
+            var destination = Path.Combine(
+                PathService.Root,
+                relativePath);
+
+            Directory.CreateDirectory(
+                Path.GetDirectoryName(destination)!);
+
+            File.Copy(file, destination, true);
+        }
+    }
+
     public static bool Verify(string archivePath)
     {
         try

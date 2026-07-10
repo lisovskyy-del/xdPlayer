@@ -1,19 +1,12 @@
-﻿namespace xdPlayer.Launcher.Services;
+﻿using xdPlayer.Launcher.Models;
+
+namespace xdPlayer.Launcher.Services;
 
 public static class UpdateService
 {
     public static async Task UpdateIfNeeded()
     {
         PathService.CreateDirectories();
-
-        Logger.Info("Checking installation...");
-
-        if (!InstallationService.IsInstalled())
-        {
-            Logger.Info("Player is not installed.");
-            await InstallLatestVersion();
-            return;
-        }
 
         Logger.Info("Checking latest release...");
 
@@ -22,6 +15,16 @@ public static class UpdateService
         if (release is null)
         {
             Logger.Error("Unable to get latest release.");
+            return;
+        }
+
+        Logger.Info("Checking player...");
+
+        if (!File.Exists(PathService.PlayerExecutable))
+        {
+            Logger.Info("Player not found.");
+
+            await InstallLatestVersion(release);
             return;
         }
 
@@ -38,16 +41,11 @@ public static class UpdateService
 
         ProcessService.KillPlayer();
 
-        await InstallLatestVersion();
+        await InstallLatestVersion(release);
     }
 
-    private static async Task InstallLatestVersion()
+    private static async Task InstallLatestVersion(GitHubRelease release)
     {
-        var release = await GitHubService.GetLatestReleaseAsync();
-
-        if (release is null)
-            throw new Exception("Unable to get latest release.");
-
         var asset = GitHubService.GetApplicationPackage(release);
 
         if (asset is null)
@@ -57,31 +55,36 @@ public static class UpdateService
 
         PathService.ClearTemp();
 
-        var result = await DownloadService.DownloadAsync(
-            asset.DownloadUrl,
-            PathService.DownloadedArchive);
+        try
+        {
+            var result = await DownloadService.DownloadAsync(
+                asset.DownloadUrl,
+                PathService.DownloadedArchive);
 
-        if (!result.Success)
-            throw new Exception(result.Error);
+            if (!result.Success)
+                throw new Exception(result.Error);
 
-        Logger.Info("Download complete.");
+            Logger.Info("Download complete.");
 
-        if (!ArchiveService.Verify(PathService.DownloadedArchive))
-            throw new Exception("Downloaded archive is invalid.");
+            if (!ArchiveService.Verify(PathService.DownloadedArchive))
+                throw new Exception("Downloaded archive is invalid.");
 
-        Logger.Info("Extracting archive...");
+            Logger.Info("Extracting archive...");
 
-        ArchiveService.Extract(PathService.DownloadedArchive);
+            ArchiveService.Extract(PathService.DownloadedArchive);
 
-        if (!ArchiveService.Validate())
-            throw new Exception("Archive validation failed.");
+            if (!ArchiveService.Validate())
+                throw new Exception("Archive validation failed.");
 
-        Logger.Info("Installing...");
+            Logger.Info("Installing...");
 
-        InstallationService.Install(PathService.ExtractedDirectory);
+            ArchiveService.Install();
 
-        PathService.ClearTemp();
-
-        Logger.Info("Installation completed.");
+            Logger.Info("Installation completed.");
+        }
+        finally
+        {
+            PathService.ClearTemp();
+        }
     }
 }

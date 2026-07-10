@@ -3,15 +3,7 @@
 public static class PathService
 {
     public static string Root =>
-        Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "xdPlayer");
-
-    public static string Current =>
-        Path.Combine(Root, "Current");
-
-    public static string Backup =>
-        Path.Combine(Root, "Backup");
+        AppContext.BaseDirectory;
 
     public static string Temp =>
         Path.Combine(Root, "Temp");
@@ -20,7 +12,7 @@ public static class PathService
         Path.Combine(Root, "Logs");
 
     public static string PlayerExecutable =>
-        Path.Combine(Current, "xdPlayer.App.exe");
+        Path.Combine(Root, "xdPlayer.App.exe");
 
     public static string DownloadedArchive =>
         Path.Combine(Temp, "xdPlayer.zip");
@@ -33,9 +25,6 @@ public static class PathService
 
     public static void CreateDirectories()
     {
-        Directory.CreateDirectory(Root);
-        Directory.CreateDirectory(Current);
-        Directory.CreateDirectory(Backup);
         Directory.CreateDirectory(Temp);
         Directory.CreateDirectory(Logs);
     }

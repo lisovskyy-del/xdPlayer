@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="build-release.bat" />
+  </Folder>
   <Project Path="xdPlayer.App/xdPlayer.App.csproj" />
   <Project Path="xdPlayer.Application/xdPlayer.Application.csproj" />
   <Project Path="xdPlayer.Domain/xdPlayer.Domain.csproj" />
