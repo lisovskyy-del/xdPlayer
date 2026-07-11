@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using xdPlayer.Launcher.Models;
+﻿using xdPlayer.Launcher.Models;
 
 namespace xdPlayer.Launcher.Services;
 
@@ -13,15 +10,22 @@ public static class DownloadService
     {
         try
         {
-            using var client = new HttpClient();
+            using var client = new HttpClient
+            {
+                Timeout = TimeSpan.FromMinutes(10)
+            };
 
             client.DefaultRequestHeaders.Add(
                 "User-Agent",
                 "xdPlayerLauncher");
 
-            var bytes = await client.GetByteArrayAsync(url);
+            await using var stream =
+                await client.GetStreamAsync(url);
 
-            await File.WriteAllBytesAsync(destination, bytes);
+            await using var file =
+                File.Create(destination);
+
+            await stream.CopyToAsync(file);
 
             return new DownloadResult
             {
