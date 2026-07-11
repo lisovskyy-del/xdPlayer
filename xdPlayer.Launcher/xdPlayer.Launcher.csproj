@@ -6,6 +6,8 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 
+		<ApplicationIcon>Assets\app.ico</ApplicationIcon>
+
 		<!-- User will see xdPlayer.exe -->
 		<AssemblyName>xdPlayer</AssemblyName>
 
