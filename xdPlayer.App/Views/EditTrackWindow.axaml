@@ -117,7 +117,7 @@
 
                         <StackPanel Grid.Column="1" Spacing="6">
                             <TextBlock Text="MusicBrainz ID (optional)" FontSize="12" Opacity="0.6" Foreground="{StaticResource TextBrush}"/>
-                            <TextBox Text="{Binding MusicBrainzId}" Watermark="e.g. 3e89f1d3-5c1a-4e5b-9d5f-0a1b2c3d4e5f"/>
+                            <TextBox Text="{Binding MusicBrainzId}" PlaceholderText="e.g. 3e89f1d3-5c1a-4e5b-9d5f-0a1b2c3d4e5f"/>
                         </StackPanel>
 
                     </Grid>
@@ -158,7 +158,7 @@
                                 </ItemsControl>
 
                                 <AutoCompleteBox Text="{Binding NewTagText}"
-                                         Watermark="+ Add tag"
+                                         PlaceholderText="+ Add tag"
                                          BorderThickness="0"
                                          ItemsSource="{Binding AllAvailableTags}"
                                          ValueMemberBinding="{Binding Name}"

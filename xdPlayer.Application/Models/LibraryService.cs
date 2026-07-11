@@ -45,7 +45,6 @@ public class LibraryService : ILibraryService
         var existing = await uow.Tracks.GetByFilePathAsync(filePath);
         if (existing != null) return existing;
 
-        var meta = _metadata.ReadMetadata(filePath);
         var track = _metadata.ReadMetadata(filePath);
 
         track.FilePath = filePath;
@@ -57,7 +56,9 @@ public class LibraryService : ILibraryService
         var profiles = await uow.UserProfiles.GetAllAsync();
         var profile = profiles.FirstOrDefault();
         if (profile?.MusicBrainzEnabled == true &&
-            (string.IsNullOrWhiteSpace(track.Genre) || string.IsNullOrWhiteSpace(track.MusicBrainzId)) || string.IsNullOrEmpty(track.CoverImagePath))
+            (string.IsNullOrWhiteSpace(track.Genre) ||
+             string.IsNullOrWhiteSpace(track.MusicBrainzId) ||
+             string.IsNullOrEmpty(track.CoverImagePath)))
         {
             System.Diagnostics.Debug.WriteLine($"[Library] Enqueuing track {track.Id} for enrichment (MusicBrainzEnabled={profile.MusicBrainzEnabled})");
             _enrichmentService.EnqueueForEnrichment(track.Id);

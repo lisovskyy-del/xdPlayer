@@ -96,7 +96,7 @@
                     <StackPanel Spacing="6">
 
                         <TextBox Text="{Binding NewPlaylistName}"
-                                 Watermark="Playlist name"
+                                 PlaceholderText="Playlist name"
                                  Name="NewPlaylistTextBox"/>
 
                         <StackPanel Orientation="Horizontal"

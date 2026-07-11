@@ -49,7 +49,7 @@
                     <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,4,0,0">
                         <TextBox Width="120"
                                  Text="{Binding AccentColorHex}"
-                                 Watermark="#RRGGBB"/>
+                                 PlaceholderText="#RRGGBB"/>
                         <Button Content="Apply"
                                 Command="{Binding ApplyHexColorCommand}"
                                 Background="{StaticResource SurfaceBrush}"
