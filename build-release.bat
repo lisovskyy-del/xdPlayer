@@ -16,6 +16,9 @@ for /f "tokens=2 delims=<>" %%a in ('findstr /i "<Version>" "%APP_PROJECT%"') do
     set VERSION=%%a
 )
 
+echo Version: %VERSION%
+pause
+
 if "%VERSION%"=="" (
     echo Failed to read version from xdPlayer.App.csproj
     pause
