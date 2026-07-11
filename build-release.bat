@@ -12,7 +12,7 @@ set RELEASE=%ROOT%Release
 
 echo Reading version...
 
-for /f "tokens=2 delims=<>" %%a in ('findstr /i "<Version>" "%APP_PROJECT%"') do (
+for /f "tokens=3 delims=<>" %%a in ('findstr /i "<Version>" "%APP_PROJECT%"') do (
     set VERSION=%%a
 )
 
