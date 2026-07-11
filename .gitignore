@@ -6,6 +6,10 @@
 # dotenv files
 .env
 
+# Build release
+Release/
+xdPlayer-v*.zip
+
 xdPlayer.App/Covers/
 xdPlayer.App/PlaylistCovers/
 xdPlayer.App/xdPlayer.db
