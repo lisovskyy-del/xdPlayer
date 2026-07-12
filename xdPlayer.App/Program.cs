@@ -1,19 +1,31 @@
 ﻿using Avalonia;
-using System;
-using Serilog;
-using xdPlayer.Application.Models;
 using ReactiveUI.Avalonia;
+using Serilog;
+using System;
+using System.Threading;
+using xdPlayer.Application.Models;
 
 namespace xdPlayer.App;
 
 class Program
 {
+    private static Mutex? _mutex;
+
     // Initialization code. Don't use any Avalonia, third-party APIs or any
     // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
     // yet and stuff might break.
     [STAThread]
     public static void Main(string[] args)
     {
+        const string mutexName = "xdPlayer_SingleInstance_Mutex";
+
+        _mutex = new Mutex(true, mutexName, out bool createdNew);
+
+        if (!createdNew)
+        {
+            return;
+        }
+
         Log.Logger = new LoggerConfiguration()
             .MinimumLevel.Debug()
             .WriteTo.Console()
@@ -35,6 +47,7 @@ class Program
         }
         finally
         {
+            _mutex.ReleaseMutex();
             Log.CloseAndFlush();
         }
     }

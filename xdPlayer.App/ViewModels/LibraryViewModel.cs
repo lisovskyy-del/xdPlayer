@@ -5,6 +5,7 @@ using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
+using System.Threading;
 using System.Threading.Tasks;
 using xdPlayer.Application.Interfaces;
 using xdPlayer.Domain.Entities;
@@ -20,7 +21,7 @@ public class LibraryViewModel : ReactiveObject
     private readonly IPlaylistService _playlistService;
     private readonly ITagService _tagService;
 
-
+    private CancellationTokenSource? _searchDebounceCts;
     private int _searchGeneration;
 
     private int _currentlyPlayingTrackId;
@@ -44,7 +45,7 @@ public class LibraryViewModel : ReactiveObject
         set
         {
             this.RaiseAndSetIfChanged(ref _searchQuery, value);
-            _ = SearchAsync(value);
+            DebounceSearch(value);
         }
     }
 
@@ -171,6 +172,29 @@ public class LibraryViewModel : ReactiveObject
             Tracks.Add(t);
             _queue.Add(t);
         }
+    }
+
+    private void DebounceSearch(string query)
+    {
+        _searchDebounceCts?.Cancel();
+        _searchDebounceCts = new CancellationTokenSource();
+        var token = _searchDebounceCts.Token;
+
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                await Task.Delay(2000, token);
+            }
+            catch (TaskCanceledException)
+            {
+                return;
+            }
+
+            if (token.IsCancellationRequested) return;
+
+            await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() => SearchAsync(query));
+        });
     }
 
     private async Task SearchAsync(string query)
