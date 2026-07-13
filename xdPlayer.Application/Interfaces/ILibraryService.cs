@@ -9,6 +9,7 @@ public interface ILibraryService
     Task<Track?> GetByIdWithTagsAsync(int id);
 
     Task<Track> AddFileAsync(string filePath);
+    Task<IEnumerable<Track>> AddFilesAsync(IEnumerable<string> filePaths);
     Task<IEnumerable<Track>> AddFolderAsync(string folderPath);
 
     Task<IEnumerable<Track>> GetAllAsync();

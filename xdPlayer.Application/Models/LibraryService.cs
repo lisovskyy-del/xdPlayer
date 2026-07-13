@@ -71,15 +71,78 @@ public class LibraryService : ILibraryService
         return track;
     }
 
+    public async Task<IEnumerable<Track>> AddFilesAsync(IEnumerable<string> filePaths)
+    {
+        const int BatchSize = 20;
+
+        using var scope = _scopeFactory.CreateScope();
+        var uow = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+
+        List<Track> addedTracks = [];
+
+        var profiles = await uow.UserProfiles.GetAllAsync();
+        var profile = profiles.FirstOrDefault();
+
+        var files = filePaths.ToList();
+
+        for (int i = 0; i < files.Count; i += BatchSize)
+        {
+            var batch = files.Skip(i).Take(BatchSize);
+
+            foreach (var filePath in batch)
+            {
+                try
+                {
+                    var existing = await uow.Tracks.GetByFilePathAsync(filePath);
+                    if (existing != null)
+                    {
+                        addedTracks.Add(existing);
+                        continue;
+                    }
+
+                    var track = _metadata.ReadMetadata(filePath);
+
+                    track.FilePath = filePath;
+                    track.AddedAt = DateTime.UtcNow;
+
+                    await uow.Tracks.AddAsync(track);
+
+                    addedTracks.Add(track);
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"[Library] {filePath}: {ex}");
+                }
+            }
+
+            await uow.SaveChangesAsync();
+
+            if (profile?.MusicBrainzEnabled == true)
+            {
+                foreach (var track in addedTracks.TakeLast(BatchSize))
+                {
+                    if (string.IsNullOrWhiteSpace(track.Genre) ||
+                        string.IsNullOrWhiteSpace(track.MusicBrainzId) ||
+                        string.IsNullOrWhiteSpace(track.CoverImagePath))
+                    {
+                        _enrichmentService.EnqueueForEnrichment(track.Id);
+                    }
+                }
+            }
+
+            await Task.Delay(200);
+        }
+
+        return addedTracks;
+    }
+
     public async Task<IEnumerable<Track>> AddFolderAsync(string folderPath)
     {
-        var files = Directory.GetFiles(folderPath, "*.*", SearchOption.AllDirectories)
+        var files = Directory
+            .GetFiles(folderPath, "*.*", SearchOption.AllDirectories)
             .Where(f => AudioExtensions.Contains(Path.GetExtension(f).ToLower()));
 
-        var added = new List<Track>();
-        foreach (var file in files)
-            added.Add(await AddFileAsync(file));
-        return added;
+        return await AddFilesAsync(files);
     }
 
     public async Task<IEnumerable<Track>> GetAllAsync()

@@ -246,16 +246,25 @@ public class LibraryViewModel : ReactiveObject
             ]
         });
 
-        foreach (var file in files)
+        var tracks = await _libraryService.AddFilesAsync(
+            files.Select(f => f.Path.LocalPath));
+
+        const int UiBatchSize = 20;
+
+        foreach (var batch in tracks.Chunk(UiBatchSize))
         {
-            var track = await _libraryService.AddFileAsync(file.Path.LocalPath);
-            if (Tracks.Any(t => t.Id == track.Id))
-                continue;
+            foreach (var track in batch)
+            {
+                if (Tracks.Any(t => t.Id == track.Id))
+                    continue;
 
-            Tracks.Add(track);
+                Tracks.Add(track);
 
-            if (!_queue.Tracks.Any(t => t.Id == track.Id))
-                _queue.Add(track);
+                if (!_queue.Tracks.Any(t => t.Id == track.Id))
+                    _queue.Add(track);
+            }
+
+            await Task.Delay(30);
         }
     }
 
@@ -272,10 +281,11 @@ public class LibraryViewModel : ReactiveObject
     {
         var topLevel = Avalonia.Application.Current?.ApplicationLifetime is
             Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktop
-            ? desktop.MainWindow
-            : null;
+                ? desktop.MainWindow
+                : null;
 
-        if (topLevel == null) return;
+        if (topLevel == null)
+            return;
 
         var folders = await topLevel.StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
         {
@@ -283,18 +293,29 @@ public class LibraryViewModel : ReactiveObject
             AllowMultiple = false
         });
 
-        if (folders.Count == 0) return;
+        if (folders.Count == 0)
+            return;
 
-        var tracks = await _libraryService.AddFolderAsync(folders[0].Path.LocalPath);
-        foreach (var track in tracks)
+        var importedTracks = (await _libraryService.AddFolderAsync(folders[0].Path.LocalPath)).ToList();
+
+        const int UiBatchSize = 20;
+
+        for (int i = 0; i < importedTracks.Count; i += UiBatchSize)
         {
-            if (Tracks.Any(t => t.Id == track.Id))
-                continue;
+            var batch = importedTracks.Skip(i).Take(UiBatchSize);
 
-            Tracks.Add(track);
+            foreach (var track in batch)
+            {
+                if (Tracks.Any(t => t.Id == track.Id))
+                    continue;
 
-            if (!_queue.Tracks.Any(t => t.Id == track.Id))
-                _queue.Add(track);
+                Tracks.Add(track);
+
+                if (!_queue.Tracks.Any(t => t.Id == track.Id))
+                    _queue.Add(track);
+            }
+
+            await Task.Delay(30);
         }
     }
 
