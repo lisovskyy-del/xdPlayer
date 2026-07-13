@@ -249,11 +249,13 @@ public class LibraryViewModel : ReactiveObject
         foreach (var file in files)
         {
             var track = await _libraryService.AddFileAsync(file.Path.LocalPath);
-            if (!Tracks.Contains(track))
-            {
-                Tracks.Add(track);
+            if (Tracks.Any(t => t.Id == track.Id))
+                continue;
+
+            Tracks.Add(track);
+
+            if (!_queue.Tracks.Any(t => t.Id == track.Id))
                 _queue.Add(track);
-            }
         }
     }
 
@@ -286,11 +288,13 @@ public class LibraryViewModel : ReactiveObject
         var tracks = await _libraryService.AddFolderAsync(folders[0].Path.LocalPath);
         foreach (var track in tracks)
         {
-            if (!Tracks.Contains(track))
-            {
-                Tracks.Add(track);
+            if (Tracks.Any(t => t.Id == track.Id))
+                continue;
+
+            Tracks.Add(track);
+
+            if (!_queue.Tracks.Any(t => t.Id == track.Id))
                 _queue.Add(track);
-            }
         }
     }
 
