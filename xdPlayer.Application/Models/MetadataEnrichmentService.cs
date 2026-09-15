@@ -59,6 +59,30 @@ public class MetadataEnrichmentService : IMetadataEnrichmentService, IDisposable
         }
     }
 
+    public async Task EnrichMissingOnStartupAsync()
+    {
+        using var scope = _scopeFactory.CreateScope();
+        var uow = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+
+        var allTracks = await uow.Tracks.GetAllAsync();
+
+        var incompleteTracks = allTracks.Where(t =>
+            string.IsNullOrWhiteSpace(t.MusicBrainzId) ||
+            string.IsNullOrWhiteSpace(t.CoverImagePath));
+
+        int queuedCount = 0;
+        foreach (var track in incompleteTracks)
+        {
+            EnqueueForEnrichment(track.Id);
+            queuedCount++;
+        }
+
+        if (queuedCount > 0)
+        {
+            System.Diagnostics.Debug.WriteLine($"[Enrichment] Startup check: Queued {queuedCount} tracks for enrichment.");
+        }
+    }
+
     private async Task EnrichTrackAsync(int trackId)
     {
         System.Diagnostics.Debug.WriteLine($"[Enrichment] Starting for track {trackId}");
@@ -74,11 +98,10 @@ public class MetadataEnrichmentService : IMetadataEnrichmentService, IDisposable
             return;
         }
 
-        if (!string.IsNullOrWhiteSpace(track.Genre) &&
-            !string.IsNullOrWhiteSpace(track.MusicBrainzId) &&
-            !string.IsNullOrWhiteSpace(track.CoverImagePath))
+        if (!string.IsNullOrWhiteSpace(track.CoverImagePath) &&
+            !string.IsNullOrWhiteSpace(track.MusicBrainzId))
         {
-            System.Diagnostics.Debug.WriteLine($"[Enrichment] Track {trackId} already has all data, skipping");
+            System.Diagnostics.Debug.WriteLine($"[Enrichment] Track {trackId} already has cover & MBID, skipping");
             return;
         }
 
@@ -92,7 +115,7 @@ public class MetadataEnrichmentService : IMetadataEnrichmentService, IDisposable
             return;
         }
 
-        System.Diagnostics.Debug.WriteLine($"[Enrichment] Found: mbid={result.MusicBrainzId}, genre={result.Genre}, album={result.Album}");
+        System.Diagnostics.Debug.WriteLine($"[Enrichment] Found: mbid={result.ReleaseMbid}, genre={result.Genre}, album={result.Album}");
 
         var changed = false;
 
@@ -114,19 +137,17 @@ public class MetadataEnrichmentService : IMetadataEnrichmentService, IDisposable
             changed = true;
         }
 
-        if (string.IsNullOrWhiteSpace(track.CoverImagePath) && result.ReleaseMbid != null)
+        string? mbidToUse = track.MusicBrainzId ?? result.ReleaseMbid;
+        if (string.IsNullOrWhiteSpace(track.CoverImagePath) && !string.IsNullOrWhiteSpace(mbidToUse))
         {
-            await Task.Delay(TimeSpan.FromSeconds(1.1));
+            await Task.Delay(TimeSpan.FromSeconds(1.1), _cts.Token).ContinueWith(_ => { });
 
-            var coverUrl = await musicBrainz.GetCoverArtUrlAsync(result.ReleaseMbid);
-            if (coverUrl != null)
+            string directCoverUrl = $"https://coverartarchive.org/release/{mbidToUse}/front-250";
+            var savedPath = await DownloadCoverAsync(directCoverUrl);
+            if (savedPath != null)
             {
-                var savedPath = await DownloadCoverAsync(coverUrl);
-                if (savedPath != null)
-                {
-                    track.CoverImagePath = savedPath;
-                    changed = true;
-                }
+                track.CoverImagePath = savedPath;
+                changed = true;
             }
         }
 
@@ -134,7 +155,7 @@ public class MetadataEnrichmentService : IMetadataEnrichmentService, IDisposable
         {
             await uow.Tracks.UpdateAsync(track);
             await uow.SaveChangesAsync();
-            System.Diagnostics.Debug.WriteLine($"[Enrichment] Track {trackId} enriched: genre={track.Genre}, album={track.Album}, cover={track.CoverImagePath}");
+            System.Diagnostics.Debug.WriteLine($"[Enrichment] Track {trackId} enriched: mbid={track.MusicBrainzId}, cover={track.CoverImagePath}");
 
             TrackEnriched?.Invoke(this, trackId);
         }

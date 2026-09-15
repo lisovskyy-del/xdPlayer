@@ -134,6 +134,8 @@ public partial class App : Avalonia.Application
             var settings = await themeService.LoadSettingsAsync();
             themeService.ApplyAccentColor(settings.AccentColor);
 
+            var enrichmentService = Services.GetRequiredService<IMetadataEnrichmentService>();
+            _ = enrichmentService.EnrichMissingOnStartupAsync();
 
             var trayIcons = new TrayIcons { trayIcon };
         }
