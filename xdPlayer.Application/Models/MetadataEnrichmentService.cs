@@ -96,9 +96,9 @@ public class MetadataEnrichmentService : IMetadataEnrichmentService, IDisposable
 
         var changed = false;
 
-        if (string.IsNullOrWhiteSpace(track.MusicBrainzId) && result.MusicBrainzId != null)
+        if (string.IsNullOrWhiteSpace(track.MusicBrainzId) && result.ReleaseMbid != null)
         {
-            track.MusicBrainzId = result.MusicBrainzId;
+            track.MusicBrainzId = result.ReleaseMbid;
             changed = true;
         }
 

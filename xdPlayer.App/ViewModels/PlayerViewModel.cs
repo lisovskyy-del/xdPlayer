@@ -15,8 +15,11 @@ public class PlayerViewModel : ReactiveObject, IDisposable
     private readonly IPlaybackManager _playbackManager;
     private readonly ListeningSessionService _sessionService;
     private readonly ILibraryService _libraryService;
+    private readonly IDiscordPresenceService? _discordPresenceService;
     private readonly System.Timers.Timer? _progressTimer;
     private static readonly IBrush MutedBrushColor = new SolidColorBrush(Color.Parse("#8A8A8A"));
+
+    private Track? _currentTrack;
 
     private static IBrush AccentBrushColor
     {
@@ -31,7 +34,6 @@ public class PlayerViewModel : ReactiveObject, IDisposable
     private RepeatMode _repeatMode = RepeatMode.None;
 
     private int _currentTrackId;
-
     public int CurrentTrackId => _currentTrackId;
 
     private bool _hasTrack;
@@ -147,7 +149,7 @@ public class PlayerViewModel : ReactiveObject, IDisposable
     public ReactiveCommand<Unit, Unit> ShuffleCommand { get; private set; }
     public ReactiveCommand<Unit, Unit> RepeatCommand { get; private set; }
 
-    // for Avalonia Previewer
+    // Constructor for Avalonia Previewer
     public PlayerViewModel()
     {
         _playbackManager = null!;
@@ -166,19 +168,29 @@ public class PlayerViewModel : ReactiveObject, IDisposable
         RepeatCommand = ReactiveCommand.Create(() => { });
     }
 
-    public PlayerViewModel(IPlaybackManager playbackManager, ListeningSessionService sessionService, ILibraryService libraryService)
+    // Main constructor with Dependency Injection
+    public PlayerViewModel(
+        IPlaybackManager playbackManager,
+        ListeningSessionService sessionService,
+        ILibraryService libraryService,
+        IDiscordPresenceService? discordPresenceService = null)
     {
         _playbackManager = playbackManager;
         _sessionService = sessionService;
         _libraryService = libraryService;
+        _discordPresenceService = discordPresenceService;
+
+        _discordPresenceService?.Initialize();
 
         PlayCommand = ReactiveCommand.CreateFromTask(() => _playbackManager.PlayOrResumeAsync());
         PauseCommand = ReactiveCommand.Create(() => _playbackManager.Pause());
         StopCommand = ReactiveCommand.CreateFromTask(async () =>
         {
             _playbackManager.Stop();
+            _discordPresenceService?.ClearPresence();
             await _sessionService.OnTrackEndedAsync(completed: false);
         });
+
         NextCommand = ReactiveCommand.CreateFromTask(() => _playbackManager.NextAsync());
         PreviousCommand = ReactiveCommand.CreateFromTask(() => _playbackManager.PreviousAsync());
         ToggleLikeCommand = ReactiveCommand.CreateFromTask(ToggleLikeAsync);
@@ -227,14 +239,24 @@ public class PlayerViewModel : ReactiveObject, IDisposable
     }
 
     private void OnStarted(object? sender, EventArgs e) =>
-     Avalonia.Threading.Dispatcher.UIThread.Post(() => IsPlaying = true);
+        Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+        {
+            IsPlaying = true;
+            _discordPresenceService?.ResetCache();
+            UpdateDiscordPresence();
+        });
 
     private void OnPaused(object? sender, EventArgs e) =>
-        Avalonia.Threading.Dispatcher.UIThread.Post(() => IsPlaying = false);
+        Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+        {
+            IsPlaying = false;
+            UpdateDiscordPresence();
+        });
 
     private void OnTrackChanged(object? sender, Track track) =>
         Avalonia.Threading.Dispatcher.UIThread.Post(async () =>
         {
+            _currentTrack = track;
             _currentTrackId = track.Id;
             HasTrack = true;
             CurrentTrackTitle = track.Title;
@@ -243,6 +265,9 @@ public class PlayerViewModel : ReactiveObject, IDisposable
             IsLiked = track.IsLiked;
 
             CurrentTrackChanged?.Invoke(this, track.Id);
+
+            _discordPresenceService?.ResetCache();
+            UpdateDiscordPresence();
 
             try
             {
@@ -253,6 +278,36 @@ public class PlayerViewModel : ReactiveObject, IDisposable
                 System.Diagnostics.Debug.WriteLine($"[Track] Exception: {ex.Message}");
             }
         });
+
+    private void UpdateDiscordPresence()
+    {
+        if (_currentTrack == null || _discordPresenceService == null) return;
+
+        // Direct property access from Track entity
+        string? releaseMbid = _currentTrack.MusicBrainzId;
+        string? albumName = _currentTrack.Album;
+
+        // Use TotalDuration from playback manager if available; otherwise convert DurationSeconds to TimeSpan
+        TimeSpan duration = _playbackManager.TotalDuration > TimeSpan.Zero
+            ? _playbackManager.TotalDuration
+            : TimeSpan.FromSeconds(_currentTrack.DurationSeconds);
+
+        _discordPresenceService.UpdatePresence(
+            title: CurrentTrackTitle ?? "Unknown Title",
+            artist: CurrentTrackArtist ?? "Unknown Artist",
+            albumName: albumName,
+            musicBrainzReleaseMbid: releaseMbid,
+            isPlaying: IsPlaying,
+            currentPosition: _playbackManager.CurrentPosition,
+            totalDuration: duration
+        );
+    }
+
+    public void OnSeekFinished()
+    {
+        _discordPresenceService?.ResetCache();
+        UpdateDiscordPresence();
+    }
 
     private async Task ToggleLikeAsync()
     {
@@ -271,5 +326,7 @@ public class PlayerViewModel : ReactiveObject, IDisposable
         _playbackManager.TrackChanged -= OnTrackChanged;
         _progressTimer?.Stop();
         _progressTimer?.Dispose();
+
+        _discordPresenceService?.Shutdown();
     }
 }

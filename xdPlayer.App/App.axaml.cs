@@ -169,6 +169,7 @@ public partial class App : Avalonia.Application
         services.AddSingleton<IMetadataEnrichmentService, MetadataEnrichmentService>();
 
         services.AddHttpClient<IMusicBrainzClient, MusicBrainzClient>();
+        services.AddSingleton<IDiscordPresenceService, DiscordPresenceService>();
 
         services.AddSingleton<SettingsViewModel>();
         services.AddSingleton<LibraryViewModel>();
